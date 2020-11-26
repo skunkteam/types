@@ -6,8 +6,9 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc --build",
+        "clean": "rm -rf dist && tsc --build --clean",
         "test": "jest",
-        "lint": "eslint . --ext .ts"
+        "lint": "npm run build && eslint . --ext .ts"
     },
     "repository": {
         "type": "git",
@@ -20,6 +21,7 @@
     },
     "homepage": "https://github.com/skunkteam/types#readme",
     "devDependencies": {
+        "@types/eslint": "^7.2.5",
         "@types/jest": "^26.0.15",
         "@typescript-eslint/eslint-plugin": "^4.8.2",
         "@typescript-eslint/parser": "^4.8.2",

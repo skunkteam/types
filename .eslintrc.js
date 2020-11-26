@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('eslint').Linter.Config} */
+const config = {
     root: true,
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -13,4 +14,10 @@ module.exports = {
         'prettier',
         'prettier/@typescript-eslint',
     ],
+    rules: {
+        'object-shorthand': ['error', 'always'],
+        'sort-imports': ['error', { ignoreCase: true, ignoreDeclarationSort: true }],
+        '@typescript-eslint/no-explicit-any': 'off',
+    },
 };
+module.exports = config;

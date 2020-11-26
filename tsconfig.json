@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
         "target": "ES2019",
+        "module": "CommonJS",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
         "outDir": "dist",
         "rootDir": "src",
+        "moduleResolution": "node",
         "importHelpers": true,
         "strict": true,
         "noUnusedLocals": true,
@@ -17,7 +19,8 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "pretty": true,
-        "composite": true
+        "composite": true,
+        "importsNotUsedAsValues": "error"
     },
     "include": [],
     "files": [],

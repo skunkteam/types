@@ -2,8 +2,8 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "noEmit": true,
-        "types": ["jest", "jest-extended", "node"]
+        "types": ["jest", "jest-extended"]
     },
-    "include": ["src/**/*.test.ts"],
+    "include": ["src/**/*.test.ts", "src/testutils.ts"],
     "references": [{ "path": "./tsconfig.lib.json" }]
 }
