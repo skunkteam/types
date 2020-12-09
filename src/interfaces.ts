@@ -22,7 +22,11 @@ export interface TypeLink<ResultType> {
 
 export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
 
-export type TypeImpl<Impl extends BaseTypeImpl<any>> = Impl & Constructor<TypeOf<Impl>>;
+export type TypeImpl<Impl extends BaseTypeImpl<any>> = Impl & {
+    // Constructor is needed to ensure TypeScript will emit this type as decorator-metadata
+    new (input: unknown): TypeOf<Impl>;
+    (input: unknown): TypeOf<Impl>;
+};
 
 /**
  * Obtains the TypeScript type of the given runtime Type-checker.
