@@ -273,7 +273,7 @@ function evalString(chars: PeekableIterator<string>, until?: string) {
                 chars.advance();
         }
     }
-    return true;
+    return false;
 }
 
 // Using weakmap to make sure it never gets copied into a different type with `createType`.

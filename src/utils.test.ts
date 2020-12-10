@@ -30,6 +30,9 @@ describe(bracketsIfNeeded, () => {
         ${'<<a>>'}             | ${'<<a>>'}
         ${'{ prop: value }'}   | ${'{ prop: value }'}
         ${'{a} {b}'}           | ${'({a} {b})'}
+        ${'"{a} {b}"'}         | ${'"{a} {b}"'}
+        ${'"{a} \\" {b}"'}     | ${'"{a} \\" {b}"'}
+        ${'"{a} {b}'}          | ${'("{a} {b})'}
     `('bracketsIfNeeded($input) => $output', ({ input, output }) => {
         expect(bracketsIfNeeded(input)).toBe(output);
     });

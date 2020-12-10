@@ -37,6 +37,7 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
             case 'null':
             case 'undefined':
                 return input == null ? this.value : autoCastFailure;
+            // istanbul ignore next: not possible
             default:
                 return autoCastFailure;
         }

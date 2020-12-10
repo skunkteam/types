@@ -22,7 +22,7 @@ testTypeImpl({
     ],
 });
 
-const specialStringOrUndefined = string.or(undefinedType).withParser(i => (i ? String(i) : '<empty>'));
+const specialStringOrUndefined = string.or(undefinedType).withParser(i => (i ? string(i) : '<empty>'));
 testTypeImpl({
     name: '{ presenceNotRequired: string | undefined, presenceRequired: string | undefined }',
     type: intersection([
