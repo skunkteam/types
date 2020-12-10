@@ -18,8 +18,10 @@ import { LiteralType } from './literal';
 export interface InterfaceTypeOptions {
     name?: string;
     partial?: boolean;
-    treatMissingAsUndefined?: boolean; // default: true
-    // TODO: stripUnknownProperties?: boolean; // default: true
+    /** Discriminate between missing keys and undefined values. Is off by default because that is what TypeScript does. */
+    strictMissingKeys?: boolean;
+    // /** When constructing values, allow unknown properties to pass unvalidated into the constructed value. */
+    // TODO: allowUnknownProperties?: boolean; // default: false
 }
 
 export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> {
@@ -38,7 +40,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     readonly possibleDiscriminators = this.options.partial ? [] : getPossibleDiscriminators(this.props);
 
     typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        const { treatMissingAsUndefined = true, partial } = this.options;
+        const { strictMissingKeys, partial } = this.options;
         const baseFailure = { type: this, value: input } as const;
         if (!isObject(input)) {
             return this.createResult(input, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
@@ -46,18 +48,17 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         const constructResult = {} as Record<string, unknown>;
         const details: FailureDetails[] = [];
         for (const [key, innerType] of Object.entries(this.props)) {
-            const present = hasOwnProperty(input, key);
-            if (!present) {
-                if (partial) continue;
-                if (!treatMissingAsUndefined) {
-                    details.push(this.missingProperty(input, key, innerType));
-                    continue;
-                }
+            const missingKey = !hasOwnProperty(input, key);
+            if (partial) {
+                if (missingKey || (!strictMissingKeys && input[key] === undefined)) continue;
+            } else if (missingKey && strictMissingKeys) {
+                details.push(this.missingProperty(input, key, innerType));
+                continue;
             }
             const innerResult = innerType.validate(input[key], options);
             if (innerResult.ok) {
                 constructResult[key] = innerResult.value;
-            } else if (!present) {
+            } else if (missingKey) {
                 details.push(this.missingProperty(input, key, innerType));
             } else {
                 details.push(...prependPathToDetails(innerResult, key));

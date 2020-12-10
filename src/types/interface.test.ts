@@ -2,7 +2,7 @@ import type { The } from '../interfaces';
 import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { boolean } from './boolean';
 import { InterfaceType, partial, type } from './interface';
-import { intersection, IntersectionType } from './intersection';
+import { IntersectionType } from './intersection';
 import { undefinedType } from './literal';
 import { number } from './number';
 import { string } from './string';
@@ -16,34 +16,56 @@ testTypeImpl({
         ...defaultUsualSuspects(partial({ force: boolean })),
         [{ force: 'field' }, 'error in [{ force?: boolean }] at <force>: expected a boolean, got a string ("field")'],
         [
-            { force: { TODO: 'prevent too large error messages' } },
-            'error in [{ force?: boolean }] at <force>: expected a boolean, got an object ({ TODO: "prevent too large error messages" })',
+            { force: { prevent: 'too large error messages by truncating smartly and beautifully' } },
+            'error in [{ force?: boolean }] at <force>: expected a boolean, got an object ({ prevent: "too large error me .. ly and beautifully" })',
         ],
     ],
 });
 
 const specialStringOrUndefined = string.or(undefinedType).withParser(i => (i ? string(i) : '<empty>'));
 testTypeImpl({
-    name: '{ presenceNotRequired: string | undefined, presenceRequired: string | undefined }',
-    type: intersection([
-        type({ presenceNotRequired: specialStringOrUndefined }),
-        type({ treatMissingAsUndefined: false }, { presenceRequired: specialStringOrUndefined }),
-    ]),
+    name: '{ presenceNotRequired: string | undefined }',
+    type: type({ presenceNotRequired: specialStringOrUndefined }),
     basicType: 'object',
-    validValues: [
-        { presenceRequired: undefined },
-        { presenceRequired: 'abc' },
-        { presenceNotRequired: undefined, presenceRequired: undefined },
-        { presenceNotRequired: 'abc', presenceRequired: 'abc' },
-        { presenceNotRequired: 'abc', presenceRequired: undefined },
+    validValues: [{ presenceNotRequired: undefined }, { presenceNotRequired: 'abc' }],
+    validConversions: [[{}, { presenceNotRequired: '<empty>' }]],
+});
+
+testTypeImpl({
+    name: '{ presenceRequired: string | undefined }',
+    type: type({ strictMissingKeys: true }, { presenceRequired: specialStringOrUndefined }),
+    validValues: [{ presenceRequired: undefined }, { presenceRequired: 'abc' }],
+    invalidValues: [
+        [{}, 'error in [{ presenceRequired: string | undefined }]: missing property <presenceRequired> [string | undefined], got: {}'],
     ],
+    validConversions: [[{ presenceRequired: undefined }, { presenceRequired: '<empty>' }]],
+});
+
+testTypeImpl({
+    name: '{ undefinedNotAllowed?: string, undefinedAllowed?: string | undefined }',
+    type: type({ strictMissingKeys: true, partial: true }, { undefinedNotAllowed: string, undefinedAllowed: specialStringOrUndefined }),
+    validValues: [{ undefinedNotAllowed: 'abc', undefinedAllowed: undefined }, {}],
     invalidValues: [
         [
-            {},
-            'error in [{ presenceNotRequired: string | undefined, presenceRequired: string | undefined }]: missing property <presenceRequired> [string | undefined], got: {}',
+            { undefinedNotAllowed: undefined, undefinedAllowed: undefined },
+            'error in [{ undefinedNotAllowed?: string, undefinedAllowed?: string | undefined }] at <undefinedNotAllowed>: expected a string, got an undefined',
         ],
     ],
-    validConversions: [[{ presenceRequired: undefined }, { presenceNotRequired: '<empty>', presenceRequired: '<empty>' }]],
+    validConversions: [
+        [{}, {}],
+        [{ undefinedAllowed: undefined }, { undefinedAllowed: '<empty>' }],
+    ],
+});
+
+testTypeImpl({
+    name: '{ undefinedAllowed?: string }',
+    type: type({ partial: true }, { undefinedAllowed: string }),
+    validValues: [{ undefinedAllowed: undefined }, {}],
+    validConversions: [
+        [{}, {}],
+        [{ undefinedAllowed: undefined }, {}],
+        [{ undefinedAllowed: 'abc' }, { undefinedAllowed: 'abc' }],
+    ],
 });
 
 describe(type, () => {

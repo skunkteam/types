@@ -1,6 +1,6 @@
 import type { BasicType, Failure, FailureDetails, OneOrMore, PropertiesInfo, Result } from './interfaces';
 
-export function printValue(input: unknown, visited: Set<unknown> = new Set()): string {
+export function printValue(input: unknown, budget = 50, visited: Set<unknown> = new Set()): string {
     switch (typeof input) {
         case 'bigint':
         case 'boolean':
@@ -10,7 +10,7 @@ export function printValue(input: unknown, visited: Set<unknown> = new Set()): s
         case 'undefined':
             return String(input);
         case 'string':
-            return JSON.stringify(input);
+            return truncateString(JSON.stringify(input), budget);
         case 'object':
             if (input === null) {
                 return 'null';
@@ -20,16 +20,45 @@ export function printValue(input: unknown, visited: Set<unknown> = new Set()): s
             }
             visited.add(input);
             if (Array.isArray(input)) {
-                return `[${input.map(v => printValue(v, visited)).join(', ')}]`;
+                return isOneOrMore(input)
+                    ? `[${truncateArray(input, budget - 2, (element, remaining) => printValue(element, remaining, visited))}]`
+                    : '[]';
             }
             if (!input.toString || (input.toString === Object.prototype.toString && isPlainObject(input))) {
-                const contents = Object.entries(input)
-                    .map(([key, value]) => `${printKey(key)}: ${printValue(value, visited)}`)
-                    .join(', ');
-                return contents ? `{ ${contents} }` : '{}';
+                const entries = Object.entries(input);
+                return isOneOrMore(entries)
+                    ? `{ ${truncateArray(
+                          entries,
+                          budget - 4,
+                          ([key, value], remaining) => `${printKey(key)}: ${printValue(value, remaining, visited)}`,
+                      )} }`
+                    : '{}';
             }
-            return String(input);
+            return truncateString(String(input), budget);
     }
+}
+
+function truncateString(str: string, budget: number) {
+    if (str.length > 10 && str.length > budget) {
+        const pieceSize = Math.max(Math.floor(budget / 2) - 4, 0);
+        return `${str.slice(0, pieceSize)} .. ${str.slice(-pieceSize)}`;
+    }
+    return str;
+}
+
+function truncateArray<T>(arr: OneOrMore<T>, budget: number, printer: (element: T, budget: number) => string): string {
+    const [first, ...rest] = arr;
+    let result = printer(first, budget);
+    for (const element of rest) {
+        const remaining = Math.max(budget - result.length, 0);
+        if (remaining > 5) {
+            result += `, ${printer(element, remaining)}`;
+        } else {
+            result += ', .. ';
+            break;
+        }
+    }
+    return result;
 }
 
 export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
