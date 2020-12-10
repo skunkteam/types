@@ -10,14 +10,13 @@ export class RecordType<
     ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>
 > extends BaseTypeImpl<ResultType> {
     readonly basicType = 'object';
+    readonly isDefaultName: boolean;
+    readonly name: string;
 
-    constructor(
-        readonly keyType: KeyTypeImpl,
-        readonly valueType: ValueTypeImpl,
-        readonly name = `Record<${keyType.name}, ${valueType.name}>`,
-        readonly strict = true,
-    ) {
+    constructor(readonly keyType: KeyTypeImpl, readonly valueType: ValueTypeImpl, name?: string, readonly strict = true) {
         super();
+        this.isDefaultName = !name;
+        this.name = name || `Record<${keyType.name}, ${valueType.name}>`;
     }
 
     typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {

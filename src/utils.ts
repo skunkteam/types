@@ -68,8 +68,12 @@ export function printKey(key: string): string {
     return isValidIdentifier(key) ? key : JSON.stringify(key);
 }
 
+export function castArray<T>(input: undefined | T | T[]): T[] {
+    return input === undefined ? [] : Array.isArray(input) ? input : [input];
+}
+
 export function humanList<T>(arr: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
-    if (!Array.isArray(arr)) return map(arr);
+    arr = castArray(arr);
     const last = arr[arr.length - 1];
     if (!last) return '';
     if (arr.length === 1) return map(last);
@@ -89,6 +93,10 @@ export function prependContextToDetails(failure: Failure | FailureDetails, conte
         ...d,
         context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
     }));
+}
+
+export function addParserInputToDetails(failure: Failure | FailureDetails, parserInput: unknown): FailureDetails[] {
+    return getDetails(failure).map(d => ({ ...d, parserInput }));
 }
 
 /**
@@ -191,48 +199,78 @@ export function transpose<T extends Record<string, string>>(obj: T): Transposed<
     return result;
 }
 
-export function bracketsIfNeeded(name: string, allow?: '|' | '&'): string {
-    return isValidIdentifier(name) || evalBrackets(name[Symbol.iterator](), allow) ? name : `(${name})`;
+export function bracketsIfNeeded(name: string, allowedSeparator?: '|' | '&'): string {
+    return isValidIdentifier(name) || evalBrackets(new PeekableIterator(name), allowedSeparator) ? name : `(${name})`;
 }
 
-function evalBrackets(chars: Iterator<string>, allow?: '|' | '&', until?: string) {
-    let next: IteratorResult<string>;
-    while (!(next = chars.next()).done) {
-        switch (next.value) {
-            case until:
+class PeekableIterator<T> {
+    current: T | undefined;
+    next: T | undefined;
+    private readonly iter: Iterator<T>;
+    constructor(iterable: Iterable<T>) {
+        this.iter = iterable[Symbol.iterator]();
+        this.advance();
+    }
+    advance(): T | undefined {
+        this.current = this.next;
+        const iterNext = this.iter.next();
+        this.next = iterNext.done ? undefined : iterNext.value;
+        return this.current;
+    }
+}
+
+const MATCHING_BRACKET = {
+    '[': ']',
+    '{': '}',
+    '(': ')',
+    '<': '>',
+} as const;
+
+function evalBrackets(chars: PeekableIterator<string>, allowedSeparator?: '|' | '&', endGroup?: string) {
+    let hasGroup = false;
+    while (chars.advance()) {
+        switch (chars.current) {
+            case endGroup:
                 return true;
             case '[':
-                if (!evalBrackets(chars, allow, ']')) return false;
-                break;
             case '{':
-                if (!evalBrackets(chars, allow, '}')) return false;
-                break;
             case '(':
-                if (!evalBrackets(chars, allow, ')')) return false;
-                break;
             case '<':
-                if (!evalBrackets(chars, allow, '>')) return false;
+                if (!evalBrackets(chars, undefined, MATCHING_BRACKET[chars.current])) return false;
+                hasGroup = true;
                 break;
             case '"':
             case "'":
-                if (!evalString(chars, next.value)) return false;
+                if (!evalString(chars, chars.current)) return false;
+                hasGroup = true;
                 break;
             case '|':
             case '&':
-                if (!until && allow !== next.value) return false;
+            case ' ':
+                if (!endGroup) {
+                    // not inside a group, so spaces and allowed separators need special care
+                    if (!allowedSeparator) return false;
+                    let foundSeparator;
+                    do {
+                        foundSeparator ||= chars.current === allowedSeparator;
+                    } while (chars.next && '|& '.includes(chars.next) && chars.advance());
+                    if (!foundSeparator) return false;
+                }
+                break;
+            default:
+                if (!endGroup && hasGroup) return false;
         }
     }
-    return !until;
+    return !endGroup;
 }
 
-function evalString(chars: Iterator<string>, until?: string) {
-    let next: IteratorResult<string>;
-    while (!(next = chars.next()).done) {
-        switch (next.value) {
+function evalString(chars: PeekableIterator<string>, until?: string) {
+    while (chars.advance()) {
+        switch (chars.current) {
             case until:
                 return true;
             case '\\':
-                chars.next();
+                chars.advance();
         }
     }
     return true;

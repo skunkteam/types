@@ -141,16 +141,6 @@ export type ObjectUnionToIntersection<Union> = (
       MergeIntersection<Intersection>
     : never;
 
-declare module '../base-type' {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    export interface BaseObjectLikeTypeImpl<ResultType> {
-        /**
-         * Intersect this Type with another.
-         */
-        and<Other extends BaseObjectLikeTypeImpl<unknown>>(other: Other): TypeImpl<IntersectionType<[this, Other]>>;
-    }
-}
-
 BaseObjectLikeTypeImpl.prototype.and = function <Other extends BaseObjectLikeTypeImpl<unknown>>(other: Other) {
     return intersection([this, other]);
 };

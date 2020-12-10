@@ -17,6 +17,30 @@ testTypeImpl({
 });
 
 testTypeImpl({
+    name: 'false.autoCast',
+    type: literal(false).autoCast,
+    basicType: 'boolean',
+    validValues: [false],
+    invalidValues: [
+        [true, 'expected the literal false, got: true'],
+        [NaN, 'expected a boolean (false), got a number (NaN)'],
+        [null, 'expected a boolean (false), got a null'],
+        [undefined, 'expected a boolean (false), got an undefined'],
+        [0, 'expected a boolean (false), got a number (0)'],
+    ],
+    validConversions: [
+        [false, false],
+        ['false', false],
+        [0, false],
+    ],
+    invalidConversions: [
+        [true, 'expected the literal false, got: true'],
+        [1, 'expected the literal false, got: true, parsed from: 1'],
+        ['FALSE', 'error in parser of [false.autoCast]: could not autocast value: "FALSE"'],
+    ],
+});
+
+testTypeImpl({
     name: '"specific string"',
     type: literal('specific string'),
     basicType: 'string',

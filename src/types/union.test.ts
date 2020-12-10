@@ -24,9 +24,9 @@ testTypeImpl({
 });
 
 const StrangeNumberUnion = union('StrangeNumberUnion', [
-    number.fromString.withConstraint('LessThanMinus10', n => n < -10),
+    number.autoCast.withConstraint('LessThanMinus10', n => n < -10),
     literal(0),
-    number.fromString.withValidation(n => n > 10),
+    number.autoCast.withValidation(n => n > 10),
 ]);
 testTypeImpl({
     name: 'StrangeNumberUnion',
@@ -39,7 +39,7 @@ testTypeImpl({
                 'error in [StrangeNumberUnion]: failed every element in union:',
                 '  • expected a [LessThanMinus10], got: 3',
                 '  • expected the literal 0, got: 3',
-                '  • error in [number.fromString]: additional validation failed',
+                '  • error in [number.autoCast]: additional validation failed',
             ],
         ],
     ],
@@ -52,16 +52,16 @@ testTypeImpl({
             '-5',
             [
                 'error in [StrangeNumberUnion]: failed every element in union:',
-                '  • expected a [LessThanMinus10], got: -5',
-                '  • error in [number.fromString]: additional validation failed',
+                '  • expected a [LessThanMinus10], got: -5, parsed from: "-5"',
+                '  • error in [number.autoCast]: additional validation failed',
                 '  • disregarded 1 union-subtype that does not accept basic type "string"',
             ],
         ],
     ],
 });
 
-const ObjectUnion = union([type({ tag: literal('a'), a: string }), type({ tag: literal('b'), b: number.fromUnknown })]);
-testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.fromUnknown }', type: ObjectUnion });
+const ObjectUnion = union([type({ tag: literal('a'), a: string }), type({ tag: literal('b'), b: number.autoCast })]);
+testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.autoCast }', type: ObjectUnion });
 testTypeImpl({
     name: 'ObjectUnion',
     type: ObjectUnion.withName('ObjectUnion'),
@@ -77,7 +77,7 @@ testTypeImpl({
             [
                 'error in [ObjectUnion]: every subtype of union has at least one discriminator mismatch',
                 '  • [{ tag: "a", a: string }] requires <tag> to be "a", got: "c"',
-                '  • [{ tag: "b", b: number.fromUnknown }] requires <tag> to be "b", got: "c"',
+                '  • [{ tag: "b", b: number.autoCast }] requires <tag> to be "b", got: "c"',
             ],
         ],
         [
@@ -244,17 +244,5 @@ testTypeImpl({
 });
 
 const MixedUnion = union([ObjectUnion, StringLiteralUnion]);
-testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.fromUnknown } | "abc" | "def"', type: MixedUnion });
+testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.autoCast } | "abc" | "def"', type: MixedUnion });
 testTypeImpl({ name: 'MixedUnion', type: MixedUnion.withName('MixedUnion'), basicType: 'mixed' });
-
-// const ComplexUnion = union()
-
-// describe('union collapse', () => {
-//     test('using equality', () => {
-//         const abc = literal('abc');
-//         const target = union([abc, nullType, abc, nullType]);
-//         expect(target.types).toEqual()
-//     });
-// })
-
-// TODO: disregarded mismatched union elements: ...

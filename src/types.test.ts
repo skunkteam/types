@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import type { FailureDetails, The } from './interfaces';
+import type { FailureDetails, The, Type } from './interfaces';
 import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
 import { boolean, int, number, string, type } from './types';
 import { partial } from './types/interface';
@@ -63,7 +63,7 @@ const Age = int
     .withConstraint('Age', n => (n < 0 ? 'the unborn miracle?' : n > 199 ? 'wow, that is really old!' : true))
     .extendWith(() => ({ MAX: 199 }));
 type ConfirmedAge = The<typeof ConfirmedAge>;
-const ConfirmedAge = Age.withBrand('ConfirmedAge').withConstructor(Age.andThen(age => age % 16));
+const ConfirmedAge = Age.withBrand('ConfirmedAge').withParser(Age.andThen(age => age % 16));
 
 testTypeImpl({
     name: 'Age',
@@ -79,8 +79,8 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'Age.fromString',
-    type: Age.fromString,
+    name: 'Age.autoCast',
+    type: Age.autoCast,
     basicType: 'number',
     validValues: [0, 1, Age.MAX],
     invalidValues: [
@@ -95,7 +95,7 @@ testTypeImpl({
         ['0', 0],
     ],
     invalidConversions: [
-        ['abc', 'error in constructor of [Age.fromString]: could not convert value to number: "abc"'],
+        ['abc', 'error in parser of [Age.autoCast]: could not autocast value: "abc"'],
         ['-1', 'error in [Age]: the unborn miracle?'],
     ],
 });
@@ -262,7 +262,13 @@ testTypeImpl({
 });
 
 /** NestedFromString is an interface type that uses other types with constructors. */
-const NestedFromString = type('NestedFromString', { a: number.fromString, b: number.fromString });
+const NumberFromString = number.withParser(
+    string.andThen(n => {
+        if (isNaN(+n)) throw `could not convert value to number: ${JSON.stringify(n)}`;
+        return +n;
+    }),
+);
+const NestedFromString = type('NestedFromString', { a: NumberFromString, b: NumberFromString });
 
 testTypeImpl({
     name: 'NestedFromString',
@@ -297,15 +303,15 @@ testTypeImpl({
     ],
     invalidConversions: [
         ...defaultUsualSuspects(NestedFromString),
-        [{ a: 1, b: '2' }, 'error in [NestedFromString] at constructor precondition of <a>: expected a string, got a number (1)'],
+        [{ a: 1, b: '2' }, 'error in [NestedFromString] at parser precondition of <a>: expected a string, got a number (1)'],
         [
             { a: 1, b: 2 },
             [
                 'encountered multiple errors in [NestedFromString]:',
                 '',
-                '- in constructor precondition at <a>: expected a string, got a number (1)',
+                '- in parser precondition at <a>: expected a string, got a number (1)',
                 '',
-                '- in constructor precondition at <b>: expected a string, got a number (2)',
+                '- in parser precondition at <b>: expected a string, got a number (2)',
             ],
         ],
         [
@@ -313,9 +319,9 @@ testTypeImpl({
             [
                 'encountered multiple errors in [NestedFromString]:',
                 '',
-                '- missing property <b> [number.fromString], got: { a: "a" }',
+                '- missing property <b> [number], got: { a: "a" }',
                 '',
-                '- in constructor at <a>: could not convert value to number: "a"',
+                '- in parser at <a>: could not convert value to number: "a"',
             ],
         ],
     ],
@@ -398,7 +404,7 @@ testTypeImpl({
 
 // Historic bug: `withValidation` did not take constructed result of prior validation into account.
 const ShoutMessage = type('ShoutMessage', {
-    msg: string.withConstructor(string.andThen(s => s + '!')),
+    msg: string.withParser(string.andThen(s => s + '!')),
 }).withValidation(o => o.msg.endsWith('!') || 'speak up');
 testTypeImpl({
     name: 'ShoutMessage',
@@ -460,4 +466,16 @@ testTypes('assignability of sub-brands', () => {
 
     // @ts-expect-error Age not assignable to CheckedAge
     assignableTo<ConfirmedAge>(Age(123));
+});
+
+testTypes('usability of assert', () => {
+    const value = {};
+    const MyImplicitType = type('MyImplicitType', { a: string });
+    const MyExplicitType: Type<{ a: string }> = type('MyExplicitType', { a: string });
+
+    // @ts-expect-error does not work, see: https://github.com/microsoft/TypeScript/issues/34596#issuecomment-548084070
+    MyImplicitType.assert(value);
+
+    // Does work:
+    MyExplicitType.assert(value);
 });

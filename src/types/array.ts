@@ -1,6 +1,6 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { Branded, ConstraintFn, Result, TypeImpl, ValidationOptions } from '../interfaces';
-import { decodeOptionalName, getDetails, isFailure, isValidIdentifier, partition, prependPathToDetails } from '../utils';
+import type { Result, TypeImpl, ValidationOptions } from '../interfaces';
+import { castArray, decodeOptionalName, getDetails, isFailure, isValidIdentifier, partition, prependPathToDetails } from '../utils';
 
 export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType> {
     readonly basicType = 'array';
@@ -26,6 +26,8 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
             failures.flatMap(getDetails),
         );
     }
+
+    protected autoCaster = castArray;
 }
 
 export function array<Element>(
@@ -37,25 +39,4 @@ export function array<Element>(
 
 function defaultName({ name }: BaseTypeImpl<unknown>) {
     return isValidIdentifier(name) ? `${name}[]` : `Array<${name}>`;
-}
-
-// Repeated for every type implementation, because higher kinded types are currently not really supported in TypeScript.
-// Known workarounds, such as: https://medium.com/@gcanti/higher-kinded-types-in-typescript-static-and-fantasy-land-d41c361d0dbe
-// are problematic with regards to instance-methods (you are very welcome to try, though). Especially the following methods are
-// difficult to get right using HKT:
-export interface ArrayType<ElementType, Element, ResultType> {
-    /**
-     * Create a new instance of this Type with the given name. Creates a brand.
-     *
-     * @param name the new name to use in (some) error messages
-     */
-    withBrand<BrandName extends string>(name: BrandName): TypeImpl<ArrayType<ElementType, Element, Branded<ResultType, BrandName>>>;
-
-    /**
-     * Use an arbitrary constraint function to further restrict a type.
-     */
-    withConstraint<BrandName extends string>(
-        name: BrandName,
-        constraint: ConstraintFn<ResultType>,
-    ): TypeImpl<ArrayType<ElementType, Element, Branded<ResultType, BrandName>>>;
 }

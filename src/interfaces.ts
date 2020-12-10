@@ -93,6 +93,11 @@ export type FailureDetails = {
     value: unknown;
 
     /**
+     * The value input value to the parser, if applicable.
+     */
+    parserInput?: unknown;
+
+    /**
      * A key indicating the location at which validation failed.
      */
     path?: PropertyKey[];

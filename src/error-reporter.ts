@@ -1,5 +1,5 @@
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
-import type { BasicType, Failure, FailureDetails } from './interfaces';
+import type { BasicType, Failure, FailureDetails, OneOrMore } from './interfaces';
 import { an, basicType, getDetails, humanList, isSingle, partition, printKey, printPath, printValue } from './utils';
 
 const BULLETS = ['-', '•', '‣', '◦'];
@@ -26,11 +26,11 @@ export function reportError(root: Omit<Failure, 'ok'>, level = 0): string {
 }
 
 function reportDetails(details: FailureDetails[], level: number) {
-    const missingProps: Record<string, Array<FailureDetails & { kind: 'missing property' }>> = {};
+    const missingProps: Record<string, OneOrMore<FailureDetails & { kind: 'missing property' }>> = {};
     for (const detail of details) {
         if (detail.kind === 'missing property') {
             const path = detail.path ? printPath(detail.path) : '';
-            (missingProps[path] ??= []).push(detail);
+            missingProps[path]?.push(detail) || (missingProps[path] = [detail]);
         }
     }
     const bullet = newBullet(level);
@@ -66,7 +66,7 @@ function detailMessageWithContext(detail: FailureDetails, level: number) {
 function detailMessage(detail: FailureDetails, level: number) {
     switch (detail.kind) {
         case undefined:
-            return `expected ${an(`[${detail.type.name}]`)}, got: ${printValue(detail.value)}`;
+            return `expected ${an(`[${detail.type.name}]`)}, got: ${printInputValue(detail)}`;
         case 'missing property':
             return missingPropertyMessage([detail]);
         case 'invalid key': {
@@ -77,8 +77,8 @@ function detailMessage(detail: FailureDetails, level: number) {
         }
         case 'invalid literal':
             return Array.isArray(detail.expected)
-                ? `expected one of the literals ${humanList(detail.expected, 'or', printValue)}, got: ${printValue(detail.value)}`
-                : `expected the literal ${printValue(detail.expected)}, got: ${printValue(detail.value)}`;
+                ? `expected one of the literals ${humanList(detail.expected, 'or', printValue)}, got: ${printInputValue(detail)}`
+                : `expected the literal ${printValue(detail.expected)}, got: ${printInputValue(detail)}`;
         case 'invalid basic type': {
             const expected = printBasicTypeAndValue(detail.expected, detail.expectedValue);
             const got = printBasicTypeAndValue(basicType(detail.value), detail.value);
@@ -89,6 +89,15 @@ function detailMessage(detail: FailureDetails, level: number) {
         case 'custom message':
             return detail.message;
     }
+}
+
+function printInputValue(details: FailureDetails) {
+    const printedValue = printValue(details.value);
+    if ('parserInput' in details) {
+        const printedParserInput = printValue(details.parserInput);
+        if (printedParserInput !== printedValue) return `${printedValue}, parsed from: ${printedParserInput}`;
+    }
+    return printedValue;
 }
 
 function printBasicTypeAndValue(bt: BasicType | BasicType[], value: unknown) {
@@ -108,10 +117,10 @@ function prependWithTypeName(detail: FailureDetails) {
     );
 }
 
-function missingPropertyMessage(details: Array<FailureDetails & { kind: 'missing property' }>) {
+function missingPropertyMessage(details: OneOrMore<FailureDetails & { kind: 'missing property' }>) {
     return `missing propert${details.length === 1 ? 'y' : 'ies'} ${details
         .map(d => `<${printKey(d.property)}> [${d.type.name}]`)
-        .join(', ')}, got: ${printValue(details[0]?.value)}`;
+        .join(', ')}, got: ${printInputValue(details[0])}`;
 }
 
 function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number): string {
@@ -176,8 +185,8 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
             );
             details.push(
                 msg(
-                    `[${mismatch.type.name}] requires <${printPath(mismatch.path)}> to be ${requiredValues}, got: ${printValue(
-                        mismatch.detail.value,
+                    `[${mismatch.type.name}] requires <${printPath(mismatch.path)}> to be ${requiredValues}, got: ${printInputValue(
+                        mismatch.detail,
                     )}`,
                 ),
             );

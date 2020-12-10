@@ -22,7 +22,7 @@ testTypeImpl({
     ],
 });
 
-const specialStringOrUndefined = string.or(undefinedType).withConstructor(i => (i ? String(i) : '<empty>'));
+const specialStringOrUndefined = string.or(undefinedType).withParser(i => (i ? String(i) : '<empty>'));
 testTypeImpl({
     name: '{ presenceNotRequired: string | undefined, presenceRequired: string | undefined }',
     type: intersection([
@@ -76,7 +76,7 @@ describe(type, () => {
         expect(result).toBeInstanceOf(IntersectionType);
         expect(result.types).toHaveLength(2);
         expect(result.types[0]).toBe(t);
-        expect(result.types[1].partial).toBeTrue();
+        expect(result.types[1].options.partial).toBeTrue();
         expect(result.types[1].props).toBe(partialProps);
     });
 

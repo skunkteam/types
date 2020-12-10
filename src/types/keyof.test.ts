@@ -32,6 +32,22 @@ testTypeImpl({
     ],
 });
 
+testTypeImpl({
+    name: '("0" | "1").autoCast',
+    type: keyof({ 0: 0, 1: 1 }).autoCast,
+    basicType: 'string',
+    validValues: ['0', '1'],
+    invalidValues: [[0, basicTypeMessage(keyof({ 0: 0, 1: 1 }).autoCast, 0)]],
+    validConversions: [
+        [0, '0'],
+        [1, '1'],
+    ],
+    invalidConversions: [
+        ['a', 'expected a [("0" | "1").autoCast], got: "a"'],
+        [2, 'expected a [("0" | "1").autoCast], got: "2", parsed from: 2'],
+    ],
+});
+
 describe(keyof, () => {
     type YourAnswer = The<typeof YourAnswer>;
     const YourAnswer = keyof('YourAnswer', { yes: true, maybe: 'trouble', no: false } as const);

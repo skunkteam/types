@@ -31,16 +31,45 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'Array<number.fromString>',
-    type: array(number.fromString),
+    name: 'string[].autoCast',
+    type: array(string).autoCast,
+    basicType: 'array',
+    // wrap arrays inside extra array because of the use of jest.each in testTypeImpl
+    validValues: [[['a', 'b', 'bla']], [[]]],
+    invalidValues: [
+        ['a', 'error in [string[].autoCast]: expected an array, got a string ("a")'],
+        [{ 0: 'a', length: 1 }, 'error in [string[].autoCast]: expected an array, got an object ({ "0": "a", length: 1 })'],
+        [
+            [1, 2, 3],
+            [
+                'encountered multiple errors in [string[].autoCast]:',
+                '',
+                '- at <[0]>: expected a string, got a number (1)',
+                '',
+                '- at <[1]>: expected a string, got a number (2)',
+                '',
+                '- at <[2]>: expected a string, got a number (3)',
+            ],
+        ],
+    ],
+    validConversions: [
+        [undefined, []],
+        ['str', ['str']],
+    ],
+    invalidConversions: [[1, 'error in [string[].autoCast] at <[0]>: expected a string, got a number (1)']],
+});
+
+testTypeImpl({
+    name: 'Array<number.autoCast>',
+    type: array(number.autoCast),
     basicType: 'array',
     // wrap arrays inside extra array because of the use of jest.each in testTypeImpl
     validValues: [[[1, 2, 3]], [[]]],
     invalidValues: [
-        [1, 'error in [Array<number.fromString>]: expected an array, got a number (1)'],
-        [{ 0: 0 }, 'error in [Array<number.fromString>]: expected an array, got an object ({ "0": 0 })'],
-        [['1'], 'error in [Array<number.fromString>] at <[0]>: expected a number, got a string ("1")'],
-        ...defaultUsualSuspects(array(number.fromString)),
+        [1, 'error in [Array<number.autoCast>]: expected an array, got a number (1)'],
+        [{ 0: 0 }, 'error in [Array<number.autoCast>]: expected an array, got an object ({ "0": 0 })'],
+        [['1'], 'error in [Array<number.autoCast>] at <[0]>: expected a number, got a string ("1")'],
+        ...defaultUsualSuspects(array(number.autoCast)),
     ],
     validConversions: [
         [
@@ -48,20 +77,7 @@ testTypeImpl({
             [1, 2, 3],
         ],
     ],
-    invalidConversions: [
-        [
-            [1, 2, 3],
-            [
-                'encountered multiple errors in [Array<number.fromString>]:',
-                '',
-                '- in constructor precondition at <[0]>: expected a string, got a number (1)',
-                '',
-                '- in constructor precondition at <[1]>: expected a string, got a number (2)',
-                '',
-                '- in constructor precondition at <[2]>: expected a string, got a number (3)',
-            ],
-        ],
-    ],
+    invalidConversions: [[1, 'error in [Array<number.autoCast>]: expected an array, got a number (1)']],
 });
 
 testTypes(() => {

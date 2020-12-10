@@ -116,16 +116,6 @@ function hasEnumerableLiteralDomain<T extends BaseTypeImpl<unknown>>(type: T): t
     return !!type.enumerableLiteralDomain;
 }
 
-declare module '../base-type' {
-    /**
-     * Union this Type with another.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    export interface BaseTypeImpl<ResultType> {
-        or<Other extends BaseTypeImpl<unknown>>(other: Other): TypeImpl<UnionType<[this, Other]>>;
-    }
-}
-
 BaseTypeImpl.prototype.or = function <Other extends BaseTypeImpl<unknown>>(other: Other) {
     return union([this, other]);
 };

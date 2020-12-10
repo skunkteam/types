@@ -1,7 +1,5 @@
 import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType } from '../base-type';
 import type {
-    Branded,
-    ConstraintFn,
     FailureDetails,
     LiteralValue,
     Properties,
@@ -19,9 +17,9 @@ import { LiteralType } from './literal';
 
 export interface InterfaceTypeOptions {
     name?: string;
-    // default: true
-    treatMissingAsUndefined?: boolean;
-    // TODO: stripUnknownProperties
+    partial?: boolean;
+    treatMissingAsUndefined?: boolean; // default: true
+    // TODO: stripUnknownProperties?: boolean; // default: true
 }
 
 export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> {
@@ -29,18 +27,18 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     readonly basicType = 'object';
     readonly isDefaultName: boolean;
 
-    constructor(readonly props: Props, readonly partial: boolean, readonly options: InterfaceTypeOptions) {
+    constructor(readonly props: Props, readonly options: InterfaceTypeOptions) {
         super();
         this.isDefaultName = !options.name;
         this.name = options.name || defaultObjectRep(this.propsInfo);
     }
 
     readonly keys = Object.keys(this.props) as Array<keyof Props>;
-    readonly propsInfo = toPropsInfo(this.props, this.partial);
-    readonly possibleDiscriminators = this.partial ? [] : getPossibleDiscriminators(this.props);
+    readonly propsInfo = toPropsInfo(this.props, this.options.partial);
+    readonly possibleDiscriminators = this.options.partial ? [] : getPossibleDiscriminators(this.props);
 
     typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        const { treatMissingAsUndefined = true } = this.options;
+        const { treatMissingAsUndefined = true, partial } = this.options;
         const baseFailure = { type: this, value: input } as const;
         if (!isObject(input)) {
             return this.createResult(input, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
@@ -50,7 +48,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         for (const [key, innerType] of Object.entries(this.props)) {
             const present = hasOwnProperty(input, key);
             if (!present) {
-                if (this.partial) continue;
+                if (partial) continue;
                 if (!treatMissingAsUndefined) {
                     details.push(this.missingProperty(input, key, innerType));
                     continue;
@@ -69,7 +67,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     }
 
     toPartial(name = `Partial<${this.name}>`): PartialType<Props> {
-        return createType(new InterfaceType(this.props, true, { ...this.options, name }));
+        return createType(new InterfaceType(this.props, { ...this.options, partial: true, name }));
     }
 
     withOptional<PartialProps extends Properties>(
@@ -90,16 +88,14 @@ export function type<Props extends Properties>(
     ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
 ): FullType<Props> {
     const [options, props] = getOptions(args);
-    return createType(new InterfaceType(props, false, options));
+    return createType(new InterfaceType(props, options));
 }
 
 type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
 
-export function partial<Props extends Properties>(
-    ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
-): PartialType<Props> {
+export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props]): PartialType<Props> {
     const [options, props] = getOptions(args);
-    return createType(new InterfaceType(props, true, options));
+    return createType(new InterfaceType(props, { ...options, partial: true }));
 }
 
 function getOptions<Props extends Properties>(
@@ -112,7 +108,7 @@ function getOptions<Props extends Properties>(
     return typeof options === 'string' ? [{ name: options }, props] : [options, props];
 }
 
-function toPropsInfo<Props extends Properties>(props: Props, partial: boolean): PropertiesInfo<Props> {
+function toPropsInfo<Props extends Properties>(props: Props, partial = false): PropertiesInfo<Props> {
     const result = {} as PropertiesInfo;
     for (const [key, type] of Object.entries(props)) {
         result[key] = { partial, type };
@@ -130,25 +126,4 @@ function getPossibleDiscriminators(props: Record<string, Type<unknown> | BaseObj
         }
     }
     return result;
-}
-
-// Repeated for every type implementation, because higher kinded types are currently not really supported in TypeScript.
-// Known workarounds, such as: https://medium.com/@gcanti/higher-kinded-types-in-typescript-static-and-fantasy-land-d41c361d0dbe
-// are problematic with regards to instance-methods (you are very welcome to try, though). Especially the following methods are
-// difficult to get right using HKT:
-export interface InterfaceType<Props, ResultType> {
-    /**
-     * Create a new instance of this Type with the given name. Creates a brand.
-     *
-     * @param name the new name to use in (some) error messages
-     */
-    withBrand<BrandName extends string>(name: BrandName): TypeImpl<InterfaceType<Props, Branded<ResultType, BrandName>>>;
-
-    /**
-     * Use an arbitrary constraint function to further restrict a type.
-     */
-    withConstraint<BrandName extends string>(
-        name: BrandName,
-        constraint: ConstraintFn<ResultType>,
-    ): TypeImpl<InterfaceType<Props, Branded<ResultType, BrandName>>>;
 }

@@ -27,8 +27,8 @@ testTypes(() => {
 });
 
 testTypeImpl({
-    name: 'string.fromUnknown',
-    type: string.fromUnknown,
+    name: 'string.autoCast',
+    type: string.autoCast,
     basicType: 'string',
     validValues: ['', '123'],
     validConversions: [

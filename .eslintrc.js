@@ -18,6 +18,7 @@ const config = {
         'object-shorthand': ['error', 'always'],
         'sort-imports': ['error', { ignoreCase: true, ignoreDeclarationSort: true }],
         '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
     },
 };
 module.exports = config;

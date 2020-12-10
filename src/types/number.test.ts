@@ -31,29 +31,29 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'number.fromString',
-    type: number.fromString,
+    name: 'number.autoCast',
+    type: number.autoCast,
     invalidValues: [
-        ['abc', basicTypeMessage(number.fromString, 'abc')],
-        ['123', basicTypeMessage(number.fromString, '123')],
-        [NaN, defaultMessage(number.fromString, NaN)],
-        ['', basicTypeMessage(number.fromString, '')],
+        ['abc', basicTypeMessage(number.autoCast, 'abc')],
+        ['123', basicTypeMessage(number.autoCast, '123')],
+        [NaN, defaultMessage(number.autoCast, NaN)],
+        ['', basicTypeMessage(number.autoCast, '')],
     ],
     validConversions: [
+        [123, 123],
         ['123', 123],
         ['-123.456', -123.456],
     ],
     invalidConversions: [
-        ['', 'error in constructor of [number.fromString]: could not convert value to number: ""'],
-        ['abc', 'error in constructor of [number.fromString]: could not convert value to number: "abc"'],
-        [123, 'error in constructor precondition of [number.fromString]: expected a string, got a number (123)'],
-        [NaN, 'error in constructor precondition of [number.fromString]: expected a string, got a number (NaN)'],
+        ['', 'error in parser of [number.autoCast]: could not autocast value: ""'],
+        ['abc', 'error in parser of [number.autoCast]: could not autocast value: "abc"'],
+        [NaN, 'error in parser of [number.autoCast]: could not autocast value: NaN'],
     ],
 });
 
 testTypeImpl({
     name: 'NonNegativeInt',
-    type: int.fromString.withConstraint('NonNegativeInt', n => n >= 0),
+    type: int.autoCast.withConstraint('NonNegativeInt', n => n >= 0),
     validValues: [0, 1, 10_000],
     invalidValues: [
         ['4', 'error in base type of [NonNegativeInt]: expected a number, got a string ("4")'],
@@ -65,8 +65,8 @@ testTypeImpl({
         ['100', 100],
     ],
     invalidConversions: [
-        ['-1', 'expected a [NonNegativeInt], got: -1'],
-        ['1.5', 'error in base type of [NonNegativeInt]: expected an [int], got: 1.5'],
-        ['aa', 'error in constructor of [NonNegativeInt]: could not convert value to number: "aa"'],
+        ['-1', 'expected a [NonNegativeInt], got: -1, parsed from: "-1"'],
+        ['1.5', 'error in base type of [NonNegativeInt]: expected an [int], got: 1.5, parsed from: "1.5"'],
+        ['aa', 'error in parser of [NonNegativeInt]: could not autocast value: "aa"'],
     ],
 });

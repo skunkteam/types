@@ -32,7 +32,7 @@ testTypeImpl({
 });
 
 type NumberRecord = The<typeof NumberRecord>;
-const NumberRecord = record('NumberRecord', number, string.fromUnknown);
+const NumberRecord = record('NumberRecord', number, string.autoCast);
 testTypeImpl({
     name: 'NumberRecord',
     type: NumberRecord,
