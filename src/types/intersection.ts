@@ -1,5 +1,6 @@
 import { BaseObjectLikeTypeImpl, createType } from '../base-type';
 import type {
+    LiteralValue,
     MergeIntersection,
     OneOrMore,
     Properties,
@@ -10,14 +11,27 @@ import type {
     TypeOf,
     ValidationOptions,
 } from '../interfaces';
-import { bracketsIfNeeded, decodeOptionalName, defaultObjectRep, getDetails, humanList, isFailure, isObject, partition } from '../utils';
+import {
+    bracketsIfNeeded,
+    decodeOptionalName,
+    defaultObjectRep,
+    define,
+    getDetails,
+    humanList,
+    isFailure,
+    isObject,
+    partition,
+} from '../utils';
 import { UnionType } from './union';
 
+/**
+ * The implementation behind types created with {@link intersection} and {@link BaseObjectLikeTypeImpl.and}.
+ */
 export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<
     IntersectionOfTypeTuple<Types>
 > {
     readonly name: string;
-    readonly basicType = 'object';
+    readonly basicType!: 'object';
     readonly isDefaultName: boolean;
 
     constructor(readonly types: Types, name?: string) {
@@ -33,19 +47,19 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     // TODO: Smarter?
     readonly propsInfo = Object.assign({}, ...this.types.map(type => type.propsInfo)) as PropertiesInfo<PropertiesOfTypeTuple<Types>>;
     readonly combinedName = combinedName(this.types);
-    readonly possibleDiscriminators = this.types.flatMap(t => t.possibleDiscriminators);
+    readonly possibleDiscriminators: Array<{ path: string[]; values: LiteralValue[] }> = this.types.flatMap(t => t.possibleDiscriminators);
 
     typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>> {
         if (!isObject(input)) {
-            return this.createResult(input, { type: this, value: input, kind: 'invalid basic type', expected: 'object' });
+            return this.createResult(input, undefined, { type: this, value: input, kind: 'invalid basic type', expected: 'object' });
         }
-        // Preventing circular problems is always relevant on object values...
         const [failures, successes] = partition(
             this.types.map(type => type.validate(input, options)),
             isFailure,
         );
         const details = failures.flatMap(getDetails);
         return this.createResult(
+            input,
             !details.length && options.mode === 'construct'
                 ? (Object.assign({}, ...successes.map(s => s.value)) as Record<string, unknown>)
                 : input,
@@ -53,6 +67,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
         );
     }
 }
+define(IntersectionType, 'basicType', 'object');
 
 function checkBasicTypes(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
     const nonObjectTypes = types.filter(t => t.basicType !== 'object');
@@ -79,6 +94,11 @@ function checkOverlap(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
         );
 }
 
+/**
+ * Intersect the given types.
+ *
+ * @param args - the optional name and all types to intersect
+ */
 export function intersection<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>(
     ...args: [name: string, types: Types] | [types: Types]
 ): TypeImpl<IntersectionType<Types>> {

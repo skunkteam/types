@@ -1,7 +1,7 @@
 import type { The } from '../interfaces';
 import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { boolean } from './boolean';
-import { InterfaceType, partial, type } from './interface';
+import { InterfaceType, object, partial } from './interface';
 import { IntersectionType } from './intersection';
 import { undefinedType } from './literal';
 import { number } from './number';
@@ -25,7 +25,7 @@ testTypeImpl({
 const specialStringOrUndefined = string.or(undefinedType).withParser(i => (i ? string(i) : '<empty>'));
 testTypeImpl({
     name: '{ presenceNotRequired: string | undefined }',
-    type: type({ presenceNotRequired: specialStringOrUndefined }),
+    type: object({ presenceNotRequired: specialStringOrUndefined }),
     basicType: 'object',
     validValues: [{ presenceNotRequired: undefined }, { presenceNotRequired: 'abc' }],
     validConversions: [[{}, { presenceNotRequired: '<empty>' }]],
@@ -33,7 +33,7 @@ testTypeImpl({
 
 testTypeImpl({
     name: '{ presenceRequired: string | undefined }',
-    type: type({ strictMissingKeys: true }, { presenceRequired: specialStringOrUndefined }),
+    type: object({ strictMissingKeys: true }, { presenceRequired: specialStringOrUndefined }),
     validValues: [{ presenceRequired: undefined }, { presenceRequired: 'abc' }],
     invalidValues: [
         [{}, 'error in [{ presenceRequired: string | undefined }]: missing property <presenceRequired> [string | undefined], got: {}'],
@@ -43,7 +43,7 @@ testTypeImpl({
 
 testTypeImpl({
     name: '{ undefinedNotAllowed?: string, undefinedAllowed?: string | undefined }',
-    type: type({ strictMissingKeys: true, partial: true }, { undefinedNotAllowed: string, undefinedAllowed: specialStringOrUndefined }),
+    type: object({ strictMissingKeys: true, partial: true }, { undefinedNotAllowed: string, undefinedAllowed: specialStringOrUndefined }),
     validValues: [{ undefinedNotAllowed: 'abc', undefinedAllowed: undefined }, {}],
     invalidValues: [
         [
@@ -59,7 +59,7 @@ testTypeImpl({
 
 testTypeImpl({
     name: '{ undefinedAllowed?: string }',
-    type: type({ partial: true }, { undefinedAllowed: string }),
+    type: object({ partial: true }, { undefinedAllowed: string }),
     validValues: [{ undefinedAllowed: undefined }, {}],
     validConversions: [
         [{}, {}],
@@ -68,9 +68,9 @@ testTypeImpl({
     ],
 });
 
-describe(type, () => {
+describe(object, () => {
     type MyType = The<typeof MyType>;
-    const MyType = type({ s: string, n: number });
+    const MyType = object({ s: string, n: number });
 
     test('access to keys', () => {
         const { keys, props, name, possibleDiscriminators } = MyType;
@@ -82,17 +82,17 @@ describe(type, () => {
 
     test.each`
         name                            | impl
-        ${'{ a: number, b: string }'}   | ${type({ a: number, b: string })}
+        ${'{ a: number, b: string }'}   | ${object({ a: number, b: string })}
         ${'{ a?: number, b?: string }'} | ${partial({ a: number, b: string })}
-        ${'{ a: number, b?: string }'}  | ${type({ a: number }).withOptional({ b: string })}
-        ${'MyObject'}                   | ${type('MyObject', { a: number }).withOptional({ b: string })}
-        ${'MyPartial'}                  | ${type('MyObject', { a: number }).withOptional('MyPartial', { b: string })}
+        ${'{ a: number, b?: string }'}  | ${object({ a: number }).withOptional({ b: string })}
+        ${'MyObject'}                   | ${object('MyObject', { a: number }).withOptional({ b: string })}
+        ${'MyPartial'}                  | ${object('MyObject', { a: number }).withOptional('MyPartial', { b: string })}
     `('default name: $name', ({ impl, name }) => {
         expect(impl).toHaveProperty('name', name);
     });
 
     test(InterfaceType.prototype.withOptional.name, () => {
-        const t = type({ a: number });
+        const t = object({ a: number });
         const partialProps = { b: string };
         const result = t.withOptional(partialProps);
         expect(result).toBeInstanceOf(IntersectionType);
@@ -107,7 +107,7 @@ describe(type, () => {
         assignableTo<{ s: typeof string; n: typeof number }>(props);
         assignableTo<{ s: { partial: boolean; type: typeof string }; n: { partial: boolean; type: typeof number } }>(propsInfo);
         assignableTo<typeof props>({ n: number, s: string });
-        assignableTo<Array<'s' | 'n'>>(keys);
+        assignableTo<ReadonlyArray<'s' | 'n'>>(keys);
         assignableTo<typeof keys>(['s', 'n']);
     });
 

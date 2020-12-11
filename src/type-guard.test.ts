@@ -1,12 +1,12 @@
 import { BaseTypeImpl } from './base-type';
 import { isType } from './type-guard';
-import { InterfaceType, string, StringType, type } from './types';
+import { InterfaceType, object, string, StringType } from './types';
 
 describe(isType, () => {
     test('correctly identify types', () => {
         expect(isType(string)).toBeTrue();
         expect(isType(string.withConstraint('SomeType', s => s))).toBeTrue();
-        expect(isType(type({}))).toBeTrue();
+        expect(isType(object({}))).toBeTrue();
 
         expect(isType(BaseTypeImpl)).toBeFalse();
         expect(isType(StringType)).toBeFalse();

@@ -12,6 +12,9 @@ import type {
 } from '../interfaces';
 import { bracketsIfNeeded, decodeOptionalName, printPath } from '../utils';
 
+/**
+ * The implementation behind types created with {@link union} and {@link BaseTypeImpl.or}.
+ */
 export class UnionType<
     Types extends OneOrMore<BaseTypeImpl<unknown>>,
     ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>
@@ -37,11 +40,11 @@ export class UnionType<
         for (const type of this.collapsedTypes) {
             const result = type.validate(value, options);
             if (result.ok) {
-                return this.createResult(result.value, true);
+                return this.createResult(value, result.value, true);
             }
             failures.push(result);
         }
-        return this.createResult(value, { type: this, value, kind: 'union', failures });
+        return this.createResult(value, undefined, { type: this, value, kind: 'union', failures });
     }
 }
 

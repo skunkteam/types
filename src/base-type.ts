@@ -1,78 +1,97 @@
 import type {
     BasicType,
     Branded,
-    ConstraintFn,
-    Constructor,
-    Failure,
     FailureDetails,
     LiteralValue,
     Properties,
     PropertiesInfo,
     Result,
-    Success,
     TypeImpl,
     TypeLink,
-    TypeOf,
     ValidationOptions,
+    ValidationResult,
+    Validator,
 } from './interfaces';
 import { autoCastFailure, designType } from './symbols';
+import type { IntersectionType } from './types/intersection';
+import type { UnionType } from './types/union';
 import {
     addParserInputToDetails,
     bracketsIfNeeded,
     cachedInstance,
     castArray,
+    checkOneOrMore,
     decodeOptionalName,
-    isFailure,
     prependContextToDetails,
     printValue,
 } from './utils';
 import { ValidationError } from './validation-error';
 
 /**
- * Static utilities that are available on all type-checkers to allow building new types and provide access to the TypeScript types for
- * design-time type checking.
- * @template ResultType the return-value of the checker
+ * The base-class of all type-implementations.
+ *
+ * @remarks
+ * All type-implementations must extend this base class. Use {@link createType} to create a {@link Type} from a type-implementation.
  */
 export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     /**
      * The associated TypeScript-type of a Type.
+     * @internal
      */
     readonly [designType]: ResultType;
 
     /** The name of the Type. */
     abstract readonly name: string;
 
-    /** The basic category this type falls in. */
+    /**
+     * The kind of values this type validates.
+     *
+     * @remarks
+     * See {@link BasicType} for more info about the rationale behind the basic type.
+     */
     abstract readonly basicType: BasicType | 'mixed';
 
-    /** The set of valid literals if enumerable. */
-    readonly enumerableLiteralDomain?: Set<LiteralValue>;
-
-    /**
-     * The validator.
-     * @internal
+    /** The set of valid literals if enumerable.
+     *
+     * @remarks
+     * If a Type (only) accepts a known number of literal values, these should be enumerated in this set. A record with such a
+     * domain as key-type
      */
-    abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
+    readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
 
     /**
-     * An optional pre-processing parser.
-     * @internal
+     * The actual validation-logic.
+     *
+     * @param input - the input value to be validated
+     * @param options - the current validation context
      */
-    typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
+    protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 
     /**
-     * Returns the same type with a default parser installed.
+     * Optional pre-processing parser.
+     *
+     * @param input - the input value to be validated
+     * @param options - the current validation context
+     */
+    protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
+
+    /**
+     * The same type, but with an auto-casting default parser installed.
+     *
+     * @remarks
+     * Each type implementation provides its own auto-cast rules. See builtin types for examples of auto-cast rules.
      */
     get autoCast(): this {
         return cachedInstance(this, 'autoCast', () => this.createAutoCastType());
     }
 
+    /**
+     * Create a autocasting version of the current type using {@link BaseTypeImpl.autoCaster}.
+     */
     protected createAutoCastType(): this {
         const autoCastParser = (value: unknown) => {
             const result = this.autoCaster(value);
-            return result === autoCastFailure
-                ? this.createResult(value, `could not autocast value: ${printValue(value)}`)
-                : this.createResult(result, true);
+            return this.createResult(value, result, result === autoCastFailure ? `could not autocast value: ${printValue(value)}` : true);
         };
         const type: this = createType(this, {
             name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
@@ -82,27 +101,40 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
         return type;
     }
 
+    /**
+     * The logic that is used in the autocasting version of the current type.
+     *
+     * @remarks
+     * To be overwritten by subclasses if necessary.
+     *
+     * @param value - the input value to try to autocast to the appropriate form
+     */
     protected autoCaster(value: unknown): unknown {
         return value;
     }
 
     /**
+     * Verifies that a value conforms to this Type.
      *
-     * @param input
-     */
-
-    /**
-     * Verifies that a value conforms to this Type. When given a value that does
-     * not conform to the Type, throws an exception.
+     * @remarks
+     * When given a value that does not conform to the Type, throws an exception.
      *
      * Note that this method can only be used if the type object is explicitly annotated with the type,
      * see: https://github.com/microsoft/TypeScript/issues/34596#issuecomment-548084070
      *
      * Example:
      * ```typescript
-     * // This does not work
-     * const MyType = type('MyType')
+     * const MyImplicitType = object('MyImplicitType', { a: string });
+     * const MyExplicitType: Type<{ a: string }> = object('MyExplicitType', { a: string });
+     *
+     * // Does not work :
+     * MyImplicitType.assert(value);
+     *
+     * // Works :-D
+     * MyExplicitType.assert(value);
      * ```
+     *
+     * @param input - the value to assert
      */
     assert(input: unknown): asserts input is ResultType {
         const result = this.validate(input, { mode: 'check' });
@@ -110,14 +142,33 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     }
 
     /**
-     * Verifies that a value conforms to this Type and returns the value if it does. When given a value that does
+     * Asserts that a value conforms to this Type and returns the input as is if it does.
+     *
+     * @remarks
+     * When given a value that does
      * not conform to the Type, throws an exception.
+     *
+     * @remarks
+     * Note that this does not invoke the parser (including the auto-caster). Use {@link BaseTypeImpl.construct}
+     *
+     * @param input - the value to check
      */
     check(input: unknown): ResultType {
         this.assert(input);
         return input;
     }
 
+    /**
+     * Calls any registered parsers or auto-caster, verifies that the resulting value conforms to this Type and returns it if it does.
+     *
+     * @remarks
+     * When given a value that either cannot be parsed by the optional parser or does not conform to the Type, throws an exception.
+     *
+     * @remarks
+     * Note that this does not invoke the parser (including the auto-caster). Use {@link BaseTypeImpl.construct}
+     *
+     * @param input - the input value to parse and validate
+     */
     construct(input: unknown): ResultType {
         const result = this.validate(input, { mode: 'construct' });
         if (!result.ok) throw ValidationError.fromFailure(result);
@@ -127,6 +178,12 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     /**
      * Validates that a value conforms to this type, and returns a result indicating
      * success or failure (does not throw).
+     *
+     * @remarks
+     * If the given {@link ValidationOptions.mode} is `'construct'` it also calls the parser to pre-process the given input.
+     *
+     * @param input - the input value to be validated
+     * @param options - the current validation context
      */
     validate(input: unknown, options: ValidationOptions): Result<ResultType> {
         // Preventing circular problems is only relevant on object values...
@@ -144,7 +201,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             value = constructorResult.value;
         }
         let result = this.typeValidator(value, options);
-        if (this.typeParser && options.mode === 'construct' && isFailure(result)) {
+        if (this.typeParser && options.mode === 'construct' && !result.ok) {
             result = { ...result, details: addParserInputToDetails(result, input) };
         }
         valueMap?.set(input, result);
@@ -159,27 +216,36 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     }
 
     /**
-     * Create a new instance of this Type with the given name. Does not create a brand.
+     * Create a new instance of this Type with the given name.
      *
-     * @param name the new name to use in (some) error messages
+     * @remarks
+     * Does not create a brand.
+     *
+     * @param name - the new name to use in error messages
      */
     withName(name: string): this {
         return createType(this, { name: { configurable: true, value: name } });
     }
 
     /**
-     * Create a new instance of this Type with the given name. Creates a brand.
+     * Create a new instance of this Type with the given name.
      *
-     * @param name the new name to use in (some) error messages
+     * @remarks
+     * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a seperate type, see {@link Branded} for more information.
+     *
+     * @param name - the new name to use in error messages
      */
     withBrand<BrandName extends string>(name: BrandName): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>> {
         return createType(branded<ResultType, BrandName>(this), { name: { configurable: true, value: name } });
     }
 
     /**
-     * Create a function with checked input, can be used as constructor and will throw meaningful messages.
+     * Create a function with validated input.
      *
-     * @param fn the function with checked input
+     * @remarks
+     * Note that only the first parameter to the function is checked. The resulting function can be used as a parser and integrates nicely with other types.
+     *
+     * @param fn - the function with input to be checked
      */
     andThen<Return, RestArgs extends unknown[]>(
         fn: (value: ResultType, ...restArgs: RestArgs) => Return,
@@ -197,10 +263,10 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     }
 
     /**
-     * Define a new type with the same specs, but with custom constructor logic. This logic can throw ValidationErrors to indicate validation
-     * failures.
-     * @param name an optional name
-     * @param newConstructor the custom constructor logic
+     * Define a new type with the same specs, but with the given parser and an optional new name.
+     *
+     * @remarks
+     * This given parser may throw ValidationErrors to indicate validation failures during parsing.
      */
     withParser(...args: [name: string, newConstructor: (i: unknown) => unknown] | [newConstructor: (i: unknown) => unknown]): this {
         const [name, constructor] = decodeOptionalName(args);
@@ -215,14 +281,19 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     }
 
     /**
-     * Add an arbitrary validation to the type. Does not create a brand.
+     * Clone the type with the added validation.
+     *
+     * @remarks
+     * Does not create a brand.
+     *
+     * @param validation - the additional validation to restrict the current type
      */
-    withValidation(validation: ConstraintFn<ResultType>): this {
+    withValidation(validation: Validator<ResultType>): this {
         // Ignoring Brand here, because that is a typings-only feature.
-        const fn: this['typeValidator'] = (input, options) => {
+        const fn: BaseTypeImpl<ResultType>['typeValidator'] = (input, options) => {
             const baseResult = this.typeValidator(input, options);
             if (!baseResult.ok) {
-                return type.createResult(input, prependContextToDetails(baseResult, 'base type'));
+                return type.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
             }
             const { value } = baseResult;
             const constraintBox = ValidationError.try({ type, value: input }, () => validation(value, options));
@@ -232,24 +303,30 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             }
             const constraintResult = constraintBox.value;
             // if no name is given, then default to the message "additional validation failed"
-            return type.createResult(isOk(constraintResult) ? value : input, constraintResult || 'additional validation failed');
+            return type.createResult(input, value, constraintResult || 'additional validation failed');
         };
         const type = createType(this, { typeValidator: { configurable: true, value: fn } });
         return type;
     }
 
     /**
-     * Use an arbitrary constraint function to create a subtype, restricting the current type.
+     * Create a new type use the given constraint function to restrict the current type.
+     *
+     * @remarks
+     * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a seperate type, see {@link Branded} for more information.
+     *
+     * @param name - the new name to use in error messages
+     * @param constraint - the additional validation to restrict the current type
      */
     withConstraint<BrandName extends string>(
         name: BrandName,
-        constraint: ConstraintFn<ResultType>,
+        constraint: Validator<ResultType>,
     ): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>> {
         // Ignoring Brand here, because that is a typings-only feature.
         const fn: TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>['typeValidator'] = (input, options) => {
             const baseResult = this.typeValidator(input, options);
             if (!baseResult.ok) {
-                return newType.createResult(input, prependContextToDetails(baseResult, 'base type'));
+                return newType.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
             }
             const { value } = baseResult;
             const constraintBox = ValidationError.try({ type: newType, value: input }, () => constraint(value, options));
@@ -259,7 +336,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             }
             const constraintResult = constraintBox.value;
             // if no name is given, then default to the message "additional validation failed"
-            return newType.createResult(isOk(constraintResult) ? value : input, constraintResult);
+            return newType.createResult(input, value, constraintResult);
         };
         const newType = createType(branded<ResultType, BrandName>(this), {
             name: { configurable: true, value: name },
@@ -268,39 +345,71 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
         return newType;
     }
 
+    /**
+     * Extend the Type with additional static methods and properties.
+     *
+     * @remarks
+     * Can be used to provide Type-specific utilities, nicely namespaced.
+     *
+     * @example
+     * ```typescript
+     * const ISODate = string.withRegexpConstraint('ISODate', ISODateRE).extendWith(T => ({
+     *     fromJS: (date: Date) => ISODate(formatISO(date)),
+     *     toJS: (isoDate: The<typeof T>) => parseISO(isoDate),
+     * }));
+     *
+     * const now = ISODate.fromJS(new Date());
+     * ```
+     */
     extendWith<E>(factory: (type: this) => E): this & E {
         return (createType(this, Object.getOwnPropertyDescriptors(factory(this))) as unknown) as this & E;
     }
 
-    createResult(value: unknown, validatorResult: true): Success<ResultType>;
-    createResult(value: unknown, validatorResult: false | string | string[] | FailureDetails | FailureDetails[]): Failure;
-    createResult(value: unknown, validatorResult: boolean | string | string[] | FailureDetails | FailureDetails[]): Result<ResultType>;
-    createResult(value: unknown, validatorResult: boolean | string | string[] | FailureDetails | FailureDetails[]): Result<ResultType> {
-        if (isOk(validatorResult)) {
-            return { ok: true, value: value as ResultType };
-        }
-        if (validatorResult === false) {
-            return this.createResult(value, { type: this, value });
-        }
-        return {
-            ok: false,
-            value,
-            type: this,
-            details: castArray(validatorResult).map(result =>
-                typeof result === 'string' ? { type: this, value, kind: 'custom message', message: result } : result,
-            ),
-        };
+    /**
+     * Union this Type with another Type.
+     *
+     * @remarks
+     * See {@link UnionType} for more information about unions.
+     */
+    // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
+    or<Other extends BaseTypeImpl<unknown>>(_other: Other): TypeImpl<UnionType<[this, Other]>> {
+        throw new Error('stub');
     }
 
     /**
-     * Union this Type with another.
+     * Create a Result based on the given {@link ValidationResult}.
+     *
+     * @param input - the original input to the validator or parser
+     * @param result - the resulting value
+     * @param validatorResult - the result of the validation or parse step
      */
-    // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    or<Other extends BaseTypeImpl<unknown>>(_other: Other): TypeImpl<import('./types').UnionType<[this, Other]>> {
-        throw new Error('stub');
+    protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType> {
+        if (isOk(validatorResult)) {
+            return { ok: true, value: result as ResultType };
+        }
+        if (validatorResult === false) {
+            return this.createResult(input, result, { type: this, value: input });
+        }
+        return {
+            ok: false,
+            value: input,
+            type: this,
+            details: checkOneOrMore(
+                castArray(validatorResult).map(result =>
+                    typeof result === 'string' ? { type: this, value: input, kind: 'custom message', message: result } : result,
+                ),
+            ),
+        };
     }
 }
 
+/**
+ * The base implementation for all object-like Types.
+ *
+ * @remarks
+ * Object-like types need to provide more information to be able to correctly
+ * compose arbitrary object-like types.
+ */
 export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<ResultType> {
     abstract readonly props: Properties;
     abstract readonly propsInfo: PropertiesInfo;
@@ -308,25 +417,40 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
     abstract readonly isDefaultName: boolean;
 
     /**
-     * Intersect this Type with another.
+     * Intersect this Type with another Type.
+     *
+     * @remarks
+     * See {@link IntersectionType} for more information about intersections.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    and<Other extends BaseObjectLikeTypeImpl<unknown>>(_other: Other): TypeImpl<import('./types').IntersectionType<[this, Other]>> {
+    and<Other extends BaseObjectLikeTypeImpl<unknown>>(_other: Other): TypeImpl<IntersectionType<[this, Other]>> {
         throw new Error('stub');
     }
 }
 
+/**
+ * Create a Type from the given type-implementation.
+ *
+ * @remarks
+ * Type-implementations (i.e. subclasses of {@link BaseTypeImpl}) provide all the necessary logic and information regarding validation
+ * and parsing, but they do not satisfy the `Type` contract yet. This method takes the `construct` method of the given type-impl and uses
+ * that function as the base of the Type. It then retrofits all properties of the given implementation onto that constructor function.
+ *
+ * @param impl - the type-implementation
+ * @param override - override certain settings of the created type
+ */
 export function createType<Impl extends BaseTypeImpl<any>>(
     impl: Impl,
-    override?: Partial<Record<keyof BaseTypeImpl<any>, PropertyDescriptor>>,
+    override?: Partial<Record<keyof BaseTypeImpl<any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
 ): TypeImpl<Impl> {
     // Replace the complete `impl` onto the `construct` function.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    const construct: Constructor<TypeOf<Impl>> = input => type.construct(input);
-    const type = Object.defineProperties(Object.setPrototypeOf(construct, Object.getPrototypeOf(impl)), {
-        ...Object.getOwnPropertyDescriptors(impl),
-        ...override,
-    }) as TypeImpl<Impl>;
+    const type = Object.defineProperties(
+        Object.setPrototypeOf((input: unknown) => type.construct(input) as unknown, Object.getPrototypeOf(impl)),
+        {
+            ...Object.getOwnPropertyDescriptors(impl),
+            ...override,
+        },
+    ) as TypeImpl<Impl>;
     return type;
 }
 

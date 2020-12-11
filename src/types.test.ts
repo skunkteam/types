@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import type { FailureDetails, The, Type } from './interfaces';
 import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
-import { boolean, int, number, string, type } from './types';
+import { boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
 import { intersection } from './types/intersection';
 
@@ -101,9 +101,9 @@ testTypeImpl({
 });
 
 /** User is a basic interface type. */
-const User = type('User', {
+const User = object('User', {
     /** The name of the User, split up into a first- and last-name. */
-    name: type({
+    name: object({
         /** The first name of the User, should not be longer than 9 characters. */
         first: SmallStringCustomMsg,
         /** The last name, has no restrictions. */
@@ -268,7 +268,7 @@ const NumberFromString = number.withParser(
         return +n;
     }),
 );
-const NestedFromString = type('NestedFromString', { a: NumberFromString, b: NumberFromString });
+const NestedFromString = object('NestedFromString', { a: NumberFromString, b: NumberFromString });
 
 testTypeImpl({
     name: 'NestedFromString',
@@ -329,7 +329,7 @@ testTypeImpl({
 
 type IntersectionTest = The<typeof IntersectionTest>;
 const IntersectionTest = intersection('IntersectionTest', [
-    type({
+    object({
         /** The number */
         nr: number,
     }),
@@ -380,8 +380,8 @@ testTypeImpl({
 testTypeImpl({
     name: '{ a: number, b?: Partial<User> }',
     type: [
-        type({ a: number }).withOptional({ b: User.toPartial() }),
-        intersection([type({ a: number }), partial({ b: partial('Partial<User>', User.props) })]),
+        object({ a: number }).withOptional({ b: User.toPartial() }),
+        intersection([object({ a: number }), partial({ b: partial('Partial<User>', User.props) })]),
     ],
     basicType: 'object',
     validValues: [{ a: 1 }, { a: 2, b: {} }, { a: 2, b: { shoeSize: 4 } }],
@@ -403,7 +403,7 @@ testTypeImpl({
 });
 
 // Historic bug: `withValidation` did not take constructed result of prior validation into account.
-const ShoutMessage = type('ShoutMessage', {
+const ShoutMessage = object('ShoutMessage', {
     msg: string.withParser(string.andThen(s => s + '!')),
 }).withValidation(o => o.msg.endsWith('!') || 'speak up');
 testTypeImpl({
@@ -470,8 +470,8 @@ testTypes('assignability of sub-brands', () => {
 
 testTypes('usability of assert', () => {
     const value = {};
-    const MyImplicitType = type('MyImplicitType', { a: string });
-    const MyExplicitType: Type<{ a: string }> = type('MyExplicitType', { a: string });
+    const MyImplicitType = object('MyImplicitType', { a: string });
+    const MyExplicitType: Type<{ a: string }> = object('MyExplicitType', { a: string });
 
     // @ts-expect-error does not work, see: https://github.com/microsoft/TypeScript/issues/34596#issuecomment-548084070
     MyImplicitType.assert(value);

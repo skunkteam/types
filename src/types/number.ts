@@ -1,20 +1,24 @@
 import { BaseTypeImpl, createType } from '../base-type';
 import type { Branded, Result, The, Type, TypeImpl } from '../interfaces';
 import { autoCastFailure } from '../symbols';
+import { define } from '../utils';
 
+/**
+ * The implementation behind all sub-types of {@link number}.
+ */
 export class NumberType<ResultType extends number = number> extends BaseTypeImpl<ResultType> {
     readonly name = 'number';
-    readonly basicType = 'number';
+    readonly basicType!: 'number';
 
     typeValidator(value: unknown): Result<ResultType> {
         if (typeof value !== 'number') {
-            return this.createResult(value, { type: this, kind: 'invalid basic type', expected: 'number', value });
+            return this.createResult(value, undefined, { type: this, kind: 'invalid basic type', expected: 'number', value });
         }
-        return this.createResult(value, !Number.isNaN(value));
+        return this.createResult(value, value, !Number.isNaN(value));
     }
-
-    protected autoCaster = numberAutoCaster;
 }
+define(NumberType, 'autoCaster', numberAutoCaster);
+define(NumberType, 'basicType', 'number');
 
 export const number: TypeImpl<NumberType> = createType(new NumberType());
 

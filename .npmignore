@@ -1,0 +1,9 @@
+.*
+node_modules
+/*.js
+/temp
+/markdown
+/etc
+/api-extractor.json
+/tsconfig.*
+/coverage

@@ -1,7 +1,10 @@
 import { BaseTypeImpl, createType } from '../base-type';
 import type { FailureDetails, Result, TypeImpl, ValidationOptions } from '../interfaces';
-import { decodeOptionalName, isObject, prependPathToDetails, printValue } from '../utils';
+import { decodeOptionalName, define, isObject, prependPathToDetails, printValue } from '../utils';
 
+/**
+ * The implementation behind types created with {@link record}.
+ */
 export class RecordType<
     KeyTypeImpl extends BaseTypeImpl<KeyType>,
     KeyType extends number | string,
@@ -9,7 +12,7 @@ export class RecordType<
     ValueType,
     ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>
 > extends BaseTypeImpl<ResultType> {
-    readonly basicType = 'object';
+    readonly basicType!: 'object';
     readonly isDefaultName: boolean;
     readonly name: string;
 
@@ -22,7 +25,7 @@ export class RecordType<
     typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const baseFailure = { type: this, value: input } as const;
         if (!isObject(input)) {
-            return this.createResult(input, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
+            return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
         }
         const constructResult = {} as Record<KeyType, ValueType>;
         const details: FailureDetails[] = [];
@@ -46,9 +49,10 @@ export class RecordType<
                 details.push({ value: input, type: this.valueType, kind: 'missing property', property: String(key) });
             }
         }
-        return this.createResult(!details.length && options.mode === 'construct' ? constructResult : input, details);
+        return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
     }
 }
+define(RecordType, 'basicType', 'object');
 
 /**
  * Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document
@@ -74,18 +78,18 @@ class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
     }
 
     readonly name = this.innerType.name;
-    readonly enumerableLiteralDomain =
-        this.innerType.enumerableLiteralDomain && new Set([...this.innerType.enumerableLiteralDomain].map(String));
+    readonly enumerableLiteralDomain = this.innerType.enumerableLiteralDomain && [...this.innerType.enumerableLiteralDomain].map(String);
 
     typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const number = input === '' ? NaN : +String(input);
         if (Number.isNaN(number)) {
             return this.createResult(
                 input,
+                undefined,
                 `expected key to be numeric (because the key-type is: ${this.name}), got: ${printValue(input)}`,
             );
         }
         const innerResult = this.innerType.validate(number, options);
-        return this.createResult(innerResult.ok ? String(input) : input, innerResult.ok || innerResult.details);
+        return this.createResult(input, String(input), innerResult.ok || innerResult.details);
     }
 }

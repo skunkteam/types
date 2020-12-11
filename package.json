@@ -6,9 +6,14 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc --build",
-        "clean": "rm -rf dist && tsc --build --clean",
+        "clean": "rm -rf dist temp coverage && tsc --build --clean",
         "test": "jest",
-        "lint": "npm run build && eslint . --ext .ts"
+        "lint": "eslint . --ext .ts",
+        "api:extract": "api-extractor run --local --verbose --typescript-compiler-folder=node_modules/typescript",
+        "api:document": "api-documenter markdown --input-folder temp",
+        "api": "npm-run-all api:* && prettier -w markdown",
+        "prepare": "npm-run-all clean build test lint",
+        "pr": "npm-run-all prepare api && prettier -w src"
     },
     "repository": {
         "type": "git",
@@ -21,14 +26,18 @@
     },
     "homepage": "https://github.com/skunkteam/types#readme",
     "devDependencies": {
+        "@microsoft/api-documenter": "^7.12.0",
+        "@microsoft/api-extractor": "^7.12.1",
         "@types/eslint": "^7.2.5",
         "@types/jest": "^26.0.15",
+        "@types/node": "^14.14.13",
         "@typescript-eslint/eslint-plugin": "^4.8.2",
         "@typescript-eslint/parser": "^4.8.2",
         "eslint": "^7.14.0",
         "eslint-config-prettier": "^6.15.0",
         "jest": "^26.6.3",
         "jest-extended": "^0.11.5",
+        "npm-run-all": "^4.1.5",
         "prettier": "^2.2.0",
         "reflect-metadata": "^0.1.13",
         "ts-jest": "^26.4.4",

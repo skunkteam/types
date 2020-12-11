@@ -5,6 +5,11 @@ import { an, basicType, getDetails, humanList, isSingle, partition, printKey, pr
 const BULLETS = ['-', '•', '‣', '◦'];
 const DEFAULT_BULLET = '*';
 
+/**
+ * Creates an human-readable error report of the given failure.
+ *
+ * @param root - the failure to report
+ */
 export function reportError(root: Omit<Failure, 'ok'>, level = 0): string {
     const details = getDetails(root);
     // Make sure we get errors breadth first:

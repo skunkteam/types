@@ -1,9 +1,12 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { Result, TypeImpl } from '../interfaces';
-import { decodeOptionalName, hasOwnProperty, transpose, Transposed } from '../utils';
+import type { Result, Transposed, TypeImpl } from '../interfaces';
+import { decodeOptionalName, define, hasOwnProperty, transpose } from '../utils';
 
+/**
+ * The implementation behind types created with {@link keyof} and {@link valueof}.
+ */
 export class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType> {
-    readonly basicType = 'string';
+    readonly basicType!: 'string';
 
     constructor(
         readonly keys: T,
@@ -14,22 +17,25 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
         super();
     }
 
-    readonly enumerableLiteralDomain = new Set(Object.keys(this.keys));
+    readonly enumerableLiteralDomain = Object.keys(this.keys);
 
     typeValidator(value: unknown): Result<ResultType> {
-        if (typeof value !== 'string') {
-            return this.createResult(value, { type: this, kind: 'invalid basic type', expected: 'string', value });
-        }
-        return this.createResult(value, hasOwnProperty(this.keys, value));
+        return this.createResult(
+            value,
+            value,
+            typeof value !== 'string'
+                ? { type: this, kind: 'invalid basic type', expected: 'string', value }
+                : hasOwnProperty(this.keys, value),
+        );
     }
 
     translate(input: unknown): T[keyof T] {
         this.assert(input);
         return this.keys[input];
     }
-
-    protected autoCaster = String;
 }
+define(KeyofType, 'autoCaster', String);
+define(KeyofType, 'basicType', 'string');
 
 export function keyof<T extends Record<string, unknown>>(...args: [name: string, keys: T] | [keys: T]): TypeImpl<KeyofType<T>> {
     const [name, keys] = decodeOptionalName(args);

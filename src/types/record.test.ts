@@ -1,6 +1,6 @@
 import type { The } from '../interfaces';
 import { defaultUsualSuspects, testTypeImpl } from '../testutils';
-import { type } from './interface';
+import { object } from './interface';
 import { keyof } from './keyof';
 import { literal } from './literal';
 import { int, number } from './number';
@@ -8,15 +8,15 @@ import { record } from './record';
 import { string } from './string';
 import { union } from './union';
 
-testTypeImpl({ name: 'Record<string, { nested: "object" }>', type: record(string, type({ nested: literal('object') })) });
-testTypeImpl({ name: 'Record<number, { nested: "object" }>', type: record(number, type({ nested: literal('object') }), false) });
+testTypeImpl({ name: 'Record<string, { nested: "object" }>', type: record(string, object({ nested: literal('object') })) });
+testTypeImpl({ name: 'Record<number, { nested: "object" }>', type: record(number, object({ nested: literal('object') }), false) });
 testTypeImpl({
     name: 'Record<"first" | "second", { nested: "object" }>',
-    type: record(keyof({ first: 1, second: 2 }), type({ nested: literal('object') })),
+    type: record(keyof({ first: 1, second: 2 }), object({ nested: literal('object') })),
 });
 
 type StringRecord = The<typeof StringRecord>;
-const StringRecord = record('StringRecord', string, type({ nested: literal('object') }));
+const StringRecord = record('StringRecord', string, object({ nested: literal('object') }));
 testTypeImpl({
     name: 'StringRecord',
     type: StringRecord,

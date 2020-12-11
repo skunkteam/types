@@ -1,4 +1,4 @@
-import type { BasicType, Failure, FailureDetails, OneOrMore, PropertiesInfo, Result } from './interfaces';
+import type { BasicType, Failure, FailureDetails, OneOrMore, PropertiesInfo, Result, Transposed } from './interfaces';
 
 export function printValue(input: unknown, budget = 50, visited: Set<unknown> = new Set()): string {
     switch (typeof input) {
@@ -69,6 +69,14 @@ export function isOneOrMore<T>(arr: T[]): arr is OneOrMore<T> {
     return arr.length > 0;
 }
 
+export function checkOneOrMore<T>(arr: T[]): OneOrMore<T> {
+    // istanbul ignore if
+    if (!isOneOrMore(arr)) {
+        throw new Error('expected at least one element, got nothing');
+    }
+    return arr;
+}
+
 export function isSingle<T>(arr: T[]): arr is [T] {
     return arr.length === 1;
 }
@@ -109,23 +117,25 @@ export function humanList<T>(arr: T | T[], lastSeparator: 'and' | 'or', map: (i:
     return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
 }
 
-export function prependPathToDetails(failure: Failure, key: PropertyKey): FailureDetails[] {
-    return getDetails(failure).map(d => ({ ...d, path: d.path ? [key, ...d.path] : [key] }));
+export function prependPathToDetails(failure: Failure, key: PropertyKey): OneOrMore<FailureDetails> {
+    return checkOneOrMore(getDetails(failure).map(d => ({ ...d, path: d.path ? [key, ...d.path] : [key] })));
 }
 
 export function getDetails(failure: Failure | FailureDetails): OneOrMore<FailureDetails> {
-    return 'details' in failure && isOneOrMore(failure.details) ? failure.details : [failure];
+    return 'details' in failure ? failure.details : [failure];
 }
 
-export function prependContextToDetails(failure: Failure | FailureDetails, context: string): FailureDetails[] {
-    return getDetails(failure).map(d => ({
-        ...d,
-        context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
-    }));
+export function prependContextToDetails(failure: Failure | FailureDetails, context: string): OneOrMore<FailureDetails> {
+    return checkOneOrMore(
+        getDetails(failure).map(d => ({
+            ...d,
+            context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
+        })),
+    );
 }
 
-export function addParserInputToDetails(failure: Failure | FailureDetails, parserInput: unknown): FailureDetails[] {
-    return getDetails(failure).map(d => ({ ...d, parserInput }));
+export function addParserInputToDetails(failure: Failure | FailureDetails, parserInput: unknown): OneOrMore<FailureDetails> {
+    return checkOneOrMore(getDetails(failure).map(d => ({ ...d, parserInput })));
 }
 
 /**
@@ -217,8 +227,6 @@ export function defaultObjectRep(propsInfo: PropertiesInfo): string {
 
     return `{ ${props.map(([key, { partial, type }]) => `${printKey(key)}${partial ? '?' : ''}: ${type.name}`).join(', ')} }`;
 }
-
-export type Transposed<T extends Record<string, string>> = Record<T[keyof T], keyof T>;
 
 export function transpose<T extends Record<string, string>>(obj: T): Transposed<T> {
     const result = {} as Transposed<T>;
@@ -313,4 +321,12 @@ export function cachedInstance<T>(instance: unknown, name: string, factory: () =
         instanceCache.set(instance, (types = {}));
     }
     return (types[name] ??= factory()) as T;
+}
+
+export function define<Constructor extends new (...args: any) => any, Key extends string>(
+    constructor: Constructor,
+    key: Key,
+    value: InstanceType<Constructor>[Key],
+): void {
+    Object.defineProperty(constructor.prototype, key, { configurable: true, value });
 }

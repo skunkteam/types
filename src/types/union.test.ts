@@ -1,6 +1,6 @@
 import { testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
-import { type } from './interface';
+import { object } from './interface';
 import { literal, nullType, undefinedType } from './literal';
 import { number } from './number';
 import { string } from './string';
@@ -60,7 +60,7 @@ testTypeImpl({
     ],
 });
 
-const ObjectUnion = union([type({ tag: literal('a'), a: string }), type({ tag: literal('b'), b: number.autoCast })]);
+const ObjectUnion = union([object({ tag: literal('a'), a: string }), object({ tag: literal('b'), b: number.autoCast })]);
 testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.autoCast }', type: ObjectUnion });
 testTypeImpl({
     name: 'ObjectUnion',
@@ -198,7 +198,7 @@ testTypeImpl({
 
 testTypeImpl({
     name: 'NestedCombinedMultiLiterals',
-    type: type('NestedCombinedMultiLiterals', { nested: CombinedMultiLiterals, c: string }),
+    type: object('NestedCombinedMultiLiterals', { nested: CombinedMultiLiterals, c: string }),
     basicType: 'object',
     validValues: [
         { nested: 'abc', c: 'required' },

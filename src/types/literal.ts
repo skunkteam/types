@@ -1,10 +1,13 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { LiteralValue, Result, TypeImpl } from '../interfaces';
+import type { BasicType, LiteralValue, Result, TypeImpl } from '../interfaces';
 import { autoCastFailure } from '../symbols';
 import { basicType, printValue } from '../utils';
 import { booleanAutoCaster } from './boolean';
 import { numberAutoCaster } from './number';
 
+/**
+ * The implementation behind types created with {@link literal} and {@link nullType}, {@link undefinedType} and {@link voidType}.
+ */
 export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType> {
     readonly name: string;
 
@@ -13,11 +16,12 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
         this.name = printValue(value);
     }
 
-    readonly basicType = basicType(this.value);
-    readonly enumerableLiteralDomain = new Set([this.value]);
+    readonly basicType: BasicType = basicType(this.value);
+    readonly enumerableLiteralDomain = [this.value];
 
     typeValidator(value: unknown): Result<ResultType> {
         return this.createResult(
+            value,
             value,
             value === this.value ||
                 (basicType(value) !== this.basicType

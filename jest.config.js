@@ -8,6 +8,14 @@ const config = {
     collectCoverage: true,
     collectCoverageFrom: ['src/**/*.ts', '!src/index.ts', '!src/testutils.ts'],
     restoreMocks: true,
+    coverageThreshold: {
+        global: {
+            statements: 96,
+            branches: 92,
+            functions: 97,
+            lines: 98,
+        },
+    },
 };
 
 module.exports = config;

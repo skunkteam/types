@@ -2,7 +2,7 @@ import { number } from './number';
 import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { array } from './array';
 import { string } from './string';
-import { type } from './interface';
+import { object } from './interface';
 import type { The } from '../interfaces';
 
 testTypeImpl({
@@ -82,7 +82,7 @@ testTypeImpl({
 
 testTypes(() => {
     type MyArray = The<typeof MyArray>;
-    const MyArray = array(type({ a: string, b: number }));
+    const MyArray = array(object({ a: string, b: number }));
 
     assignableTo<MyArray>([
         { a: 'string', b: 1 },

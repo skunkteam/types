@@ -11,12 +11,17 @@ import type {
     ValidationOptions,
     Writable,
 } from '../interfaces';
-import { decodeOptionalName, defaultObjectRep, hasOwnProperty, isObject, prependPathToDetails } from '../utils';
+import { decodeOptionalName, defaultObjectRep, define, hasOwnProperty, isObject, prependPathToDetails } from '../utils';
 import { intersection, IntersectionType } from './intersection';
 import { LiteralType } from './literal';
 
+/**
+ * Options for {@link object}.
+ */
 export interface InterfaceTypeOptions {
+    /** The optional name for the type, uses a default TypeScript-like name if no name is given. */
     name?: string;
+    /** Mark all properties as optional in this type. */
     partial?: boolean;
     /** Discriminate between missing keys and undefined values. Is off by default because that is what TypeScript does. */
     strictMissingKeys?: boolean;
@@ -24,9 +29,12 @@ export interface InterfaceTypeOptions {
     // TODO: allowUnknownProperties?: boolean; // default: false
 }
 
+/**
+ * The implementation behind types created with {@link object} and {@link partial}.
+ */
 export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> {
     readonly name: string;
-    readonly basicType = 'object';
+    readonly basicType!: 'object';
     readonly isDefaultName: boolean;
 
     constructor(readonly props: Props, readonly options: InterfaceTypeOptions) {
@@ -35,6 +43,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         this.name = options.name || defaultObjectRep(this.propsInfo);
     }
 
+    /** The keys (property-names) for this object-like type. */
     readonly keys = Object.keys(this.props) as Array<keyof Props>;
     readonly propsInfo = toPropsInfo(this.props, this.options.partial);
     readonly possibleDiscriminators = this.options.partial ? [] : getPossibleDiscriminators(this.props);
@@ -43,7 +52,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         const { strictMissingKeys, partial } = this.options;
         const baseFailure = { type: this, value: input } as const;
         if (!isObject(input)) {
-            return this.createResult(input, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
+            return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
         }
         const constructResult = {} as Record<string, unknown>;
         const details: FailureDetails[] = [];
@@ -64,13 +73,15 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
                 details.push(...prependPathToDetails(innerResult, key));
             }
         }
-        return this.createResult(!details.length && options.mode === 'construct' ? constructResult : input, details);
+        return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
     }
 
+    /** Clone this type with all properties marked optional. */
     toPartial(name = `Partial<${this.name}>`): PartialType<Props> {
         return createType(new InterfaceType(this.props, { ...this.options, partial: true, name }));
     }
 
+    /** Create a type with all properties of the current type, plus the given optional properties. */
     withOptional<PartialProps extends Properties>(
         ...args: [props: PartialProps] | [name: string, props: PartialProps]
     ): TypeImpl<IntersectionType<[this, PartialType<PartialProps>]>> {
@@ -82,18 +93,35 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         return { kind: 'missing property', value, property, type };
     }
 }
+define(InterfaceType, 'basicType', 'object');
 
-type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
+export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
 
-export function type<Props extends Properties>(
+/**
+ * Create a type-validator that validates (or parses) an object structure.
+ *
+ * @remarks
+ * This is a basic building block for more complex structured types, can be nested.
+ *
+ * @param args - the options and properties of the new type
+ */
+export function object<Props extends Properties>(
     ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
 ): FullType<Props> {
     const [options, props] = getOptions(args);
     return createType(new InterfaceType(props, options));
 }
 
-type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
+export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
 
+/**
+ * Create a type-validator that validates (or parses) an object structure with only optional properties.
+ *
+ * @remarks
+ * This is a basic building block for more complex structured types, can be nested.
+ *
+ * @param args - the optional name and (required) properties of the new type
+ */
 export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props]): PartialType<Props> {
     const [options, props] = getOptions(args);
     return createType(new InterfaceType(props, { ...options, partial: true }));

@@ -3,7 +3,7 @@ import type { The } from '../interfaces';
 import { assignableTo, testTypes } from '../testutils';
 import { array } from './array';
 import { boolean } from './boolean';
-import { partial, type } from './interface';
+import { object, partial } from './interface';
 import { intersection, IntersectionOfTypeTuple } from './intersection';
 import { literal } from './literal';
 import { number } from './number';
@@ -15,11 +15,11 @@ import { union } from './union';
 describe(intersection, () => {
     test.each`
         name                                         | impl
-        ${'{ a: "property", b: number }'}            | ${intersection([type({ a: literal('property'), b: number })])}
-        ${'{ a: "property", b?: number }'}           | ${intersection([type({ a: literal('property') }), partial({ b: number })])}
-        ${'{ a: "property", b?: number }'}           | ${type({ a: literal('property') }).and(partial({ b: number }))}
-        ${'NamedObject & { a?: number, b: number }'} | ${intersection([partial({ a: number }), type('NamedObject', {}), type({ b: number })])}
-        ${'{ a?: number, b: number }'}               | ${intersection([intersection([partial({ a: number })]), type({ b: number })])}
+        ${'{ a: "property", b: number }'}            | ${intersection([object({ a: literal('property'), b: number })])}
+        ${'{ a: "property", b?: number }'}           | ${intersection([object({ a: literal('property') }), partial({ b: number })])}
+        ${'{ a: "property", b?: number }'}           | ${object({ a: literal('property') }).and(partial({ b: number }))}
+        ${'NamedObject & { a?: number, b: number }'} | ${intersection([partial({ a: number }), object('NamedObject', {}), object({ b: number })])}
+        ${'{ a?: number, b: number }'}               | ${intersection([intersection([partial({ a: number })]), object({ b: number })])}
     `('default name: $name', ({ impl, name }) => {
         expect(impl).toHaveProperty('name', name);
         expect(impl.props).toEqual({
@@ -30,9 +30,9 @@ describe(intersection, () => {
 
     test('complex name', () => {
         // type A = { tag: '{' };
-        const A = type({ tag: literal('{') });
+        const A = object({ tag: literal('{') });
         // type B = { 'tag': '('; 'only-here': true };
-        const B = type({ 'tag': literal('('), 'only-here': literal(true) });
+        const B = object({ 'tag': literal('('), 'only-here': literal(true) });
         // type C = { tok?: number };
         const C = partial({ tok: number });
         // type U = (A | B) & C;
@@ -54,9 +54,9 @@ describe(intersection, () => {
     });
 
     test('invalid type defs', () => {
-        expect(() => intersection([array(number) as any, type({})])).toThrow('can only create an intersection of objects, got: number[]');
+        expect(() => intersection([array(number) as any, object({})])).toThrow('can only create an intersection of objects, got: number[]');
         jest.spyOn(console, 'warn').mockReturnValueOnce();
-        intersection([type({ a: number }), type({ a: number })]);
+        intersection([object({ a: number }), object({ a: number })]);
         expect(console.warn).toHaveBeenCalledWith(
             'overlapping properties are currently not supported in intersections, overlapping properties: a',
         );
@@ -74,7 +74,7 @@ describe(intersection, () => {
 
     testTypes('resulting type and props', () => {
         type MyIntersection = The<typeof MyIntersection>;
-        const MyIntersection = intersection([intersection([partial({ a: number })]), type({ b: number }), type({ c: boolean })]);
+        const MyIntersection = intersection([intersection([partial({ a: number })]), object({ b: number }), object({ c: boolean })]);
 
         assignableTo<MyIntersection>({ b: 1, c: false });
         assignableTo<MyIntersection>({ a: 1, b: 2, c: true });

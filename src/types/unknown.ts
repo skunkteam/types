@@ -1,36 +1,71 @@
 import { BaseTypeImpl, createType } from '../base-type';
 import type { Result, TypeImpl } from '../interfaces';
-import { castArray, isObject } from '../utils';
+import { castArray, define, isObject } from '../utils';
 
+/**
+ * The implementation behind all sub-types of {@link unknown}.
+ */
 export class UnknownType<ResultType = unknown> extends BaseTypeImpl<ResultType> {
     readonly name = 'unknown';
-    readonly basicType = 'mixed';
+    readonly basicType!: 'mixed';
 
     typeValidator(value: unknown): Result<ResultType> {
-        return this.createResult(value, true);
+        return this.createResult(value, value, true);
     }
 }
+define(UnknownType, 'basicType', 'mixed');
 
+/**
+ * The implementation behind all sub-types of {@link unknownRecord}.
+ */
 export class UnknownRecordType<ResultType extends Record<string, unknown> = Record<string, unknown>> extends BaseTypeImpl<ResultType> {
     readonly name = 'Record<string, unknown>';
-    readonly basicType = 'object';
+    readonly basicType!: 'object';
 
     typeValidator(value: unknown): Result<ResultType> {
-        return this.createResult(value, isObject(value) || { type: this, value, kind: 'invalid basic type', expected: 'object' });
+        return this.createResult(value, value, isObject(value) || { type: this, value, kind: 'invalid basic type', expected: 'object' });
     }
 }
+define(UnknownRecordType, 'basicType', 'object');
 
+/**
+ * The implementation behind all sub-types of {@link unknownArray}.
+ */
 export class UnknownArrayType<ResultType extends unknown[] = unknown[]> extends BaseTypeImpl<ResultType> {
     readonly name = 'unknown[]';
-    readonly basicType = 'array';
+    readonly basicType!: 'array';
 
     typeValidator(value: unknown): Result<ResultType> {
-        return this.createResult(value, Array.isArray(value) || { type: this, value, kind: 'invalid basic type', expected: 'array' });
+        return this.createResult(
+            value,
+            value,
+            Array.isArray(value) || { type: this, value, kind: 'invalid basic type', expected: 'array' },
+        );
     }
-
-    protected autoCaster = castArray;
 }
+define(UnknownArrayType, 'autoCaster', castArray);
+define(UnknownArrayType, 'basicType', 'array');
 
+/**
+ * Built-in validator that accepts all values.
+ *
+ * @remarks
+ * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
+ */
 export const unknown: TypeImpl<UnknownType> = createType(new UnknownType());
+
+/**
+ * Built-in validator that accepts all objects (`null` is not accepted).
+ *
+ * @remarks
+ * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
+ */
 export const unknownRecord: TypeImpl<UnknownRecordType> = createType(new UnknownRecordType());
+
+/**
+ * Built-in validator that accepts all arrays.
+ *
+ * @remarks
+ * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
+ */
 export const unknownArray: TypeImpl<UnknownArrayType> = createType(new UnknownArrayType());
