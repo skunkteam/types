@@ -3,16 +3,21 @@
 Inspired by [io-ts](https://github.com/gcanti/io-ts), but without the functional programming (lingo).
 
 -   [Design goals](#design-goals)
--   [API reference](markdown/types.md)
+-   [API examples](#api-examples)
+    -   ["Simple types"](#"simple-types")
+    -   [Object types](#object-types)
+    -   [Unions and Intersections](#unions-and-intersections)
+    -   [Parsers](#parsers)
 -   [Nest.js integration](#nest.js-integration)
+-   [API reference](markdown/types.md)
 
 ## Design goals:
 
 ### strict / loose mode
 
-Every type is strict by default (applies no coercion during validation), but can be converted into a looser variant using the [`.autoCast`](markdown/types.basetypeimpl.autocast.md) feature.
+Every type is strict by default (applies no coercion during validation), but can be converted into a looser variant using the [`.autoCast`](markdown/types.basetypeimpl.autocast.md) feature. Also, objects are stripped of unknown properties by default.
 
-### Super (human-)readable error messages
+### Great (human-)readable error messages
 
 Great care has been taken to ensure that (even deeply nested) types emit readable error messages when validation fails.
 
@@ -22,7 +27,7 @@ When integrating in an imperative codebase, using a library that is purely funct
 
 ### Mimic JavaScript type-constructors
 
-In JavaScript, one can create a `string` or `number` using the constructors `String` and `Number`. Types created with this library mimic that pattern as you can see in the [examples](#api-examples) below.
+In JavaScript, one can create a `string` or `number` using the constructors `String` and `Number`. Types created with this library mimic that pattern as you can see in the [API examples](#api-examples) below.
 
 ### Branding
 
@@ -38,7 +43,7 @@ const obj = { someProperty: 'with a value' };
 // Now all three of: `SomeInterface`, `SomeOtherInterface` and `typeof obj` are assignable to each other, because they all satisfy each-other's requirements.
 ```
 
-Sometimes however, it would be really nice to have nominal types (i.e. types that are different just because they have a different name, even if they look the same). An example from this library is the [`int`](markdown/types.int.md) type. A value that is validated by this type is effectively a `number` that has been validated to be a whole number (an integer). `int`s should be assignable to variables of type `number`, because they are in fact numbers. But not the otherway round; a `number` is not guaranteed to be an `int`.
+Sometimes however, it would be really nice to have nominal types (i.e. types that are different just because they have a different name, even if they look the same). An example from this library is the [`int`](markdown/types.int.md) type. A value that is validated by this type is effectively a `number` that has been validated to be a whole number (an integer). `int`s should be assignable to variables of type `number`, because they are in fact numbers. But not the other way round; a `number` is not guaranteed to be an `int`.
 
 TypeScript currently has limited support for nominal types, but we can work around this limitation with "branding". Without going into too much details, this allows us to do the following:
 
@@ -93,12 +98,12 @@ const a: number = uint(123);
 const b: int = uint(123);
 const c: uint = uint(123);
 
-// Invalid:
+// Invalid (TypeScript will complain):
 const a: uint = 123;
 const b: uint = int(123);
 ```
 
-Note that brands are string-literals, so make sure to use unique brand-names for your types. [io-ts](https://github.com/gcanti/io-ts) uses unique symbols, which have stronger uniqueness guarentees. In this library we opted to use string-literals anyway to allow for a much easier to use API.
+Note that brands are string-literals, so make sure to use unique brand-names for your types. [io-ts](https://github.com/gcanti/io-ts) uses unique symbols, which have stronger uniqueness guarentees. In this library we opted to use string-literals to allow for a much easier to use API.
 
 ### Compatible with TypeScript's `emitDecoratorMetadata` feature
 
@@ -114,6 +119,8 @@ const MyType = // MyType implementation here
 ```
 
 ## API examples
+
+### "Simple types"
 
 ```typescript
 /** An example of a simple constraint without a custom message. */
@@ -138,7 +145,7 @@ SmallString('1234567890');
 // throws ValidationError: expected a [SmallString], got: "1234567890"
 ```
 
-The error-message is ok, but to get better error messages provide one in your validation, for example:
+The error-message is ok, but to get better error messages provide one in your validation-function, for example:
 
 ```typescript
 /** A Percentage must be between 0 and 100 inclusive. */
@@ -149,10 +156,13 @@ Percentage(123);
 // throws ValidationError: error in [Percentage]: should be between 0 and 100 inclusive, got: 123
 ```
 
+### Object types
+
 This is nice and all, but the library really shines once you start combining types into larger structures.
 
 ```typescript
-/** User is a basic interface type. */
+/** User is a basic object type. */
+type User = The<typeof User>;
 const User = object('User', {
     /** The name of the User, split up into a first- and last-name. */
     name: object({
@@ -182,6 +192,178 @@ User({ name: { first: "my name is so incredibly long, you wouldn't believe it" }
 // - at <name.first>: expected a [SmallString], got: "my name is so incred ..  wouldn't believe it"
 
 User({ name: { first: 'Donald', last: 'Duck' }, shoeSize: 1 }); // OK
+```
+
+Optional fields can be added with [`withOptional()`](markdown/types.interfacetype.withoptional.md).
+
+```typescript
+type Name = The<typeof Name>;
+const Name = object('Name', {
+    /** First name */
+    first: string,
+    /** Last name */
+    last: string,
+}).withOptional({
+    /** Optional middle name */
+    middle: string,
+});
+
+Name({ first: 1 });
+// throws ValidationError: encountered multiple errors in [Name]:
+//
+// - missing property <last> [string], got: { first: 1 }
+//
+// - at <first>: expected a string, got a number (1)
+```
+
+Note that `Name` does not complain about a missing `middle` property (because that property is optional).
+
+By default, `object` validators strip unknown properties. In a future version, that will be configurable.
+
+```typescript
+Name({ first: 'first', last: 'last', middle: 'middle', title: 'title' });
+// => { first: 'first', last: 'last', middle: 'middle' }
+```
+
+Note that, by default, `undefined` values and omitted fields are interchangeable:
+
+```typescript
+// `or` defines a simple union which is explained below
+object({ prop: string.or(undefinedType) }).is({}); // => true
+// `partial` is the same as `object`, but all properties are optional
+partial({ prop: string }).is({ prop: undefined }); // => true
+
+// This allows us to provide default values for omitted fields and define
+// optional fields inline with required fields. (`withParser` will be explained
+// later)
+
+type StringOrEmpty = The<typeof StringOrEmpty>;
+const StringOrEmpty = string.or(undefinedType).withParser(i => i || 'DEFAULT');
+
+// Now missing properties are automatically converted to the given default value.
+// In a future version we might add a convenience method for this.
+object({ prop: StringOrEmpty }).construct({}); // => { prop: 'DEFAULT' }
+object({ prop: StringOrEmpty }).is({}); // => true
+```
+
+To opt out of this behavior, use the optional options parameter (first):
+
+```typescript
+object({ strictMissingKeys: true }, { prop: StringOrEmpty }).construct({});
+// throws ValidationError: error in [{ prop: string | undefined }]: missing property <prop> [string | undefined], got: {}
+object({ strictMissingKeys: true }, { prop: StringOrEmpty }).construct({ prop: undefined });
+// => { prop: 'DEFAULT' }
+```
+
+### Unions and Intersections
+
+Use [`union()`](markdown/types.union.md) and [`intersection()`](markdown/types.intersection.md) to create unions and intersections. When creating unions or intersections of two types, the methods: [`or()`](markdown/types.basetypeimpl.or.md) and [`and()`](markdown/types.baseobjectliketypeimpl.and.md) might be preferable.
+
+```typescript
+// Example adapted from: https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#unions-with-common-fields
+type NetworkState = The<typeof NetworkState>;
+const NetworkState = union('NetworkState', [
+    object('NetworkLoadingState', { state: literal('loading') }),
+    object('NetworkFailedState', { state: literal('failed'), code: number }),
+    object('NetworkSuccessState', { state: literal('success'), response: Response }),
+]);
+```
+
+When reporting errors, in case of unions, the library tries to be as helpful as possible. Of course all errors are grouped by union-element for better understandability:
+
+```typescript
+NetworkState({});
+// throws ValidationError: error in [NetworkState]: failed every element in union:
+//   • error in [NetworkLoadingState]: missing property <state> ["loading"], got: {}
+//   • encountered multiple errors in [NetworkFailedState]:
+//     ‣ missing properties <state> ["failed"], <code> [number], got: {}
+//   • encountered multiple errors in [NetworkSuccessState]:
+//     ‣ missing properties <state> ["success"], <response> [Response], got: {}
+```
+
+But whenever possible, the validation-messages will be limited to the (most likely) intended union-element:
+
+```typescript
+NetworkState({ state: 'failed', code: '500' });
+// throws ValidationError: error in [NetworkState]: in union element [NetworkFailedState] at <code>: expected a number, got a string ("500")
+//   • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>
+
+// Or based on the type of value:
+union([string, boolean, object({ value: number, unit: string })]).check(123);
+// throws ValidationError: error in [string | boolean | { value: number, unit: string }]: expected a boolean, an object or a string, got a number (123)
+
+union([string, boolean, object({ value: number, unit: string })]).check({});
+// throws ValidationError: error in [string | boolean | { value: number, unit: string }]:
+//   • missing properties <value> [number], <unit> [string], got: {}
+//   • disregarded 2 union-subtypes that do not accept an object
+```
+
+### Parsers
+
+Validation is most likely used to validate incoming data / messages. Sometimes this data looks a lot like your internal type, but is slightly off. For example, maybe, the input has strings instead of numbers, or a "yes"/"no" instead of booleans. In those cases you can "prepend" a parsing step to your validator. For builtin types the most common conversions are available using the [`.autoCast`](markdown/types.basetypeimpl.autocast.md) feature.
+
+Take the following (questionable) definition of `Age`:
+
+```typescript
+type Age = The<typeof Age>;
+const Age = int.withConstraint('Age', n => (n >= 0 && n < 200) || `Unexpected age: ${n}`);
+
+Age(123); // => 123
+Age('123');
+// throw ValidationError: error in base type of [Age]: expected a number, got a string ("123")
+```
+
+When we turn on the `autoCast` feature, it will accept anything it can reasonably (and safely) convert to number:
+
+```typescript
+type Age = The<typeof Age>;
+const Age = int.withConstraint('Age', n => (n >= 0 && n < 200) || `Unexpected age: ${n}`).autoCast;
+
+Age(123); // => 123
+Age('123'); // => 123
+```
+
+This is why we call the default function the "type constructor". It behaves similarly to `Number` and `String`. This is reflected in the API as follows:
+
+```typescript
+// Age(...) is shorthand for Age.construct(...), it uses the optional parser to
+// (try to) construct a valid instance of Age.
+Age.construct('123'); // => 123
+Age(true);
+// throws ValidationError: error in parser of [Age.autoCast]: could not autocast value: true
+
+// `is()` is a type-guard, it returns whether the value is already a valid Age.
+Age.is('123'); // => false
+Age.is(123); // => true
+
+// `check()` is the check-only variant of `construct()`, it returns the value, but
+// does not involve the parser
+Age.check('123'); // throws
+Age.check(123); // => 123
+```
+
+You can use your own (custom) parser with the [`withParser()`](markdown/types.basetypeimpl.withparser.md). For example:
+
+```typescript
+type Answer = The<typeof Answer>;
+const Answer = boolean.withParser(
+    'Answer',
+    string.andThen(v => v === 'yes'),
+);
+
+Answer('yes'); // => true
+Answer('no'); // => false
+Answer(1);
+// throws ValidationError: error in parser precondition of [Answer]: expected a string, got a number (1)
+
+// Or, as an contrived example, if you want to be more rigid:
+type Answer = The<typeof Answer>;
+const ValidAnswers = keyof({ yes: true, no: false });
+const Answer = boolean.withParser('Answer', v => ValidAnswers.translate(v));
+
+Answer('yes'); // => true
+Answer('nope');
+// throws ValidationError: error in parser of [Answer]: expected a ["yes" | "no"], got: "nope"
 ```
 
 ## Nest.js integration

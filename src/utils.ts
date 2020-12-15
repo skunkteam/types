@@ -109,12 +109,16 @@ export function castArray<T>(input: undefined | T | T[]): T[] {
     return input === undefined ? [] : Array.isArray(input) ? input : [input];
 }
 
-export function humanList<T>(arr: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
-    arr = castArray(arr);
+export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
+    const arr = castArray(input);
     const last = arr[arr.length - 1];
     if (!last) return '';
     if (arr.length === 1) return map(last);
     return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
+}
+
+export function plural(amount: number | unknown[], thing: string, things = `${thing}s`): string {
+    return (Array.isArray(amount) ? amount.length : amount) === 1 ? thing : things;
 }
 
 export function prependPathToDetails(failure: Failure, key: PropertyKey): OneOrMore<FailureDetails> {

@@ -17,7 +17,7 @@ testTypeImpl({
             NaN,
             [
                 'error in [number | null]: in union element [number]: expected a [number], got: NaN',
-                '  • disregarded 1 union-subtype that does not accept basic type "number"',
+                '  • disregarded 1 union-subtype that does not accept a number',
             ],
         ],
     ],
@@ -54,7 +54,7 @@ testTypeImpl({
                 'error in [StrangeNumberUnion]: failed every element in union:',
                 '  • expected a [LessThanMinus10], got: -5, parsed from: "-5"',
                 '  • error in [number.autoCast]: additional validation failed',
-                '  • disregarded 1 union-subtype that does not accept basic type "string"',
+                '  • disregarded 1 union-subtype that does not accept a string',
             ],
         ],
     ],
@@ -84,7 +84,7 @@ testTypeImpl({
             { tag: 'a' },
             [
                 'error in [ObjectUnion]: in union element [{ tag: "a", a: string }]: missing property <a> [string], got: { tag: "a" }',
-                '  • disregarded 1 union-subtype due to a mismatch in value of discriminator <tag>',
+                '  • disregarded 1 union-subtype due to a mismatch in values of discriminator <tag>',
             ],
         ],
     ],
@@ -94,9 +94,38 @@ testTypeImpl({
             { tag: 'b', b: 123 },
         ],
     ],
-    // invalidConversions: [
-    // TODO:
-    // ]
+});
+
+const NetworkState = union('NetworkState', [
+    object('NetworkLoadingState', { state: literal('loading') }),
+    object('NetworkFailedState', { state: literal('failed'), code: number }),
+    object('NetworkSuccessState', { state: literal('success'), response: object('Response', {}) }),
+]);
+testTypeImpl({
+    name: 'NetworkState',
+    type: NetworkState,
+    basicType: 'object',
+    validValues: [{ state: 'loading' }, { state: 'failed', code: 500 }, { state: 'success', response: {} }],
+    invalidValues: [
+        [
+            {},
+            [
+                'error in [NetworkState]: failed every element in union:',
+                '  • error in [NetworkLoadingState]: missing property <state> ["loading"], got: {}',
+                '  • encountered multiple errors in [NetworkFailedState]:',
+                '    ‣ missing properties <state> ["failed"], <code> [number], got: {}',
+                '  • encountered multiple errors in [NetworkSuccessState]:',
+                '    ‣ missing properties <state> ["success"], <response> [Response], got: {}',
+            ],
+        ],
+        [
+            { state: 'failed' },
+            [
+                'error in [NetworkState]: in union element [NetworkFailedState]: missing property <code> [number], got: { state: "failed" }',
+                '  • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>',
+            ],
+        ],
+    ],
 });
 
 const PrimitiveTypeUnion = union([number, string, boolean, undefinedType]);

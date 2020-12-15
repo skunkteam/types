@@ -1,6 +1,6 @@
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { BasicType, Failure, FailureDetails, OneOrMore } from './interfaces';
-import { an, basicType, getDetails, humanList, isSingle, partition, printKey, printPath, printValue } from './utils';
+import { an, basicType, getDetails, humanList, isSingle, partition, plural, printKey, printPath, printValue } from './utils';
 
 const BULLETS = ['-', '•', '‣', '◦'];
 const DEFAULT_BULLET = '*';
@@ -10,7 +10,7 @@ const DEFAULT_BULLET = '*';
  *
  * @param root - the failure to report
  */
-export function reportError(root: Omit<Failure, 'ok'>, level = 0): string {
+export function reportError(root: Omit<Failure, 'ok'>, level = -1): string {
     const details = getDetails(root);
     // Make sure we get errors breadth first:
     details.sort((a, b) => (a.path?.length || 0) - (b.path?.length || 0));
@@ -24,9 +24,9 @@ export function reportError(root: Omit<Failure, 'ok'>, level = 0): string {
             ? `error in ${ctx}[${root.type.name}]`
             : '';
         msg && (msg += ': ');
-        return msg + detailMessage(detail, level);
+        return msg + detailMessage(detail, level + 1);
     } else {
-        return `encountered multiple errors in [${root.type.name}]:` + reportDetails(details, level);
+        return `encountered multiple errors in [${root.type.name}]:` + reportDetails(details, level + 1);
     }
 }
 
@@ -134,14 +134,16 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
     const [topLevelFailures, nonTopLevelFailures] = partition(failures, isTopLevelFailure);
     const [wrongBasicTypes, otherTopLevelFailures] = partition(topLevelFailures, hasKind('invalid basic type'));
     const details: FailureDetails[] = [];
-    switch (wrongBasicTypes.length) {
-        case 0:
-            break;
-        case 1:
-            details.push(msg(`disregarded 1 union-subtype that does not accept basic type "${basicType(value)}"`));
-            break;
-        default:
-            details.push(msg(`disregarded ${wrongBasicTypes.length} union-subtypes that do not accept a ${basicType(value)}`));
+    if (wrongBasicTypes.length) {
+        details.push(
+            msg(
+                `disregarded ${wrongBasicTypes.length} ${plural(wrongBasicTypes, 'union-subtype')} that ${plural(
+                    wrongBasicTypes,
+                    'does',
+                    'do',
+                )} not accept ${an(basicType(value))}`,
+            ),
+        );
     }
     // let remainingFailures: Failure[];
     if (!nonTopLevelFailures.length) {
@@ -202,17 +204,17 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
             message: `every subtype of union has at least one discriminator mismatch`,
         });
     }
-    if (isSingle(mismatchedDiscriminators)) {
-        details.push(
-            msg(`disregarded 1 union-subtype due to a mismatch in value of discriminator <${printPath(mismatchedDiscriminators[0].path)}>`),
-        );
-    } else if (mismatchedDiscriminators.length > 1) {
+    if (mismatchedDiscriminators.length) {
+        const mismatchedDiscriminatorPaths = [...new Set(mismatchedDiscriminators.map(d => printPath(d.path)))];
         details.push(
             msg(
-                `disregarded ${mismatchedDiscriminators.length} union-subtypes due to a mismatch in values of discriminators ${humanList(
+                `disregarded ${mismatchedDiscriminators.length} ${plural(
                     mismatchedDiscriminators,
+                    'union-subtype',
+                )} due to a mismatch in values of ${plural(mismatchedDiscriminatorPaths, 'discriminator')} ${humanList(
+                    mismatchedDiscriminatorPaths,
                     'and',
-                    d => `<${printPath(d.path)}>`,
+                    p => `<${p}>`,
                 )}`,
             ),
         );

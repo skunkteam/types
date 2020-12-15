@@ -13,7 +13,7 @@
         "api:document": "api-documenter markdown --input-folder temp",
         "api": "npm-run-all api:* && prettier -w markdown",
         "prepare": "npm-run-all clean build test lint",
-        "pr": "npm-run-all prepare api && prettier -w src"
+        "pr": "npm-run-all prepare api && prettier -w src README.md"
     },
     "repository": {
         "type": "git",
