@@ -9,8 +9,8 @@ export class UnknownType<ResultType = unknown> extends BaseTypeImpl<ResultType> 
     readonly name = 'unknown';
     readonly basicType!: 'mixed';
 
-    typeValidator(value: unknown): Result<ResultType> {
-        return this.createResult(value, value, true);
+    typeValidator(input: unknown): Result<ResultType> {
+        return this.createResult(input, input, true);
     }
 }
 define(UnknownType, 'basicType', 'mixed');
@@ -22,8 +22,8 @@ export class UnknownRecordType<ResultType extends Record<string, unknown> = Reco
     readonly name = 'Record<string, unknown>';
     readonly basicType!: 'object';
 
-    typeValidator(value: unknown): Result<ResultType> {
-        return this.createResult(value, value, isObject(value) || { type: this, value, kind: 'invalid basic type', expected: 'object' });
+    typeValidator(input: unknown): Result<ResultType> {
+        return this.createResult(input, input, isObject(input) || { type: this, input, kind: 'invalid basic type', expected: 'object' });
     }
 }
 define(UnknownRecordType, 'basicType', 'object');
@@ -35,11 +35,11 @@ export class UnknownArrayType<ResultType extends unknown[] = unknown[]> extends 
     readonly name = 'unknown[]';
     readonly basicType!: 'array';
 
-    typeValidator(value: unknown): Result<ResultType> {
+    typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
-            value,
-            value,
-            Array.isArray(value) || { type: this, value, kind: 'invalid basic type', expected: 'array' },
+            input,
+            input,
+            Array.isArray(input) || { type: this, input, kind: 'invalid basic type', expected: 'array' },
         );
     }
 }

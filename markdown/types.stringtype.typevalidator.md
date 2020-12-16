@@ -7,14 +7,14 @@
 <b>Signature:</b>
 
 ```typescript
-typeValidator(value: unknown): Result<ResultType>;
+typeValidator(input: unknown): Result<ResultType>;
 ```
 
 ## Parameters
 
 | Parameter | Type    | Description |
 | --------- | ------- | ----------- |
-| value     | unknown |             |
+| input     | unknown |             |
 
 <b>Returns:</b>
 

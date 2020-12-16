@@ -34,4 +34,4 @@ export declare class LiteralType<ResultType extends LiteralValue> extends BaseTy
 | Method                                                       | Modifiers | Description |
 | ------------------------------------------------------------ | --------- | ----------- |
 | [autoCaster(input)](./types.literaltype.autocaster.md)       |           |             |
-| [typeValidator(value)](./types.literaltype.typevalidator.md) |           |             |
+| [typeValidator(input)](./types.literaltype.typevalidator.md) |           |             |

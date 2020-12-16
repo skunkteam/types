@@ -10,11 +10,11 @@ export class BooleanType<ResultType extends boolean = boolean> extends BaseTypeI
     readonly name = 'boolean';
     readonly basicType!: 'boolean';
 
-    typeValidator(value: unknown): Result<ResultType> {
+    typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
-            value,
-            value,
-            typeof value === 'boolean' || { type: this, kind: 'invalid basic type', expected: 'boolean', value },
+            input,
+            input,
+            typeof input === 'boolean' || { type: this, kind: 'invalid basic type', expected: 'boolean', input },
         );
     }
 }

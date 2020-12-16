@@ -35,16 +35,16 @@ export class UnionType<
     readonly collapsedTypes = this.types.flatMap(type => (type instanceof UnionType ? (type.types as Types) : type)) as Types;
     readonly enumerableLiteralDomain = analyzeEnumerableLiteralDomain(this.types);
 
-    typeValidator(value: unknown, options: ValidationOptions): Result<ResultType> {
+    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const failures = [];
         for (const type of this.collapsedTypes) {
-            const result = type.validate(value, options);
+            const result = type.validate(input, options);
             if (result.ok) {
-                return this.createResult(value, result.value, true);
+                return this.createResult(input, result.value, true);
             }
             failures.push(result);
         }
-        return this.createResult(value, undefined, { type: this, value, kind: 'union', failures });
+        return this.createResult(input, undefined, { type: this, input, kind: 'union', failures });
     }
 }
 

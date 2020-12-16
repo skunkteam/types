@@ -25,4 +25,4 @@ export declare class BooleanType<ResultType extends boolean = boolean> extends B
 
 | Method                                                       | Modifiers | Description |
 | ------------------------------------------------------------ | --------- | ----------- |
-| [typeValidator(value)](./types.booleantype.typevalidator.md) |           |             |
+| [typeValidator(input)](./types.booleantype.typevalidator.md) |           |             |

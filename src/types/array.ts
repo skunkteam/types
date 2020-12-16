@@ -13,7 +13,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
     }
 
     typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        const baseFailure = { type: this, value: input } as const;
+        const baseFailure = { type: this, input } as const;
         if (!Array.isArray(input)) {
             return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'array' });
         }

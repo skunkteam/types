@@ -80,7 +80,7 @@ export class BooleanType<ResultType extends boolean = boolean> extends BaseTypeI
     // (undocumented)
     readonly name = "boolean";
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
 }
 
 // @public
@@ -92,16 +92,16 @@ export function createType<Impl extends BaseTypeImpl<any>>(impl: Impl, override?
 // @public
 export interface Failure {
     details: OneOrMore<FailureDetails>;
+    input: unknown;
     // (undocumented)
     ok: false;
     type: BaseTypeImpl<unknown>;
-    value: unknown;
 }
 
 // @public (undocumented)
 export type FailureDetails = {
     type: BaseTypeImpl<unknown>;
-    value: unknown;
+    input: unknown;
     parserInput?: unknown;
     path?: PropertyKey[];
     context?: string;
@@ -227,7 +227,7 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
     // (undocumented)
     translate(input: unknown): T[keyof T];
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
 }
 
 // @public (undocumented)
@@ -245,7 +245,7 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
     // (undocumented)
     readonly name: string;
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
     // (undocumented)
     readonly value: ResultType;
 }
@@ -274,7 +274,7 @@ export class NumberType<ResultType extends number = number> extends BaseTypeImpl
     // (undocumented)
     readonly name = "number";
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
 }
 
 // @public
@@ -348,7 +348,7 @@ export class StringType<ResultType extends string = string> extends BaseTypeImpl
     // (undocumented)
     readonly name = "string";
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
     // (undocumented)
     withRegexpConstraint<BrandName extends string>(name: BrandName, regExp: RegExp): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
 }
@@ -422,7 +422,7 @@ export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultTyp
     // (undocumented)
     readonly types: Types;
     // (undocumented)
-    typeValidator(value: unknown, options: ValidationOptions): Result<ResultType>;
+    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 }
 
 // @public
@@ -438,7 +438,7 @@ export class UnknownArrayType<ResultType extends unknown[] = unknown[]> extends 
     // (undocumented)
     readonly name = "unknown[]";
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
 }
 
 // @public
@@ -451,7 +451,7 @@ export class UnknownRecordType<ResultType extends Record<string, unknown> = Reco
     // (undocumented)
     readonly name = "Record<string, unknown>";
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
 }
 
 // @public
@@ -461,7 +461,7 @@ export class UnknownType<ResultType = unknown> extends BaseTypeImpl<ResultType> 
     // (undocumented)
     readonly name = "unknown";
     // (undocumented)
-    typeValidator(value: unknown): Result<ResultType>;
+    typeValidator(input: unknown): Result<ResultType>;
 }
 
 // @public
@@ -470,14 +470,14 @@ export class ValidationError extends Error implements Failure {
     details: OneOrMore<FailureDetails>;
     static fromFailure(failure: Omit<Failure, 'ok'>): ValidationError;
     // (undocumented)
+    input: unknown;
+    // (undocumented)
     readonly name = "ValidationError";
     // (undocumented)
     readonly ok = false;
-    static try<Return>({ type, value }: Pick<Failure, 'type' | 'value'>, fn: () => Return): Result<Return>;
+    static try<Return>({ type, input }: Pick<Failure, 'type' | 'input'>, fn: () => Return): Result<Return>;
     // (undocumented)
     type: BaseTypeImpl<unknown>;
-    // (undocumented)
-    value: unknown;
 }
 
 // @public

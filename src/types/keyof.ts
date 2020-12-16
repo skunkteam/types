@@ -19,13 +19,13 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
 
     readonly enumerableLiteralDomain = Object.keys(this.keys);
 
-    typeValidator(value: unknown): Result<ResultType> {
+    typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
-            value,
-            value,
-            typeof value !== 'string'
-                ? { type: this, kind: 'invalid basic type', expected: 'string', value }
-                : hasOwnProperty(this.keys, value),
+            input,
+            input,
+            typeof input !== 'string'
+                ? { type: this, kind: 'invalid basic type', expected: 'string', input }
+                : hasOwnProperty(this.keys, input),
         );
     }
 

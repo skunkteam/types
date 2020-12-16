@@ -25,14 +25,14 @@ Is itself also a [Failure](./types.failure.md) and can be used as such in APIs.
 | Property                                      | Modifiers | Type                                                                                                 | Description |
 | --------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------- | ----------- |
 | [details](./types.validationerror.details.md) |           | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; |             |
+| [input](./types.validationerror.input.md)     |           | unknown                                                                                              |             |
 | [name](./types.validationerror.name.md)       |           | (not declared)                                                                                       |             |
 | [ok](./types.validationerror.ok.md)           |           | (not declared)                                                                                       |             |
 | [type](./types.validationerror.type.md)       |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       |             |
-| [value](./types.validationerror.value.md)     |           | unknown                                                                                              |             |
 
 ## Methods
 
 | Method                                                         | Modifiers           | Description                                                                                                            |
 | -------------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | [fromFailure(failure)](./types.validationerror.fromfailure.md) | <code>static</code> | Creates a ValidationError with a human-readable error-report based on the given [Failure](./types.failure.md)<!-- -->. |
-| [try({ type, value }, fn)](./types.validationerror.try.md)     | <code>static</code> | Catch any errors thrown by <code>fn</code> and report the result as a [Result](./types.result.md)<!-- -->.             |
+| [try({ type, input }, fn)](./types.validationerror.try.md)     | <code>static</code> | Catch any errors thrown by <code>fn</code> and report the result as a [Result](./types.result.md)<!-- -->.             |

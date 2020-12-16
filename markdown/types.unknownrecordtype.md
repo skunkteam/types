@@ -25,4 +25,4 @@ export declare class UnknownRecordType<ResultType extends Record<string, unknown
 
 | Method                                                             | Modifiers | Description |
 | ------------------------------------------------------------------ | --------- | ----------- |
-| [typeValidator(value)](./types.unknownrecordtype.typevalidator.md) |           |             |
+| [typeValidator(input)](./types.unknownrecordtype.typevalidator.md) |           |             |

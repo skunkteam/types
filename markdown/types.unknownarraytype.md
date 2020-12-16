@@ -25,4 +25,4 @@ export declare class UnknownArrayType<ResultType extends unknown[] = unknown[]> 
 
 | Method                                                            | Modifiers | Description |
 | ----------------------------------------------------------------- | --------- | ----------- |
-| [typeValidator(value)](./types.unknownarraytype.typevalidator.md) |           |             |
+| [typeValidator(input)](./types.unknownarraytype.typevalidator.md) |           |             |

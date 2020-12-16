@@ -38,4 +38,4 @@ export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, R
 
 | Method                                                              | Modifiers | Description |
 | ------------------------------------------------------------------- | --------- | ----------- |
-| [typeValidator(value, options)](./types.uniontype.typevalidator.md) |           |             |
+| [typeValidator(input, options)](./types.uniontype.typevalidator.md) |           |             |

@@ -25,5 +25,5 @@ export declare class StringType<ResultType extends string = string> extends Base
 
 | Method                                                                           | Modifiers | Description |
 | -------------------------------------------------------------------------------- | --------- | ----------- |
-| [typeValidator(value)](./types.stringtype.typevalidator.md)                      |           |             |
+| [typeValidator(input)](./types.stringtype.typevalidator.md)                      |           |             |
 | [withRegexpConstraint(name, regExp)](./types.stringtype.withregexpconstraint.md) |           |             |

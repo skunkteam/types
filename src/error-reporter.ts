@@ -86,7 +86,7 @@ function detailMessage(detail: FailureDetails, level: number) {
                 : `expected the literal ${printValue(detail.expected)}, got: ${printInputValue(detail)}`;
         case 'invalid basic type': {
             const expected = printBasicTypeAndValue(detail.expected, detail.expectedValue);
-            const got = printBasicTypeAndValue(basicType(detail.value), detail.value);
+            const got = printBasicTypeAndValue(basicType(detail.input), detail.input);
             return `expected ${expected}, got ${got}`;
         }
         case 'union':
@@ -97,7 +97,7 @@ function detailMessage(detail: FailureDetails, level: number) {
 }
 
 function printInputValue(details: FailureDetails) {
-    const printedValue = printValue(details.value);
+    const printedValue = printValue(details.input);
     if ('parserInput' in details) {
         const printedParserInput = printValue(details.parserInput);
         if (printedParserInput !== printedValue) return `${printedValue}, parsed from: ${printedParserInput}`;
@@ -129,8 +129,8 @@ function missingPropertyMessage(details: OneOrMore<FailureDetails & { kind: 'mis
 }
 
 function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number): string {
-    const { type, value, failures } = detail;
-    const failureBase = { type, value };
+    const { type, input, failures } = detail;
+    const failureBase = { type, input };
     const [topLevelFailures, nonTopLevelFailures] = partition(failures, isTopLevelFailure);
     const [wrongBasicTypes, otherTopLevelFailures] = partition(topLevelFailures, hasKind('invalid basic type'));
     const details: FailureDetails[] = [];
@@ -141,7 +141,7 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
                     wrongBasicTypes,
                     'does',
                     'do',
-                )} not accept ${an(basicType(value))}`,
+                )} not accept ${an(basicType(input))}`,
             ),
         );
     }
@@ -236,7 +236,7 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
     );
 
     function msg(message: string): FailureDetails {
-        return { type, value, kind: 'custom message', message };
+        return { type, input, kind: 'custom message', message };
     }
 
     function printSingleMessage(mainDetail: FailureDetails) {

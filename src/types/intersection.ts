@@ -51,7 +51,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
 
     typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>> {
         if (!isObject(input)) {
-            return this.createResult(input, undefined, { type: this, value: input, kind: 'invalid basic type', expected: 'object' });
+            return this.createResult(input, undefined, { type: this, input, kind: 'invalid basic type', expected: 'object' });
         }
         const [failures, successes] = partition(
             this.types.map(type => type.validate(input, options)),

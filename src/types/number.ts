@@ -10,11 +10,11 @@ export class NumberType<ResultType extends number = number> extends BaseTypeImpl
     readonly name = 'number';
     readonly basicType!: 'number';
 
-    typeValidator(value: unknown): Result<ResultType> {
-        if (typeof value !== 'number') {
-            return this.createResult(value, undefined, { type: this, kind: 'invalid basic type', expected: 'number', value });
+    typeValidator(input: unknown): Result<ResultType> {
+        if (typeof input !== 'number') {
+            return this.createResult(input, undefined, { type: this, kind: 'invalid basic type', expected: 'number', input });
         }
-        return this.createResult(value, value, !Number.isNaN(value));
+        return this.createResult(input, input, !Number.isNaN(input));
     }
 }
 define(NumberType, 'autoCaster', numberAutoCaster);

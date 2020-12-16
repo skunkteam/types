@@ -19,14 +19,14 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
     readonly basicType: BasicType = basicType(this.value);
     readonly enumerableLiteralDomain = [this.value];
 
-    typeValidator(value: unknown): Result<ResultType> {
+    typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
-            value,
-            value,
-            value === this.value ||
-                (basicType(value) !== this.basicType
-                    ? { type: this, value, kind: 'invalid basic type', expected: this.basicType, expectedValue: this.value }
-                    : { type: this, value, kind: 'invalid literal', expected: this.value }),
+            input,
+            input,
+            input === this.value ||
+                (basicType(input) !== this.basicType
+                    ? { type: this, input, kind: 'invalid basic type', expected: this.basicType, expectedValue: this.value }
+                    : { type: this, input, kind: 'invalid literal', expected: this.value }),
         );
     }
 

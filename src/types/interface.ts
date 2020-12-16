@@ -50,7 +50,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
 
     typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const { strictMissingKeys, partial } = this.options;
-        const baseFailure = { type: this, value: input } as const;
+        const baseFailure = { type: this, input } as const;
         if (!isObject(input)) {
             return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
         }
@@ -90,7 +90,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     }
 
     private missingProperty(value: unknown, property: string, type: BaseTypeImpl<unknown>): FailureDetails {
-        return { kind: 'missing property', value, property, type };
+        return { kind: 'missing property', input: value, property, type };
     }
 }
 define(InterfaceType, 'basicType', 'object');

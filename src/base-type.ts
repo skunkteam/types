@@ -274,7 +274,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             ...(name && { name: { configurable: true, value: name } }),
             typeParser: {
                 configurable: true,
-                value: (value: unknown) => ValidationError.try({ type, value }, () => constructor(value)),
+                value: (input: unknown) => ValidationError.try({ type, input }, () => constructor(input)),
             },
         });
         return type;
@@ -295,15 +295,12 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             if (!baseResult.ok) {
                 return type.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
             }
-            const { value } = baseResult;
-            const constraintBox = ValidationError.try({ type, value: input }, () => validation(value, options));
-            if (!constraintBox.ok) {
-                // constraint has thrown an error
-                return constraintBox;
-            }
-            const constraintResult = constraintBox.value;
-            // if no name is given, then default to the message "additional validation failed"
-            return type.createResult(input, value, constraintResult || 'additional validation failed');
+            const tryResult = ValidationError.try(
+                { type, input },
+                // if no name is given, then default to the message "additional validation failed"
+                () => validation(baseResult.value, options) || 'additional validation failed',
+            );
+            return tryResult.ok ? type.createResult(input, baseResult.value, tryResult.value) : tryResult;
         };
         const type = createType(this, { typeValidator: { configurable: true, value: fn } });
         return type;
@@ -328,15 +325,8 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             if (!baseResult.ok) {
                 return newType.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
             }
-            const { value } = baseResult;
-            const constraintBox = ValidationError.try({ type: newType, value: input }, () => constraint(value, options));
-            if (!constraintBox.ok) {
-                // constraint has thrown an error
-                return constraintBox;
-            }
-            const constraintResult = constraintBox.value;
-            // if no name is given, then default to the message "additional validation failed"
-            return newType.createResult(input, value, constraintResult);
+            const tryResult = ValidationError.try({ type: newType, input }, () => constraint(baseResult.value, options));
+            return tryResult.ok ? newType.createResult(input, baseResult.value, tryResult.value) : tryResult;
         };
         const newType = createType(branded<ResultType, BrandName>(this), {
             name: { configurable: true, value: name },
@@ -388,15 +378,15 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             return { ok: true, value: result as ResultType };
         }
         if (validatorResult === false) {
-            return this.createResult(input, result, { type: this, value: input });
+            return this.createResult(input, result, { type: this, input });
         }
         return {
             ok: false,
-            value: input,
+            input,
             type: this,
             details: checkOneOrMore(
                 castArray(validatorResult).map(result =>
-                    typeof result === 'string' ? { type: this, value: input, kind: 'custom message', message: result } : result,
+                    typeof result === 'string' ? { type: this, input, kind: 'custom message', message: result } : result,
                 ),
             ),
         };

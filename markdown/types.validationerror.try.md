@@ -9,14 +9,14 @@ Catch any errors thrown by `fn` and report the result as a [Result](./types.resu
 <b>Signature:</b>
 
 ```typescript
-static try<Return>({ type, value }: Pick<Failure, 'type' | 'value'>, fn: () => Return): Result<Return>;
+static try<Return>({ type, input }: Pick<Failure, 'type' | 'input'>, fn: () => Return): Result<Return>;
 ```
 
 ## Parameters
 
 | Parameter       | Type                                                                 | Description                   |
 | --------------- | -------------------------------------------------------------------- | ----------------------------- |
-| { type, value } | Pick&lt;[Failure](./types.failure.md)<!-- -->, 'type' \| 'value'&gt; |                               |
+| { type, input } | Pick&lt;[Failure](./types.failure.md)<!-- -->, 'type' \| 'input'&gt; |                               |
 | fn              | () =&gt; Return                                                      | the function that could throw |
 
 <b>Returns:</b>

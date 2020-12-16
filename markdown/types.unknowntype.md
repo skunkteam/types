@@ -25,4 +25,4 @@ export declare class UnknownType<ResultType = unknown> extends BaseTypeImpl<Resu
 
 | Method                                                       | Modifiers | Description |
 | ------------------------------------------------------------ | --------- | ----------- |
-| [typeValidator(value)](./types.unknowntype.typevalidator.md) |           |             |
+| [typeValidator(input)](./types.unknowntype.typevalidator.md) |           |             |

@@ -84,7 +84,7 @@ export interface Failure {
     /**
      * The input value.
      */
-    value: unknown;
+    input: unknown;
 
     /**
      * The details of the failure (at least one),
@@ -105,7 +105,7 @@ export type FailureDetails = {
     /**
      * The input value that failed the validation.
      */
-    value: unknown;
+    input: unknown;
 
     /**
      * The value input value to the parser, if applicable.

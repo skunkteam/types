@@ -6,24 +6,24 @@ import { ValidationError } from './validation-error';
 
 describe(ValidationError, () => {
     const type = unknown.withName('GreatType');
-    const value = { toString: () => '[custom string]' };
+    const input = { toString: () => '[custom string]' };
     const CASES: [failure: Omit<Failure, 'ok'>, expected: Partial<ValidationError>][] = [
         [
-            { type, value, details: [{ type, value }] },
-            { message: 'expected a [GreatType], got: [custom string]', type, value },
+            { type, input, details: [{ type, input }] },
+            { message: 'expected a [GreatType], got: [custom string]', type, input },
         ],
         [
-            { type, value, details: [{ type, value, kind: 'custom message', message: 'custom message, hurray' }] },
-            { message: 'error in [GreatType]: custom message, hurray', type, value },
+            { type, input, details: [{ type, input, kind: 'custom message', message: 'custom message, hurray' }] },
+            { message: 'error in [GreatType]: custom message, hurray', type, input },
         ],
         [
             {
                 type,
-                value,
+                input,
                 details: [
                     {
                         type,
-                        value,
+                        input,
                         path: ['a', 'with space', 123],
                         kind: 'custom message',
                         message: 'expected a valid something, got something else',
@@ -33,7 +33,7 @@ describe(ValidationError, () => {
             {
                 message: 'error in [GreatType] at <a["with space"][123]>: expected a valid something, got something else',
                 type,
-                value,
+                input,
             },
         ],
     ];

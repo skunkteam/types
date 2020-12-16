@@ -17,6 +17,6 @@ export interface Failure
 | Property                              | Type                                                                                                 | Description                                |
 | ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | [details](./types.failure.details.md) | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; | The details of the failure (at least one), |
+| [input](./types.failure.input.md)     | unknown                                                                                              | The input value.                           |
 | [ok](./types.failure.ok.md)           | false                                                                                                |                                            |
 | [type](./types.failure.type.md)       | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       | The type that failed validation.           |
-| [value](./types.failure.value.md)     | unknown                                                                                              | The input value.                           |

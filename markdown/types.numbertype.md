@@ -25,4 +25,4 @@ export declare class NumberType<ResultType extends number = number> extends Base
 
 | Method                                                      | Modifiers | Description |
 | ----------------------------------------------------------- | --------- | ----------- |
-| [typeValidator(value)](./types.numbertype.typevalidator.md) |           |             |
+| [typeValidator(input)](./types.numbertype.typevalidator.md) |           |             |

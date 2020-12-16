@@ -16,7 +16,7 @@ export class ValidationError extends Error implements Failure {
      * @param failure - the failure to throw
      */
     static fromFailure(failure: Omit<Failure, 'ok'>): ValidationError {
-        return new ValidationError(reportError(failure), failure.type, failure.value, failure.details);
+        return new ValidationError(reportError(failure), failure.type, failure.input, failure.details);
     }
 
     /**
@@ -25,15 +25,15 @@ export class ValidationError extends Error implements Failure {
      * @param context - the type that is performing the validation and the original input value
      * @param fn - the function that could throw
      */
-    static try<Return>({ type, value }: Pick<Failure, 'type' | 'value'>, fn: () => Return): Result<Return> {
+    static try<Return>({ type, input }: Pick<Failure, 'type' | 'input'>, fn: () => Return): Result<Return> {
         try {
             return { ok: true, value: fn() };
         } catch (error: unknown) {
             if (error instanceof ValidationError) {
-                return { ...error, type, value };
+                return { ...error, type, input };
             }
             const message = String(isObject(error) && hasOwnProperty(error, 'message') ? error.message : error);
-            return { ok: false, type, value, details: [{ kind: 'custom message', message, type, value }] };
+            return { ok: false, type, input, details: [{ kind: 'custom message', message, type, input }] };
         }
     }
 
@@ -43,7 +43,7 @@ export class ValidationError extends Error implements Failure {
     private constructor(
         message: string,
         public type: BaseTypeImpl<unknown>,
-        public value: unknown,
+        public input: unknown,
         public details: OneOrMore<FailureDetails>,
     ) {
         super(message);

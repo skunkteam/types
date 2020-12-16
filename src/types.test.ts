@@ -227,10 +227,10 @@ testTypeImpl({
 const RestrictedUser = User.withConstraint('RestrictedUser', user => {
     const errors: FailureDetails[] = [];
     if (user.name.first === 'Bobby' && user.name.last === 'Tables') {
-        errors.push({ type: RestrictedUser, value: user.name, path: ['name'], context: 'the Bobby Tables detector' });
+        errors.push({ type: RestrictedUser, input: user.name, path: ['name'], context: 'the Bobby Tables detector' });
     }
     if (user.name.first.length === 5 && user.name.last.length === 6) {
-        errors.push({ type: RestrictedUser, value: user, kind: 'custom message', message: 'this User is suspicious' });
+        errors.push({ type: RestrictedUser, input: user, kind: 'custom message', message: 'this User is suspicious' });
     }
     return errors;
 });

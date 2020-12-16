@@ -9,11 +9,11 @@ export class StringType<ResultType extends string = string> extends BaseTypeImpl
     readonly name = 'string';
     readonly basicType!: 'string';
 
-    typeValidator(value: unknown): Result<ResultType> {
+    typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
-            value,
-            value,
-            typeof value === 'string' || { type: this, kind: 'invalid basic type', expected: 'string', value },
+            input,
+            input,
+            typeof input === 'string' || { type: this, kind: 'invalid basic type', expected: 'string', input },
         );
     }
 

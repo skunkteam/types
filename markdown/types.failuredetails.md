@@ -9,7 +9,7 @@
 ```typescript
 export declare type FailureDetails = {
     type: BaseTypeImpl<unknown>;
-    value: unknown;
+    input: unknown;
     parserInput?: unknown;
     path?: PropertyKey[];
     context?: string;
