@@ -59,7 +59,9 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         for (const [key, innerType] of Object.entries(this.props)) {
             const missingKey = !hasOwnProperty(input, key);
             if (partial) {
-                if (missingKey || (!strictMissingKeys && input[key] === undefined)) continue;
+                if (missingKey || (!strictMissingKeys && input[key] === undefined)) {
+                    continue;
+                }
             } else if (missingKey && strictMissingKeys) {
                 details.push(this.missingProperty(input, key, innerType));
                 continue;

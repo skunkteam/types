@@ -4,7 +4,7 @@ export function printValue(input: unknown, budget = 50, visited: Set<unknown> = 
     switch (typeof input) {
         case 'bigint':
         case 'boolean':
-        case 'function':
+        case 'function': // PR comment: It could be a good idea to 'truncate' `String(<function>)` as well somehow. Those can be pretty big.
         case 'number':
         case 'symbol':
         case 'undefined':
@@ -46,10 +46,13 @@ function truncateString(str: string, budget: number) {
     return str;
 }
 
+// PR comment: Nothing major, but you could accept any `Array` as `arr` and do the `oneOrMore` check in here, since both uses of this function
+//             have a ternary around them that effectively makes this function return an empty string if the `Array` is empty.
 function truncateArray<T>(arr: OneOrMore<T>, budget: number, printer: (element: T, budget: number) => string): string {
     const [first, ...rest] = arr;
     let result = printer(first, budget);
     for (const element of rest) {
+        // PR comment: I get the `Math.max()`, but it is kind of useless here. Both 0 and any negative number is smaller than 5.
         const remaining = Math.max(budget - result.length, 0);
         if (remaining > 5) {
             result += `, ${printer(element, remaining)}`;
@@ -112,7 +115,7 @@ export function castArray<T>(input: undefined | T | T[]): T[] {
 export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
     const arr = castArray(input);
     const last = arr[arr.length - 1];
-    if (!last) return '';
+    if (!last) return ''; // PR comment: probably not a problem, since we create these Arrays ourselves, but this would make `['foo', 'bar', 'baz', '']` return `''`;
     if (arr.length === 1) return map(last);
     return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
 }

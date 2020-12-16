@@ -19,6 +19,8 @@ export class ValidationError extends Error implements Failure {
         return new ValidationError(reportError(failure), failure.type, failure.input, failure.details);
     }
 
+    // PR Comment: I would have expected that the static `ValidationError.try()` would return a `ValidationError` on failure.
+    //             This will return a `Failure`, but not a `ValidationError`. Why is this?
     /**
      * Catch any errors thrown by `fn` and report the result as a {@link Result}.
      *

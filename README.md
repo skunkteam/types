@@ -298,6 +298,10 @@ union([string, boolean, object({ value: number, unit: string })]).check({});
 //   • disregarded 2 union-subtypes that do not accept an object
 ```
 
+### Generic Types
+
+<!-- PR comment: TODO -->
+
 ### Parsers
 
 Validation is most likely used to validate incoming data / messages. Sometimes this data looks a lot like your internal type, but is slightly off. For example, maybe, the input has strings instead of numbers, or a "yes"/"no" instead of booleans. In those cases you can "prepend" a parsing step to your validator. For builtin types the most common conversions are available using the [`.autoCast`](markdown/types.basetypeimpl.autocast.md) feature.

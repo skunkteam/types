@@ -42,6 +42,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
         checkOverlap(types);
     }
 
+    // PR comment: 'Smarter'? To be able to support overlapping properties?
     // TODO: Smarter?
     readonly props = Object.assign({}, ...this.types.map(type => type.props)) as PropertiesOfTypeTuple<Types>;
     // TODO: Smarter?
@@ -131,6 +132,7 @@ function combinedName(types: BaseObjectLikeTypeImpl<unknown>[]) {
     return defaultObjectRep(collectedProps);
 }
 
+// PR comment: Impressive! Thnx for the comments! Would have been difficult otherwise!
 export type IntersectionOfTypeTuple<Tuple extends TypeLink<unknown>[]> = IntersectionOfTypeUnion<Tuple[number]>;
 export type IntersectionOfTypeUnion<Union extends TypeLink<unknown>> = (
     // v--- always matches, but will distribute a union over the the first leg of the ternary expression

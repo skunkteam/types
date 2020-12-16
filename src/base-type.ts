@@ -142,11 +142,10 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     }
 
     /**
-     * Asserts that a value conforms to this Type and returns the input as is if it does.
+     * Asserts that a value conforms to this Type and returns the input as is, if it does.
      *
      * @remarks
-     * When given a value that does
-     * not conform to the Type, throws an exception.
+     * When given a value that does not conform to the Type, throws an exception.
      *
      * @remarks
      * Note that this does not invoke the parser (including the auto-caster). Use {@link BaseTypeImpl.construct}
@@ -163,9 +162,6 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      *
      * @remarks
      * When given a value that either cannot be parsed by the optional parser or does not conform to the Type, throws an exception.
-     *
-     * @remarks
-     * Note that this does not invoke the parser (including the auto-caster). Use {@link BaseTypeImpl.construct}
      *
      * @param input - the input value to parse and validate
      */

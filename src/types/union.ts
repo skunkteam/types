@@ -81,7 +81,9 @@ function analyzePropsInfo<Types extends OneOrMore<BaseTypeImpl<unknown> | BaseOb
 
 function analyzePossibleDiscriminators(types: Array<BaseTypeImpl<unknown> | BaseObjectLikeTypeImpl<unknown>>) {
     let found: Record<string, { path: string[]; values: LiteralValue[] }> | undefined;
+    // Generate the intersection (based on path) of all 'possibleDiscriminators' in all object like types in `types`
     for (const type of types) {
+        // All objects types have 'possibleDiscriminators' (even if it is empty)
         if ('possibleDiscriminators' in type) {
             const pds: typeof found = {};
             for (const d of type.possibleDiscriminators) {
