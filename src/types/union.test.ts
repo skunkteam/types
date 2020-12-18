@@ -117,9 +117,9 @@ testTypeImpl({
                 'error in [NetworkState]: failed every element in union:',
                 '  • error in [NetworkLoadingState]: missing property <state> ["loading"], got: {}',
                 '  • encountered multiple errors in [NetworkFailedState]:',
-                '    ‣ missing properties <state> ["failed"], <code> [number], got: {}',
+                '    ‣ missing properties <state> ["failed"] and <code> [number], got: {}',
                 '  • encountered multiple errors in [NetworkSuccessState]:',
-                '    ‣ missing properties <state> ["success"], <response> [Response], got: {}',
+                '    ‣ missing properties <state> ["success"] and <response> [Response], got: {}',
             ],
         ],
         [

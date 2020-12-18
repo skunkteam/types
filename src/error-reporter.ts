@@ -123,9 +123,11 @@ function prependWithTypeName(detail: FailureDetails) {
 }
 
 function missingPropertyMessage(details: OneOrMore<FailureDetails & { kind: 'missing property' }>) {
-    return `missing propert${details.length === 1 ? 'y' : 'ies'} ${details
-        .map(d => `<${printKey(d.property)}> [${d.type.name}]`)
-        .join(', ')}, got: ${printInputValue(details[0])}`;
+    return `missing ${plural(details, 'property', 'properties')} ${humanList(
+        details,
+        'and',
+        d => `<${printKey(d.property)}> [${d.type.name}]`,
+    )}, got: ${printInputValue(details[0])}`;
 }
 
 function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number): string {

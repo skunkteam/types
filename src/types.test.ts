@@ -129,7 +129,7 @@ testTypeImpl({
             [
                 'encountered multiple errors in [User]:',
                 '',
-                '- missing properties <name> [{ first: SmallString, last: LastNameType }], <shoeSize> [int], got: {}',
+                '- missing properties <name> [{ first: SmallString, last: LastNameType }] and <shoeSize> [int], got: {}',
             ],
         ],
         [
@@ -139,7 +139,7 @@ testTypeImpl({
                 '',
                 '- missing property <shoeSize> [int], got: { name: {} }',
                 '',
-                '- at <name>: missing properties <first> [SmallString], <last> [LastNameType], got: {}',
+                '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
             ],
         ],
         [
@@ -147,7 +147,7 @@ testTypeImpl({
             [
                 'encountered multiple errors in [User]:',
                 '',
-                '- at <name>: missing properties <first> [SmallString], <last> [LastNameType], got: {}',
+                '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
             ],
         ],
         [
@@ -203,7 +203,7 @@ testTypeImpl({
             [
                 'encountered multiple errors in [Partial<User>]:',
                 '',
-                '- at <name>: missing properties <first> [SmallString], <last> [LastNameType], got: {}',
+                '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
             ],
         ],
         [
