@@ -17,10 +17,26 @@ testTypeImpl({
         [{ force: 'field' }, 'error in [{ force?: boolean }] at <force>: expected a boolean, got a string ("field")'],
         [
             { force: { prevent: 'too large error messages by truncating smartly and beautifully' } },
-            'error in [{ force?: boolean }] at <force>: expected a boolean, got an object ({ prevent: "too large error me .. ly and beautifully" })',
+            'error in [{ force?: boolean }] at <force>: expected a boolean, got an object ({ prevent: "too large err .. d beautifully" })',
         ],
     ],
 });
+
+testTypeImpl({
+    name: '{ really?: boolean.autoCast, amounts?: { begin: number.autoCast, end: number.autoCast } }',
+    type: partial({ really: boolean, amounts: object({ begin: number, end: number }) }).autoCastAll,
+    basicType: 'object',
+    validValues: [{}, { really: true }, { really: false, amounts: { begin: 123, end: -456 } }, { amounts: { begin: 123, end: -456 } }],
+    validConversions: [
+        [{}, {}],
+        [
+            { really: 1, amounts: { begin: '123.456', end: BigInt(789) } },
+            { really: true, amounts: { begin: 123.456, end: 789 } },
+        ],
+    ],
+});
+
+testTypeImpl({ name: 'CustomNamed.autoCastAll', type: object('CustomNamed', { prop: string }).autoCastAll });
 
 const specialStringOrUndefined = string.or(undefinedType).withParser(i => i || '<empty>');
 testTypeImpl({

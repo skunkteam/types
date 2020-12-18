@@ -80,6 +80,20 @@ testTypeImpl({
     invalidConversions: [[1, 'error in [Array<number.autoCast>]: expected an array, got a number (1)']],
 });
 
+testTypeImpl({
+    name: 'Array<number.autoCast>.autoCast',
+    type: array(number).autoCastAll,
+    basicType: 'array',
+    // wrap arrays inside extra array because of the use of jest.each in testTypeImpl
+    validValues: [[[1, 2, 3]], [[]]],
+    validConversions: [['1', [1]]],
+});
+
+testTypeImpl({
+    name: '(custom name).autoCast',
+    type: array('custom name', number).autoCastAll,
+});
+
 testTypes(() => {
     type MyArray = The<typeof MyArray>;
     const MyArray = array(object({ a: string, b: number }));

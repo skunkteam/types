@@ -15,9 +15,11 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
     // (undocumented)
     readonly elementType: ElementType;
     // (undocumented)
+    readonly isDefaultName: boolean;
+    // (undocumented)
     readonly name: string;
     // (undocumented)
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 }
 
 // @public
@@ -43,11 +45,13 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     andThen<Return, RestArgs extends unknown[]>(fn: (value: ResultType, ...restArgs: RestArgs) => Return): (input: unknown, ...restArgs: RestArgs) => Return;
     assert(input: unknown): asserts input is ResultType;
     get autoCast(): this;
-    protected autoCaster(value: unknown): unknown;
+    get autoCastAll(): this;
+    protected autoCaster?(this: this, value: unknown): unknown;
     abstract readonly basicType: BasicType | 'mixed';
     check(input: unknown): ResultType;
     construct(input: unknown): ResultType;
-    protected createAutoCastType(): this;
+    // (undocumented)
+    protected createAutoCastAllType(): this;
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
     extendWith<E>(factory: (type: this) => E): this & E;
@@ -68,20 +72,10 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
 export type BasicType = 'string' | 'number' | 'bigint' | 'boolean' | 'function' | 'object' | 'array' | 'symbol' | 'undefined' | 'null';
 
 // @public
-export const boolean: TypeImpl<BooleanType>;
+export const boolean: Type<boolean>;
 
 // @public (undocumented)
 export function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure;
-
-// @public
-export class BooleanType<ResultType extends boolean = boolean> extends BaseTypeImpl<ResultType> {
-    // (undocumented)
-    readonly basicType: 'boolean';
-    // (undocumented)
-    readonly name = "boolean";
-    // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
-}
 
 // @public
 export type Branded<T, BrandName extends string> = T extends WithBrands<infer Base, infer ExistingBrands> ? WithBrands<Base, BrandName | ExistingBrands> : WithBrands<T, BrandName>;
@@ -161,7 +155,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     readonly propsInfo: PropertiesInfo<Props>;
     toPartial(name?: string): PartialType<Props>;
     // (undocumented)
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
     withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<IntersectionType<[this, PartialType<PartialProps>]>>;
 }
 
@@ -204,7 +198,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     // (undocumented)
     readonly types: Types;
     // (undocumented)
-    typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>>;
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>>;
 }
 
 // @public
@@ -227,7 +221,7 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
     // (undocumented)
     translate(input: unknown): T[keyof T];
     // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
+    protected typeValidator(input: unknown): Result<ResultType>;
 }
 
 // @public (undocumented)
@@ -237,15 +231,13 @@ export function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<
 export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType> {
     constructor(value: ResultType);
     // (undocumented)
-    protected autoCaster(input: unknown): LiteralValue | typeof autoCastFailure;
-    // (undocumented)
     readonly basicType: BasicType;
     // (undocumented)
     readonly enumerableLiteralDomain: ResultType[];
     // (undocumented)
     readonly name: string;
     // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
+    protected typeValidator(input: unknown): Result<ResultType>;
     // (undocumented)
     readonly value: ResultType;
 }
@@ -262,27 +254,13 @@ export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? {
 export const nullType: TypeImpl<LiteralType<null>>;
 
 // @public (undocumented)
-export const number: TypeImpl<NumberType>;
+export const number: Type<number>;
 
 // @public (undocumented)
 export function numberAutoCaster(input: unknown): number | typeof autoCastFailure;
 
 // @public
-export class NumberType<ResultType extends number = number> extends BaseTypeImpl<ResultType> {
-    // (undocumented)
-    readonly basicType: 'number';
-    // (undocumented)
-    readonly name = "number";
-    // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
-}
-
-// @public
-function object<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]): FullType<Props>;
-
-export { object }
-
-export { object as type }
+export function object<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]): FullType<Props>;
 
 // @public (undocumented)
 export type ObjectUnionToIntersection<Union> = (Union extends unknown ? (k: Union) => void : never) extends (k: infer Intersection) => void ? MergeIntersection<Intersection> : never;
@@ -295,6 +273,9 @@ export function partial<Props extends Properties>(...args: [props: Props] | [nam
 
 // @public (undocumented)
 export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
+
+// @public (undocumented)
+export function pattern<BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: string | false): Type<Branded<string, BrandName>>;
 
 // @public
 export type Properties = Record<string, Type<unknown>>;
@@ -327,7 +308,7 @@ export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType exten
     // (undocumented)
     readonly strict: boolean;
     // (undocumented)
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
     // (undocumented)
     readonly valueType: ValueTypeImpl;
 }
@@ -339,19 +320,20 @@ export function reportError(root: Omit<Failure, 'ok'>, level?: number): string;
 export type Result<T> = Success<T> | Failure;
 
 // @public
-export const string: TypeImpl<StringType>;
+export class SimpleType<ResultType> extends BaseTypeImpl<ResultType> {
+    // (undocumented)
+    readonly basicType: BasicType | 'mixed';
+    static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (type: SimpleType<ResultType>, input: unknown, options: ValidationOptions) => ValidationResult, options?: Pick<BaseTypeImpl<ResultType>, 'enumerableLiteralDomain'> & {
+        autoCaster: BaseTypeImpl<ResultType>['autoCaster'];
+    }): Type<ResultType>;
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
+}
 
 // @public
-export class StringType<ResultType extends string = string> extends BaseTypeImpl<ResultType> {
-    // (undocumented)
-    readonly basicType: 'string';
-    // (undocumented)
-    readonly name = "string";
-    // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
-    // (undocumented)
-    withRegexpConstraint<BrandName extends string>(name: BrandName, regExp: RegExp): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
-}
+export const string: Type<string>;
 
 // @public
 export interface Success<T> {
@@ -422,47 +404,17 @@ export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultTyp
     // (undocumented)
     readonly types: Types;
     // (undocumented)
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 }
 
 // @public
-export const unknown: TypeImpl<UnknownType>;
+export const unknown: Type<unknown>;
 
 // @public
-export const unknownArray: TypeImpl<UnknownArrayType>;
+export const unknownArray: Type<unknown[]>;
 
 // @public
-export class UnknownArrayType<ResultType extends unknown[] = unknown[]> extends BaseTypeImpl<ResultType> {
-    // (undocumented)
-    readonly basicType: 'array';
-    // (undocumented)
-    readonly name = "unknown[]";
-    // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
-}
-
-// @public
-export const unknownRecord: TypeImpl<UnknownRecordType>;
-
-// @public
-export class UnknownRecordType<ResultType extends Record<string, unknown> = Record<string, unknown>> extends BaseTypeImpl<ResultType> {
-    // (undocumented)
-    readonly basicType: 'object';
-    // (undocumented)
-    readonly name = "Record<string, unknown>";
-    // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
-}
-
-// @public
-export class UnknownType<ResultType = unknown> extends BaseTypeImpl<ResultType> {
-    // (undocumented)
-    readonly basicType: 'mixed';
-    // (undocumented)
-    readonly name = "unknown";
-    // (undocumented)
-    typeValidator(input: unknown): Result<ResultType>;
-}
+export const unknownRecord: Type<Record<string, unknown>>;
 
 // @public
 export class ValidationError extends Error implements Failure {

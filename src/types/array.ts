@@ -7,12 +7,16 @@ import { castArray, decodeOptionalName, define, getDetails, isFailure, isValidId
  */
 export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType> {
     readonly basicType!: 'array';
+    readonly isDefaultName: boolean;
+    readonly name: string;
 
-    constructor(readonly elementType: ElementType, readonly name = defaultName(elementType)) {
+    constructor(readonly elementType: ElementType, name?: string) {
         super();
+        this.isDefaultName = !name;
+        this.name = name || defaultName(elementType);
     }
 
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const baseFailure = { type: this, input } as const;
         if (!Array.isArray(input)) {
             return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'array' });
@@ -33,6 +37,12 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
 }
 define(ArrayType, 'autoCaster', castArray);
 define(ArrayType, 'basicType', 'array');
+
+// Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
+// up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
+define(ArrayType, 'createAutoCastAllType', function (this: ArrayType<BaseTypeImpl<any>, any, any[]>) {
+    return createType(new ArrayType(this.elementType.autoCastAll, this.isDefaultName ? undefined : this.name).autoCast);
+});
 
 /**
  * Create a type that checks whether the input is an array and all elements conform to the given `elementType`.

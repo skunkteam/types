@@ -16,6 +16,7 @@ import {
     decodeOptionalName,
     defaultObjectRep,
     define,
+    extensionName,
     getDetails,
     humanList,
     isFailure,
@@ -42,14 +43,13 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
         checkOverlap(types);
     }
 
-    // TODO: Smarter?
+    // TODO: Support overlapping properties
     readonly props = Object.assign({}, ...this.types.map(type => type.props)) as PropertiesOfTypeTuple<Types>;
-    // TODO: Smarter?
     readonly propsInfo = Object.assign({}, ...this.types.map(type => type.propsInfo)) as PropertiesInfo<PropertiesOfTypeTuple<Types>>;
     readonly combinedName = combinedName(this.types);
     readonly possibleDiscriminators: Array<{ path: string[]; values: LiteralValue[] }> = this.types.flatMap(t => t.possibleDiscriminators);
 
-    typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>> {
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>> {
         if (!isObject(input)) {
             return this.createResult(input, undefined, { type: this, input, kind: 'invalid basic type', expected: 'object' });
         }
@@ -68,6 +68,13 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     }
 }
 define(IntersectionType, 'basicType', 'object');
+
+// Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
+// up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
+define(IntersectionType, 'createAutoCastAllType', function (this: IntersectionType<OneOrMore<BaseObjectLikeTypeImpl<unknown>>>) {
+    const types = this.types.map(t => t.autoCastAll) as OneOrMore<BaseObjectLikeTypeImpl<unknown>>;
+    return createType(new IntersectionType(types, extensionName(this, 'autoCastAll')));
+});
 
 function checkBasicTypes(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
     const nonObjectTypes = types.filter(t => t.basicType !== 'object');

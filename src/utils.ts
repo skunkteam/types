@@ -2,13 +2,15 @@ import type { BasicType, Failure, FailureDetails, OneOrMore, PropertiesInfo, Res
 
 export function printValue(input: unknown, budget = 50, visited: Set<unknown> = new Set()): string {
     switch (typeof input) {
-        case 'bigint':
         case 'boolean':
-        case 'function':
         case 'number':
-        case 'symbol':
         case 'undefined':
-            return String(input);
+        case 'bigint':
+            return truncateString(String(input), budget);
+        case 'symbol':
+            return input.description ? `[Symbol: ${truncateString(input.description, budget - 10)}]` : '[Symbol]';
+        case 'function':
+            return `[Function: ${truncateString(input.name, budget - 12)}]`;
         case 'string':
             return truncateString(JSON.stringify(input), budget);
         case 'object':
@@ -27,11 +29,10 @@ export function printValue(input: unknown, budget = 50, visited: Set<unknown> = 
             if (!input.toString || (input.toString === Object.prototype.toString && isPlainObject(input))) {
                 const entries = Object.entries(input);
                 return isOneOrMore(entries)
-                    ? `{ ${truncateArray(
-                          entries,
-                          budget - 4,
-                          ([key, value], remaining) => `${printKey(key)}: ${printValue(value, remaining, visited)}`,
-                      )} }`
+                    ? `{ ${truncateArray(entries, budget - 4, ([key, value], remaining) => {
+                          const printedKey = printKey(key);
+                          return `${printedKey}: ${printValue(value, remaining - printedKey.length - 2, visited)}`;
+                      })} }`
                     : '{}';
             }
             return truncateString(String(input), budget);
@@ -39,22 +40,25 @@ export function printValue(input: unknown, budget = 50, visited: Set<unknown> = 
 }
 
 function truncateString(str: string, budget: number) {
-    if (str.length > 10 && str.length > budget) {
-        const pieceSize = Math.max(Math.floor(budget / 2) - 4, 0);
+    if (str.length > 6 && str.length > budget) {
+        const pieceSize = Math.max(Math.floor(budget / 2) - 4, 1);
         return `${str.slice(0, pieceSize)} .. ${str.slice(-pieceSize)}`;
     }
     return str;
 }
 
 function truncateArray<T>(arr: OneOrMore<T>, budget: number, printer: (element: T, budget: number) => string): string {
+    if (budget <= 0) {
+        return '..';
+    }
     const [first, ...rest] = arr;
     let result = printer(first, budget);
     for (const element of rest) {
-        const remaining = Math.max(budget - result.length, 0);
+        const remaining = budget - result.length;
         if (remaining > 5) {
             result += `, ${printer(element, remaining)}`;
         } else {
-            result += ', .. ';
+            result += ', ..';
             break;
         }
     }
@@ -112,7 +116,7 @@ export function castArray<T>(input: undefined | T | T[]): T[] {
 export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
     const arr = castArray(input);
     const last = arr[arr.length - 1];
-    if (!last) return '';
+    if (last === undefined) return '';
     if (arr.length === 1) return map(last);
     return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
 }
@@ -242,6 +246,10 @@ export function transpose<T extends Record<string, string>>(obj: T): Transposed<
 
 export function bracketsIfNeeded(name: string, allowedSeparator?: '|' | '&'): string {
     return isValidIdentifier(name) || evalBrackets(new PeekableIterator(name), allowedSeparator) ? name : `(${name})`;
+}
+
+export function extensionName(obj: { name: string; isDefaultName: boolean }, extension: string): string | undefined {
+    return obj.isDefaultName ? undefined : `${bracketsIfNeeded(obj.name)}.${extension}`;
 }
 
 class PeekableIterator<T> {

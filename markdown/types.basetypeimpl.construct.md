@@ -24,4 +24,4 @@ ResultType
 
 ## Remarks
 
-Note that this does not invoke the parser (including the auto-caster). Use [BaseTypeImpl.construct()](./types.basetypeimpl.construct.md)
+When given a value that either cannot be parsed by the optional parser or does not conform to the Type, throws an exception.

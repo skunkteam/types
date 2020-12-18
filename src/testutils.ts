@@ -1,18 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
 import type { BasicType, Type } from './interfaces';
-import {
-    BooleanType,
-    InterfaceType,
-    IntersectionType,
-    KeyofType,
-    NumberType,
-    RecordType,
-    StringType,
-    UnknownArrayType,
-    UnknownRecordType,
-} from './types';
-import { ArrayType } from './types/array';
 import { an, basicType, printValue } from './utils';
 import { ValidationError } from './validation-error';
 
@@ -96,19 +84,7 @@ export function defaultMessage(type: Type<any> | string, value: unknown, baseTyp
 export function basicTypeMessage(type: Type<any> | string, value: unknown, baseType?: Type<any>): string {
     const name = typeof type === 'string' ? type : type.name;
     const ctx = baseType ? 'base type of ' : '';
-    const expected = an(
-        type instanceof InterfaceType || type instanceof UnknownRecordType || type instanceof IntersectionType || type instanceof RecordType
-            ? 'object'
-            : type instanceof ArrayType || type instanceof UnknownArrayType
-            ? 'array'
-            : type instanceof NumberType
-            ? 'number'
-            : type instanceof StringType || type instanceof KeyofType
-            ? 'string'
-            : type instanceof BooleanType
-            ? 'boolean'
-            : type.constructor.name,
-    );
+    const expected = an(typeof type === 'string' ? type : type.basicType);
     const bt = basicType(value);
     const v = printValue(value);
     return `error in ${ctx}[${name}]: expected ${expected}, got ${an(bt)}${bt !== v ? ` (${v})` : ''}`;

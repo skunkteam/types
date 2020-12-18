@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>>;
+protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>>;
 ```
 
 ## Parameters

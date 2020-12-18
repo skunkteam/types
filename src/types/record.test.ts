@@ -79,6 +79,12 @@ testTypeImpl({
     ],
 });
 
+testTypeImpl({
+    name: 'IntRecord.autoCastAll',
+    type: IntRecord.autoCastAll,
+    validConversions: [[{ 1: 1 }, { 1: '1' }]],
+});
+
 type NumberLiteralUnionRecord = The<typeof NumberLiteralUnionRecord>;
 const NumberLiteralUnionRecord = record('NumberLiteralUnionRecord', union([literal(42), literal(3.14)]), string);
 testTypeImpl({
@@ -92,7 +98,7 @@ testTypeImpl({
             [
                 'encountered multiple errors in [NumberLiteralUnionRecord]:',
                 '',
-                '- missing properties <"42"> [string], <"3.14"> [string], got: { "123": "not ok", "": "not ok" }',
+                '- missing properties <"42"> [string] and <"3.14"> [string], got: { "123": "not ok", "": "not ok" }',
                 '',
                 '- key <"123"> is invalid: in subset of union: expected one of the literals 42 or 3.14, got: 123',
                 '',
@@ -115,7 +121,7 @@ testTypeImpl({
             [
                 'encountered multiple errors in [StrictKeyofRecord]:',
                 '',
-                '- missing properties <one> ["mississippi"], <two> ["mississippi"], got: {}',
+                '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}',
             ],
         ],
         [{ one: 'mississippi' }, 'error in [StrictKeyofRecord]: missing property <two> ["mississippi"], got: { one: "mississippi" }'],
@@ -148,7 +154,7 @@ testTypeImpl({
             [
                 'encountered multiple errors in [NonStrictKeyofRecord]:',
                 '',
-                '- missing properties <one> ["mississippi"], <two> ["mississippi"], got: {}',
+                '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}',
             ],
         ],
         [{ one: 'mississippi' }, 'error in [NonStrictKeyofRecord]: missing property <two> ["mississippi"], got: { one: "mississippi" }'],

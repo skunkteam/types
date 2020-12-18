@@ -9,5 +9,5 @@ Built-in validator for boolean-values.
 <b>Signature:</b>
 
 ```typescript
-boolean: TypeImpl<BooleanType>
+boolean: Type<boolean>
 ```

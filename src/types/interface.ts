@@ -11,7 +11,7 @@ import type {
     ValidationOptions,
     Writable,
 } from '../interfaces';
-import { decodeOptionalName, defaultObjectRep, define, hasOwnProperty, isObject, prependPathToDetails } from '../utils';
+import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, isObject, prependPathToDetails } from '../utils';
 import { intersection, IntersectionType } from './intersection';
 import { LiteralType } from './literal';
 
@@ -48,7 +48,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     readonly propsInfo = toPropsInfo(this.props, this.options.partial);
     readonly possibleDiscriminators = this.options.partial ? [] : getPossibleDiscriminators(this.props);
 
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const { strictMissingKeys, partial } = this.options;
         const baseFailure = { type: this, input } as const;
         if (!isObject(input)) {
@@ -59,16 +59,18 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         for (const [key, innerType] of Object.entries(this.props)) {
             const missingKey = !hasOwnProperty(input, key);
             if (partial) {
-                if (missingKey || (!strictMissingKeys && input[key] === undefined)) continue;
+                if (missingKey || (!strictMissingKeys && input[key] === undefined)) {
+                    continue;
+                }
             } else if (missingKey && strictMissingKeys) {
-                details.push(this.missingProperty(input, key, innerType));
+                details.push(missingProperty(input, key, innerType));
                 continue;
             }
             const innerResult = innerType.validate(input[key], options);
             if (innerResult.ok) {
                 constructResult[key] = innerResult.value;
             } else if (missingKey) {
-                details.push(this.missingProperty(input, key, innerType));
+                details.push(missingProperty(input, key, innerType));
             } else {
                 details.push(...prependPathToDetails(innerResult, key));
             }
@@ -88,12 +90,23 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
         const [name = this.isDefaultName ? undefined : this.name, props] = decodeOptionalName<[PartialProps]>(args);
         return name ? intersection(name, [this, partial(props)]) : intersection([this, partial(props)]);
     }
-
-    private missingProperty(value: unknown, property: string, type: BaseTypeImpl<unknown>): FailureDetails {
-        return { kind: 'missing property', input: value, property, type };
-    }
 }
 define(InterfaceType, 'basicType', 'object');
+
+// Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
+// up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
+define(InterfaceType, 'createAutoCastAllType', function (this: InterfaceType<Properties, any>) {
+    const name = extensionName(this, 'autoCastAll');
+    const props: Properties = {};
+    for (const [key, value] of Object.entries(this.props)) {
+        props[key] = value.autoCastAll;
+    }
+    return createType(new InterfaceType(props, { ...this.options, name }).autoCast);
+});
+
+function missingProperty(input: unknown, property: string, type: BaseTypeImpl<unknown>): FailureDetails {
+    return { kind: 'missing property', input, property, type };
+}
 
 export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
 

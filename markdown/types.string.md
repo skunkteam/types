@@ -9,9 +9,5 @@ Built-in validator for string-values.
 <b>Signature:</b>
 
 ```typescript
-string: TypeImpl<StringType>
+string: Type<string>
 ```
-
-## Remarks
-
-Can be sub-typed with [BaseTypeImpl.withConstraint()](./types.basetypeimpl.withconstraint.md)<!-- -->, and with the convenience method [StringType.withRegexpConstraint()](./types.stringtype.withregexpconstraint.md)<!-- -->.

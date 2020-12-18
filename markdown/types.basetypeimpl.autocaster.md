@@ -9,13 +9,14 @@ The logic that is used in the autocasting version of the current type.
 <b>Signature:</b>
 
 ```typescript
-protected autoCaster(value: unknown): unknown;
+protected autoCaster?(this: this, value: unknown): unknown;
 ```
 
 ## Parameters
 
 | Parameter | Type    | Description                                                |
 | --------- | ------- | ---------------------------------------------------------- |
+| this      | this    |                                                            |
 | value     | unknown | the input value to try to autocast to the appropriate form |
 
 <b>Returns:</b>

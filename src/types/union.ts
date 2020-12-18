@@ -10,7 +10,7 @@ import type {
     TypeOf,
     ValidationOptions,
 } from '../interfaces';
-import { bracketsIfNeeded, decodeOptionalName, printPath } from '../utils';
+import { bracketsIfNeeded, decodeOptionalName, define, extensionName, printPath } from '../utils';
 
 /**
  * The implementation behind types created with {@link union} and {@link BaseTypeImpl.or}.
@@ -35,7 +35,7 @@ export class UnionType<
     readonly collapsedTypes = this.types.flatMap(type => (type instanceof UnionType ? (type.types as Types) : type)) as Types;
     readonly enumerableLiteralDomain = analyzeEnumerableLiteralDomain(this.types);
 
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const failures = [];
         for (const type of this.collapsedTypes) {
             const result = type.validate(input, options);
@@ -47,6 +47,13 @@ export class UnionType<
         return this.createResult(input, undefined, { type: this, input, kind: 'union', failures });
     }
 }
+
+// Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
+// up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
+define(UnionType, 'createAutoCastAllType', function (this: UnionType<OneOrMore<BaseTypeImpl<unknown>>, any>) {
+    const types = this.types.map(t => t.autoCastAll) as OneOrMore<BaseTypeImpl<unknown>>;
+    return createType(new UnionType(types, extensionName(this, 'autoCastAll')));
+});
 
 export function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(
     ...args: [name: string, types: Types] | [types: Types]
@@ -81,7 +88,9 @@ function analyzePropsInfo<Types extends OneOrMore<BaseTypeImpl<unknown> | BaseOb
 
 function analyzePossibleDiscriminators(types: Array<BaseTypeImpl<unknown> | BaseObjectLikeTypeImpl<unknown>>) {
     let found: Record<string, { path: string[]; values: LiteralValue[] }> | undefined;
+    // Generate the intersection (based on path) of all 'possibleDiscriminators' in all object like types in `types`
     for (const type of types) {
+        // All object-types have 'possibleDiscriminators' (even if it is empty)
         if ('possibleDiscriminators' in type) {
             const pds: typeof found = {};
             for (const d of type.possibleDiscriminators) {

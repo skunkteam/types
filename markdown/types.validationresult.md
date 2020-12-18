@@ -13,3 +13,7 @@ export declare type ValidationResult = boolean | string | string[] | FailureDeta
 ```
 
 <b>References:</b> [FailureDetails](./types.failuredetails.md)
+
+## Remarks
+
+The validation is considered a success if the result is `true` or an empty array, anything else is considered to be a failure.

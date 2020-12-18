@@ -9,7 +9,7 @@ Built-in validator that accepts all objects (`null` is not accepted).
 <b>Signature:</b>
 
 ```typescript
-unknownRecord: TypeImpl<UnknownRecordType>
+unknownRecord: Type<Record<string, unknown>>
 ```
 
 ## Remarks

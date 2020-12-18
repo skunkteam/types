@@ -12,6 +12,9 @@ export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
 
 /**
  * The possible return values inside validation and constraint functions.
+ *
+ * @remarks
+ * The validation is considered a success if the result is `true` or an empty array, anything else is considered to be a failure.
  */
 export type ValidationResult = boolean | string | string[] | FailureDetails | FailureDetails[];
 

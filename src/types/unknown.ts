@@ -1,50 +1,6 @@
-import { BaseTypeImpl, createType } from '../base-type';
-import type { Result, TypeImpl } from '../interfaces';
-import { castArray, define, isObject } from '../utils';
-
-/**
- * The implementation behind all sub-types of {@link unknown}.
- */
-export class UnknownType<ResultType = unknown> extends BaseTypeImpl<ResultType> {
-    readonly name = 'unknown';
-    readonly basicType!: 'mixed';
-
-    typeValidator(input: unknown): Result<ResultType> {
-        return this.createResult(input, input, true);
-    }
-}
-define(UnknownType, 'basicType', 'mixed');
-
-/**
- * The implementation behind all sub-types of {@link unknownRecord}.
- */
-export class UnknownRecordType<ResultType extends Record<string, unknown> = Record<string, unknown>> extends BaseTypeImpl<ResultType> {
-    readonly name = 'Record<string, unknown>';
-    readonly basicType!: 'object';
-
-    typeValidator(input: unknown): Result<ResultType> {
-        return this.createResult(input, input, isObject(input) || { type: this, input, kind: 'invalid basic type', expected: 'object' });
-    }
-}
-define(UnknownRecordType, 'basicType', 'object');
-
-/**
- * The implementation behind all sub-types of {@link unknownArray}.
- */
-export class UnknownArrayType<ResultType extends unknown[] = unknown[]> extends BaseTypeImpl<ResultType> {
-    readonly name = 'unknown[]';
-    readonly basicType!: 'array';
-
-    typeValidator(input: unknown): Result<ResultType> {
-        return this.createResult(
-            input,
-            input,
-            Array.isArray(input) || { type: this, input, kind: 'invalid basic type', expected: 'array' },
-        );
-    }
-}
-define(UnknownArrayType, 'autoCaster', castArray);
-define(UnknownArrayType, 'basicType', 'array');
+import type { Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
+import { castArray, isObject } from '../utils';
 
 /**
  * Built-in validator that accepts all values.
@@ -52,7 +8,7 @@ define(UnknownArrayType, 'basicType', 'array');
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknown: TypeImpl<UnknownType> = createType(new UnknownType());
+export const unknown: Type<unknown> = SimpleType.create('unknown', 'mixed', () => true);
 
 /**
  * Built-in validator that accepts all objects (`null` is not accepted).
@@ -60,7 +16,11 @@ export const unknown: TypeImpl<UnknownType> = createType(new UnknownType());
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknownRecord: TypeImpl<UnknownRecordType> = createType(new UnknownRecordType());
+export const unknownRecord: Type<Record<string, unknown>> = SimpleType.create(
+    'Record<string, unknown>',
+    'object',
+    (type, input) => isObject(input) || { type, input, kind: 'invalid basic type', expected: 'object' },
+);
 
 /**
  * Built-in validator that accepts all arrays.
@@ -68,4 +28,9 @@ export const unknownRecord: TypeImpl<UnknownRecordType> = createType(new Unknown
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknownArray: TypeImpl<UnknownArrayType> = createType(new UnknownArrayType());
+export const unknownArray: Type<unknown[]> = SimpleType.create(
+    'unknown[]',
+    'array',
+    (type, input) => Array.isArray(input) || { type, input, kind: 'invalid basic type', expected: 'array' },
+    { autoCaster: castArray },
+);

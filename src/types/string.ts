@@ -1,36 +1,20 @@
-import { BaseTypeImpl, createType } from '../base-type';
-import type { Branded, Result, TypeImpl } from '../interfaces';
-import { define } from '../utils';
-
-/**
- * The implementation behind all sub-types of {@link string}.
- */
-export class StringType<ResultType extends string = string> extends BaseTypeImpl<ResultType> {
-    readonly name = 'string';
-    readonly basicType!: 'string';
-
-    typeValidator(input: unknown): Result<ResultType> {
-        return this.createResult(
-            input,
-            input,
-            typeof input === 'string' || { type: this, kind: 'invalid basic type', expected: 'string', input },
-        );
-    }
-
-    withRegexpConstraint<BrandName extends string>(
-        name: BrandName,
-        regExp: RegExp,
-    ): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>> {
-        return this.withConstraint(name, s => regExp.test(s));
-    }
-}
-define(StringType, 'autoCaster', String);
-define(StringType, 'basicType', 'string');
+import type { Branded, Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
 
 /**
  * Built-in validator for string-values.
- *
- * @remarks
- * Can be sub-typed with {@link BaseTypeImpl.withConstraint}, and with the convenience method {@link StringType.withRegexpConstraint}.
  */
-export const string: TypeImpl<StringType> = createType(new StringType());
+export const string: Type<string> = SimpleType.create(
+    'string',
+    'string',
+    (type, input) => typeof input === 'string' || { type, kind: 'invalid basic type', expected: 'string', input },
+    { autoCaster: String },
+);
+
+export function pattern<BrandName extends string>(
+    name: BrandName,
+    regExp: RegExp,
+    customMessage: string | false = false,
+): Type<Branded<string, BrandName>> {
+    return string.withConstraint(name, s => regExp.test(s) || customMessage);
+}
