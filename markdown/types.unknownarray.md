@@ -9,7 +9,7 @@ Built-in validator that accepts all arrays.
 <b>Signature:</b>
 
 ```typescript
-unknownArray: TypeImpl<UnknownArrayType>
+unknownArray: Type<unknown[]>
 ```
 
 ## Remarks

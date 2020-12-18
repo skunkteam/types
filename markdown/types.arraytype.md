@@ -22,11 +22,12 @@ export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Elemen
 
 ## Properties
 
-| Property                                        | Modifiers | Type        | Description |
-| ----------------------------------------------- | --------- | ----------- | ----------- |
-| [basicType](./types.arraytype.basictype.md)     |           | 'array'     |             |
-| [elementType](./types.arraytype.elementtype.md) |           | ElementType |             |
-| [name](./types.arraytype.name.md)               |           | string      |             |
+| Property                                            | Modifiers | Type        | Description |
+| --------------------------------------------------- | --------- | ----------- | ----------- |
+| [basicType](./types.arraytype.basictype.md)         |           | 'array'     |             |
+| [elementType](./types.arraytype.elementtype.md)     |           | ElementType |             |
+| [isDefaultName](./types.arraytype.isdefaultname.md) |           | boolean     |             |
+| [name](./types.arraytype.name.md)                   |           | string      |             |
 
 ## Methods
 

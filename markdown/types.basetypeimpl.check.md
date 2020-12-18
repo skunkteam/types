@@ -4,7 +4,7 @@
 
 ## BaseTypeImpl.check() method
 
-Asserts that a value conforms to this Type and returns the input as is if it does.
+Asserts that a value conforms to this Type and returns the input as is, if it does.
 
 <b>Signature:</b>
 

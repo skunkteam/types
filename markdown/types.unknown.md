@@ -9,7 +9,7 @@ Built-in validator that accepts all values.
 <b>Signature:</b>
 
 ```typescript
-unknown: TypeImpl<UnknownType>
+unknown: Type<unknown>
 ```
 
 ## Remarks

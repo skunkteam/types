@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-typeValidator(input: unknown): Result<ResultType>;
+protected typeValidator(input: unknown): Result<ResultType>;
 ```
 
 ## Parameters
