@@ -56,5 +56,4 @@ export function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<
 
 export const nullType: TypeImpl<LiteralType<null>> = literal(null);
 export const undefinedType: TypeImpl<LiteralType<undefined>> = literal(undefined);
-// PR comment: do we want to support this? Because people started using `void` before `--strictNullChecks`, it is still sometimes used as `null \ undefined` instead of just `undefined`. Maybe just leave it out, to avoid confusion?
 export const voidType: TypeImpl<LiteralType<void>> = undefinedType;
