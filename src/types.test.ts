@@ -101,6 +101,7 @@ testTypeImpl({
 });
 
 /** User is a basic interface type. */
+type User = The<typeof User>;
 const User = object('User', {
     /** The name of the User, split up into a first- and last-name. */
     name: object({
@@ -172,7 +173,7 @@ testTypeImpl({
                 '',
                 '- at <name>: missing property <last> [LastNameType], got: { first: "very very long" }',
                 '',
-                '- in base type at <shoeSize>: expected a number, got a symbol (Symbol(4))',
+                '- in base type at <shoeSize>: expected a number, got a symbol ([Symbol: 4])',
                 '',
                 '- at <name.first>: your string "very very long" is too long! :-(',
             ],
@@ -415,6 +416,32 @@ testTypeImpl({
     validConversions: [[{ msg: 'a' }, { msg: 'a!' }]],
 });
 
+type MyGenericWrapper<T> = { ok: boolean; inner: T };
+function MyGenericWrapper<T>(inner: Type<T>) {
+    return object(`MyGenericWrapper<${inner.name}>`, { ok: boolean, inner });
+}
+
+testTypeImpl({
+    name: 'MyGenericWrapper<string>',
+    type: MyGenericWrapper(string),
+    basicType: 'object',
+    validValues: [{ ok: true, inner: 'string' }],
+    invalidValues: [[{ ok: false, inner: 123 }, 'error in [MyGenericWrapper<string>] at <inner>: expected a string, got a number (123)']],
+});
+
+testTypeImpl({
+    name: 'MyGenericWrapper<Partial<User>>',
+    type: MyGenericWrapper(User.toPartial()),
+    basicType: 'object',
+    validValues: [
+        { ok: true, inner: {} },
+        { ok: true, inner: { shoeSize: 4 } },
+    ],
+    invalidValues: [
+        [{ ok: false, inner: 123 }, 'error in [MyGenericWrapper<Partial<User>>] at <inner>: expected an object, got a number (123)'],
+    ],
+});
+
 // Static types tests
 
 testTypes('TypeOf', () => {
@@ -442,6 +469,15 @@ testTypes('TypeOf', () => {
     assignableTo<number>(Percentage(50));
     // @ts-expect-error number not assignable to Percentage
     assignableTo<Percentage>(123);
+
+    type WithUser = The<typeof WithUser>;
+    const WithUser = MyGenericWrapper(User);
+    assignableTo<MyGenericWrapper<User>>(WithUser({}));
+    assignableTo<WithUser>(WithUser({}));
+    assignableTo<WithUser>({ ok: true, inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: int(5) } });
+    assignableTo<MyGenericWrapper<User>>({ ok: true, inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: int(5) } });
+    assignableTo<{ ok: boolean; inner: User }>({} as MyGenericWrapper<User>);
+    assignableTo<{ ok: boolean; inner: User }>({} as WithUser);
 });
 
 testTypes('assignability of sub-brands', () => {

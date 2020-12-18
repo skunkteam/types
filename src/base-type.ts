@@ -82,23 +82,37 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * Each type implementation provides its own auto-cast rules. See builtin types for examples of auto-cast rules.
      */
     get autoCast(): this {
-        return cachedInstance(this, 'autoCast', () => this.createAutoCastType());
+        return cachedInstance(this, 'autoCast', () => {
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            const { autoCaster } = this;
+            if (!autoCaster) {
+                return this;
+            }
+            const autoCastParser = (input: unknown) => {
+                const result = autoCaster.call(this, input);
+                return this.createResult(
+                    input,
+                    result,
+                    result === autoCastFailure ? `could not autocast value: ${printValue(input)}` : true,
+                );
+            };
+            const type: this = createType(this, {
+                name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
+                typeParser: { configurable: true, value: autoCastParser },
+            });
+            return type;
+        });
     }
 
     /**
-     * Create a autocasting version of the current type using {@link BaseTypeImpl.autoCaster}.
+     * Create a recursive autocasting version of the current type.
      */
-    protected createAutoCastType(): this {
-        const autoCastParser = (value: unknown) => {
-            const result = this.autoCaster(value);
-            return this.createResult(value, result, result === autoCastFailure ? `could not autocast value: ${printValue(value)}` : true);
-        };
-        const type: this = createType(this, {
-            name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
-            typeParser: { configurable: true, value: autoCastParser },
-            autoCast: { configurable: true, get: () => type },
-        });
-        return type;
+    get autoCastAll(): this {
+        return cachedInstance(this, 'autoCastAll', () => this.createAutoCastAllType());
+    }
+
+    protected createAutoCastAllType(): this {
+        return this.autoCast;
     }
 
     /**
@@ -109,9 +123,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      *
      * @param value - the input value to try to autocast to the appropriate form
      */
-    protected autoCaster(value: unknown): unknown {
-        return value;
-    }
+    protected autoCaster?(this: this, value: unknown): unknown;
 
     /**
      * Verifies that a value conforms to this Type.

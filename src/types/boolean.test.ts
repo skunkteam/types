@@ -43,3 +43,7 @@ testTypeImpl({
         [undefined, 'error in parser of [boolean.autoCast]: could not autocast value: undefined'],
     ],
 });
+
+test('no autoCastAll', () => {
+    expect(boolean.autoCastAll).toBe(boolean.autoCast);
+});

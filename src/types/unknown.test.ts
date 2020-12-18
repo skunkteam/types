@@ -35,3 +35,8 @@ testTypeImpl({
         ...defaultUsualSuspects(unknownArray),
     ],
 });
+test('no autoCastAll', () => {
+    expect(unknown.autoCastAll).toBe(unknown.autoCast);
+    expect(unknownRecord.autoCastAll).toBe(unknownRecord.autoCast);
+    expect(unknownArray.autoCastAll).toBe(unknownArray.autoCast);
+});

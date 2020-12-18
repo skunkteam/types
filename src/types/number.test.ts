@@ -70,3 +70,6 @@ testTypeImpl({
         ['aa', 'error in parser of [NonNegativeInt]: could not autocast value: "aa"'],
     ],
 });
+test('no autoCastAll', () => {
+    expect(number.autoCastAll).toBe(number.autoCast);
+});

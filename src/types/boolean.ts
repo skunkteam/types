@@ -1,31 +1,16 @@
-import { BaseTypeImpl, createType } from '../base-type';
-import type { Result, TypeImpl } from '../interfaces';
+import type { Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
 import { autoCastFailure } from '../symbols';
-import { define } from '../utils';
-
-/**
- * The implementation behind all sub-types of {@link boolean}.
- */
-export class BooleanType<ResultType extends boolean = boolean> extends BaseTypeImpl<ResultType> {
-    readonly name = 'boolean';
-    readonly basicType!: 'boolean';
-
-    typeValidator(input: unknown): Result<ResultType> {
-        return this.createResult(
-            input,
-            input,
-            typeof input === 'boolean' || { type: this, kind: 'invalid basic type', expected: 'boolean', input },
-        );
-    }
-}
-define(BooleanType, 'autoCaster', booleanAutoCaster);
-define(BooleanType, 'basicType', 'boolean');
-define(BooleanType, 'enumerableLiteralDomain', [true, false]);
 
 /**
  * Built-in validator for boolean-values.
  */
-export const boolean: TypeImpl<BooleanType> = createType(new BooleanType());
+export const boolean: Type<boolean> = SimpleType.create(
+    'boolean',
+    'boolean',
+    (type, input) => typeof input === 'boolean' || { type, kind: 'invalid basic type', expected: 'boolean', input },
+    { autoCaster: booleanAutoCaster, enumerableLiteralDomain: [true, false] },
+);
 
 export function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure {
     switch (input) {

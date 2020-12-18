@@ -1,26 +1,13 @@
-import { BaseTypeImpl, createType } from '../base-type';
-import type { Branded, Result, The, Type, TypeImpl } from '../interfaces';
+import type { Branded, The, Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
 import { autoCastFailure } from '../symbols';
-import { define } from '../utils';
 
-/**
- * The implementation behind all sub-types of {@link number}.
- */
-export class NumberType<ResultType extends number = number> extends BaseTypeImpl<ResultType> {
-    readonly name = 'number';
-    readonly basicType!: 'number';
-
-    typeValidator(input: unknown): Result<ResultType> {
-        if (typeof input !== 'number') {
-            return this.createResult(input, undefined, { type: this, kind: 'invalid basic type', expected: 'number', input });
-        }
-        return this.createResult(input, input, !Number.isNaN(input));
-    }
-}
-define(NumberType, 'autoCaster', numberAutoCaster);
-define(NumberType, 'basicType', 'number');
-
-export const number: TypeImpl<NumberType> = createType(new NumberType());
+export const number: Type<number> = SimpleType.create(
+    'number',
+    'number',
+    (type, input) => (typeof input !== 'number' ? { type, kind: 'invalid basic type', expected: 'number', input } : !Number.isNaN(input)),
+    { autoCaster: numberAutoCaster },
+);
 
 export type int = The<typeof int>;
 export const int: Type<Branded<number, 'int'>> = number.withConstraint('int', Number.isInteger);

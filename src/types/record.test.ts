@@ -79,6 +79,12 @@ testTypeImpl({
     ],
 });
 
+testTypeImpl({
+    name: 'IntRecord.autoCastAll',
+    type: IntRecord.autoCastAll,
+    validConversions: [[{ 1: 1 }, { 1: '1' }]],
+});
+
 type NumberLiteralUnionRecord = The<typeof NumberLiteralUnionRecord>;
 const NumberLiteralUnionRecord = record('NumberLiteralUnionRecord', union([literal(42), literal(3.14)]), string);
 testTypeImpl({

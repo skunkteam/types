@@ -1,6 +1,6 @@
 import { BaseTypeImpl } from '../base-type';
 import type { The } from '../interfaces';
-import { assignableTo, testTypes } from '../testutils';
+import { assignableTo, testTypeImpl, testTypes } from '../testutils';
 import { array } from './array';
 import { boolean } from './boolean';
 import { object, partial } from './interface';
@@ -26,6 +26,19 @@ describe(intersection, () => {
             a: expect.any(BaseTypeImpl),
             b: expect.any(BaseTypeImpl),
         });
+    });
+
+    testTypeImpl({
+        name: 'NamedObject.autoCastAll & { true: true.autoCast }',
+        // stupid type, I know
+        type: intersection([object('NamedObject', { obj: literal('[object Object]') }), object({ true: literal(true) })]).autoCastAll,
+        basicType: 'object',
+        validConversions: [
+            [
+                { obj: {}, true: 1 },
+                { obj: '[object Object]', true: true },
+            ],
+        ],
     });
 
     test('complex name', () => {

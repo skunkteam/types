@@ -1,6 +1,6 @@
 import { BaseTypeImpl, createType } from '../base-type';
 import type { FailureDetails, Result, TypeImpl, ValidationOptions } from '../interfaces';
-import { decodeOptionalName, define, isObject, prependPathToDetails, printValue } from '../utils';
+import { decodeOptionalName, define, extensionName, isObject, prependPathToDetails, printValue } from '../utils';
 
 /**
  * The implementation behind types created with {@link record}.
@@ -22,7 +22,7 @@ export class RecordType<
         this.name = name || `Record<${keyType.name}, ${valueType.name}>`;
     }
 
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const baseFailure = { type: this, input } as const;
         if (!isObject(input)) {
             return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
@@ -54,6 +54,16 @@ export class RecordType<
 }
 define(RecordType, 'basicType', 'object');
 
+// Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
+// up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
+define(RecordType, 'createAutoCastAllType', function (
+    this: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<any>, any, Record<number | string, any>>,
+) {
+    const { keyType, valueType, strict } = this;
+    const name = extensionName(this, 'autoCastAll');
+    return createType(new RecordType(keyType.autoCastAll, valueType.autoCastAll, name, strict));
+});
+
 /**
  * Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document
  */
@@ -80,7 +90,7 @@ class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
     readonly name = this.innerType.name;
     readonly enumerableLiteralDomain = this.innerType.enumerableLiteralDomain && [...this.innerType.enumerableLiteralDomain].map(String);
 
-    typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const number = input === '' ? NaN : +String(input);
         if (Number.isNaN(number)) {
             return this.createResult(

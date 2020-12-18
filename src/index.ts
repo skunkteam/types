@@ -7,7 +7,7 @@
 export * from './base-type';
 export * from './error-reporter';
 export * from './interfaces';
+export * from './simple-type';
 export * from './type-guard';
 export * from './types';
-export { object as type } from './types';
 export * from './validation-error';

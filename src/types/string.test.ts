@@ -1,6 +1,6 @@
 import type { The } from '../interfaces';
 import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
-import { string } from './string';
+import { pattern, string } from './string';
 
 testTypeImpl({
     name: 'string',
@@ -11,7 +11,7 @@ testTypeImpl({
 });
 
 type ISODate = The<typeof ISODate>;
-const ISODate = string.withRegexpConstraint('ISODate', /^([12][0-9]{3})-(0[1-9]|1[0-2])-([0-3][0-9])$/);
+const ISODate = pattern('ISODate', /^([12][0-9]{3})-(0[1-9]|1[0-2])-([0-3][0-9])$/);
 testTypeImpl({
     name: 'ISODate',
     type: ISODate,
@@ -36,4 +36,7 @@ testTypeImpl({
         [123, '123'],
         [{ toString: () => 'ok' }, 'ok'],
     ],
+});
+test('no autoCastAll', () => {
+    expect(string.autoCastAll).toBe(string.autoCast);
 });

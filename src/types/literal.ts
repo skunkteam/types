@@ -1,7 +1,7 @@
 import { BaseTypeImpl, createType } from '../base-type';
 import type { BasicType, LiteralValue, Result, TypeImpl } from '../interfaces';
 import { autoCastFailure } from '../symbols';
-import { basicType, printValue } from '../utils';
+import { basicType, define, printValue } from '../utils';
 import { booleanAutoCaster } from './boolean';
 import { numberAutoCaster } from './number';
 
@@ -19,7 +19,7 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
     readonly basicType: BasicType = basicType(this.value);
     readonly enumerableLiteralDomain = [this.value];
 
-    typeValidator(input: unknown): Result<ResultType> {
+    protected typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
             input,
             input,
@@ -29,24 +29,26 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
                     : { type: this, input, kind: 'invalid literal', expected: this.value }),
         );
     }
-
-    protected autoCaster(input: unknown): LiteralValue | typeof autoCastFailure {
-        switch (this.basicType) {
-            case 'string':
-                return String(input);
-            case 'number':
-                return numberAutoCaster(input);
-            case 'boolean':
-                return booleanAutoCaster(input);
-            case 'null':
-            case 'undefined':
-                return input == null ? this.value : autoCastFailure;
-            // istanbul ignore next: not possible
-            default:
-                return autoCastFailure;
-        }
-    }
 }
+
+// Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
+// up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
+define(LiteralType, 'autoCaster', function (this: LiteralType<LiteralValue>, input: unknown) {
+    switch (this.basicType) {
+        case 'string':
+            return String(input);
+        case 'number':
+            return numberAutoCaster(input);
+        case 'boolean':
+            return booleanAutoCaster(input);
+        case 'null':
+        case 'undefined':
+            return input == null ? this.value : autoCastFailure;
+        // istanbul ignore next: not possible
+        default:
+            return autoCastFailure;
+    }
+});
 
 export function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>> {
     return createType(new LiteralType(value));

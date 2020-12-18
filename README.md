@@ -7,6 +7,7 @@ Inspired by [io-ts](https://github.com/gcanti/io-ts), but without the functional
     -   ["Simple types"](#"simple-types")
     -   [Object types](#object-types)
     -   [Unions and Intersections](#unions-and-intersections)
+    -   [Generic Types](#generic-types)
     -   [Parsers](#parsers)
 -   [Nest.js integration](#nest.js-integration)
 -   [API reference](markdown/types.md)
@@ -300,7 +301,54 @@ union([string, boolean, object({ value: number, unit: string })]).check({});
 
 ### Generic Types
 
-<!-- PR comment: TODO -->
+Generic types can be modelled as functions. This is best explained with an example.
+
+To model the following type:
+
+```typescript
+interface MyGenericWrapper<T> {
+    // Example of an ordinary interface member:
+    ok: boolean;
+    // This is the generic part:
+    inner: T;
+}
+```
+
+Create the following function:
+
+```typescript
+function MyGenericWrapper<T>(innerType: Type<T>) {
+    // The name (first parameter) is of course optional, but it can make life easier when things get more complex.
+    return object(`MyGenericWrapper<${innerType.name}>`, {
+        ok: boolean,
+        inner: innerType,
+    });
+}
+```
+
+An alias in TypeScript...
+
+```typescript
+type WrappedUser = MyGenericWrapper<User>;
+```
+
+... becomes a variable (with the necessary boilerplate) using this library:
+
+```typescript
+type WrappedUser = The<typeof WrappedUser>;
+const WrappedUser = MyGenericWrapper(User);
+```
+
+But you can also use it inline inside other combinators.
+
+```typescript
+type UserRequest = The<typeof UserRequest>;
+const UserRequest = object('UserRequest', {
+    method: Method,
+    url: Url,
+    body: MyGenericWrapper(User),
+});
+```
 
 ### Parsers
 

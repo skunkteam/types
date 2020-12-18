@@ -24,22 +24,26 @@ testTypeImpl({
 });
 
 const StrangeNumberUnion = union('StrangeNumberUnion', [
-    number.autoCast.withConstraint('LessThanMinus10', n => n < -10),
+    number.withConstraint('LessThanMinus10', n => n < -10),
     literal(0),
-    number.autoCast.withValidation(n => n > 10),
+    number.withValidation(n => n > 10),
 ]);
+
+// No autoCast feature
+expect(StrangeNumberUnion.autoCast).toBe(StrangeNumberUnion);
+
 testTypeImpl({
-    name: 'StrangeNumberUnion',
-    type: StrangeNumberUnion,
+    name: 'StrangeNumberUnion.autoCastAll',
+    type: StrangeNumberUnion.autoCastAll,
     validValues: [-11, 0, 11],
     invalidValues: [
         [
             3,
             [
-                'error in [StrangeNumberUnion]: failed every element in union:',
+                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
                 '  • expected a [LessThanMinus10], got: 3',
                 '  • expected the literal 0, got: 3',
-                '  • error in [number.autoCast]: additional validation failed',
+                '  • error in [number]: additional validation failed',
             ],
         ],
     ],
@@ -51,10 +55,10 @@ testTypeImpl({
         [
             '-5',
             [
-                'error in [StrangeNumberUnion]: failed every element in union:',
+                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
                 '  • expected a [LessThanMinus10], got: -5, parsed from: "-5"',
-                '  • error in [number.autoCast]: additional validation failed',
-                '  • disregarded 1 union-subtype that does not accept a string',
+                '  • expected the literal 0, got: -5, parsed from: "-5"',
+                '  • error in [number]: additional validation failed',
             ],
         ],
     ],
