@@ -75,7 +75,7 @@ function setPageNumber(page: The<typeof int>): void;
 // Wait, what's that awkward type? `The<typeof int>` is not something we want to
 // write every time, and definitely not something we want to expose to consumers
 // of our APIs. This is why we always combine our type-declaration with a
-// one-liner that/ creates a TypeScript type with the same name. The following is
+// one-liner that creates a TypeScript type with the same name. The following is
 // the actual declaration in this library:
 export type int = The<typeof int>;
 export const int = number.withConstraint('int', Number.isInteger);
@@ -112,7 +112,7 @@ When using the `emitDecoratorMetadata` feature of the TypeScript compiler, the c
 
 It enables libraries that perform automatic type-validation based on TypeScript typings of a method or constructor. This is done in several frameworks/libraries and can be very convenient. It is limited to classes however, because in TypeScript other types have no runtime aspect. When defining types using this library, types **do** have a runtime aspect. So This library enables the use of any type (even a regexp-validated string, an enum, etc.) as type in a decorated method and makes sure the right metadata is available at runtime for runtime validation. (see [this example of Nest.js integration](#nest.js-integration))
 
-When using types in combination with the `emitDecoratorMetadata` feature, make sure to always create a TypeScript with the same name as the runtime type-validator, as follows:
+When using types in combination with the `emitDecoratorMetadata` feature, make sure to always create a TypeScript type with the same name as the runtime type-validator, as follows:
 
 ```typescript
 type MyType = The<typeof MyType>;
@@ -186,7 +186,7 @@ User({ shoeSize: -5 });
 User({ name: { first: "my name is so incredibly long, you wouldn't believe it" }, shoeSize: -4 });
 // throws ValidationError: encountered multiple errors in [User]:
 //
-// - at <name>: missing property <last> [string], got: { first: "my name is so incr .. ouldn't believe it" }
+// - at <name>: missing property <last> [string], got: { first: "my name is so  .. n't believe it" }
 //
 // - at <shoeSize>: reverse running-shoes are not supported yet
 //
@@ -277,9 +277,9 @@ NetworkState({});
 // throws ValidationError: error in [NetworkState]: failed every element in union:
 //   • error in [NetworkLoadingState]: missing property <state> ["loading"], got: {}
 //   • encountered multiple errors in [NetworkFailedState]:
-//     ‣ missing properties <state> ["failed"], <code> [number], got: {}
+//     ‣ missing properties <state> ["failed"] and <code> [number], got: {}
 //   • encountered multiple errors in [NetworkSuccessState]:
-//     ‣ missing properties <state> ["success"], <response> [Response], got: {}
+//     ‣ missing properties <state> ["success"] and <response> [Response], got: {}
 ```
 
 But whenever possible, the validation-messages will be limited to the (most likely) intended union-element:
@@ -295,7 +295,7 @@ union([string, boolean, object({ value: number, unit: string })]).check(123);
 
 union([string, boolean, object({ value: number, unit: string })]).check({});
 // throws ValidationError: error in [string | boolean | { value: number, unit: string }]:
-//   • missing properties <value> [number], <unit> [string], got: {}
+//   • missing properties <value> [number] and <unit> [string], got: {}
 //   • disregarded 2 union-subtypes that do not accept an object
 ```
 
