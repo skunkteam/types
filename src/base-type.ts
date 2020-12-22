@@ -178,7 +178,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * @param input - the input value to parse and validate
      */
     construct(input: unknown): ResultType {
-        const result = this.validate(input, { mode: 'construct' });
+        const result = this.validate(input);
         if (!result.ok) throw ValidationError.fromFailure(result);
         return result.value;
     }
@@ -188,12 +188,12 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * success or failure (does not throw).
      *
      * @remarks
-     * If the given {@link ValidationOptions.mode} is `'construct'` it also calls the parser to pre-process the given input.
+     * If the given {@link ValidationOptions.mode} is `'construct'` (default) it also calls the parser to pre-process the given input.
      *
      * @param input - the input value to be validated
      * @param options - the current validation context
      */
-    validate(input: unknown, options: ValidationOptions): Result<ResultType> {
+    validate(input: unknown, options: ValidationOptions = { mode: 'construct' }): Result<ResultType> {
         // Preventing circular problems is only relevant on object values...
         const valueMap = typeof input === 'object' && input ? getVisitedMap(this, options) : undefined;
         const previousResult = valueMap?.get(input);
@@ -259,7 +259,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
         fn: (value: ResultType, ...restArgs: RestArgs) => Return,
     ): (input: unknown, ...restArgs: RestArgs) => Return {
         return (input, ...rest) => {
-            const preconditionResult = this.validate(input, { mode: 'construct' });
+            const preconditionResult = this.validate(input);
             if (!preconditionResult.ok) {
                 throw ValidationError.fromFailure({
                     ...preconditionResult,

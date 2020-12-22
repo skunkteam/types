@@ -60,7 +60,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     or<Other extends BaseTypeImpl<unknown>>(_other: Other): TypeImpl<UnionType<[this, Other]>>;
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
     protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
-    validate(input: unknown, options: ValidationOptions): Result<ResultType>;
+    validate(input: unknown, options?: ValidationOptions): Result<ResultType>;
     withBrand<BrandName extends string>(name: BrandName): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
     withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
     withName(name: string): this;
