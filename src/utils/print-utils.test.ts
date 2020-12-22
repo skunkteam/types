@@ -1,4 +1,4 @@
-import { bracketsIfNeeded, printValue } from './utils';
+import { bracketsIfNeeded, printValue } from './print-utils';
 
 describe(printValue, () => {
     const circular = { nested: { prop: { value: 123, circular: 0 as unknown } } };
@@ -33,19 +33,20 @@ describe(printValue, () => {
 
 describe(bracketsIfNeeded, () => {
     test.each`
-        input                  | output
-        ${'a'}                 | ${'a'}
-        ${'a b'}               | ${'(a b)'}
-        ${'func(example ok)'}  | ${'func(example ok)'}
-        ${'func (example ok)'} | ${'(func (example ok))'}
-        ${'<a'}                | ${'(<a)'}
-        ${'<<a>'}              | ${'(<<a>)'}
-        ${'<<a>>'}             | ${'<<a>>'}
-        ${'{ prop: value }'}   | ${'{ prop: value }'}
-        ${'{a} {b}'}           | ${'({a} {b})'}
-        ${'"{a} {b}"'}         | ${'"{a} {b}"'}
-        ${'"{a} \\" {b}"'}     | ${'"{a} \\" {b}"'}
-        ${'"{a} {b}'}          | ${'("{a} {b})'}
+        input                         | output
+        ${'a'}                        | ${'a'}
+        ${'a b'}                      | ${'(a b)'}
+        ${'func(example ok)'}         | ${'func(example ok)'}
+        ${'func (example ok)'}        | ${'(func (example ok))'}
+        ${'<a'}                       | ${'(<a)'}
+        ${'<<a>'}                     | ${'(<<a>)'}
+        ${'<<a>>'}                    | ${'<<a>>'}
+        ${'{ prop: value }'}          | ${'{ prop: value }'}
+        ${'{ prop: value }.autoCast'} | ${'({ prop: value }.autoCast)'}
+        ${'{a} {b}'}                  | ${'({a} {b})'}
+        ${'"{a} {b}"'}                | ${'"{a} {b}"'}
+        ${'"{a} \\" {b}"'}            | ${'"{a} \\" {b}"'}
+        ${'"{a} {b}'}                 | ${'("{a} {b})'}
     `('bracketsIfNeeded($input) => $output', ({ input, output }) => {
         expect(bracketsIfNeeded(input)).toBe(output);
     });

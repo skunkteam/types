@@ -19,6 +19,16 @@ export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
 export type ValidationResult = boolean | string | string[] | FailureDetails | FailureDetails[];
 
 /**
+ * The type for optional custom messages
+ *
+ * @remarks
+ * - When of type `string`, the custom message will be: `${customMessage}, got: ${got}`
+ *
+ * - When of type `function`, it will receive the `got` part to use inside the message.
+ */
+export type CustomMessage = undefined | string | ((got: string) => string);
+
+/**
  * The validation-logic as needed by {@link BaseTypeImpl.withConstraint} and {@link BaseTypeImpl.withValidation}.
  */
 export type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;

@@ -11,6 +11,8 @@ testTypeImpl({
         [NaN, basicTypeMessage(boolean, NaN)],
         [null, basicTypeMessage(boolean, null)],
         [undefined, basicTypeMessage(boolean, undefined)],
+        [[true], basicTypeMessage(boolean, [true])],
+        [[], basicTypeMessage(boolean, [])],
         [0, basicTypeMessage(boolean, 0)],
         [1, basicTypeMessage(boolean, 1)],
     ],

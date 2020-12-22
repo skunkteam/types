@@ -1,6 +1,6 @@
 import { BaseTypeImpl, createType } from '../base-type';
 import type { Result, TypeImpl, ValidationOptions } from '../interfaces';
-import { castArray, decodeOptionalName, define, getDetails, isFailure, isValidIdentifier, partition, prependPathToDetails } from '../utils';
+import { castArray, decodeOptionalName, define, isFailure, isValidIdentifier, partition, prependPathToDetails } from '../utils';
 
 /**
  * The implementation behind types created with {@link array}.
@@ -31,7 +31,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
         return this.createResult(
             input,
             !failures.length && options.mode === 'construct' ? validResults.map(r => r.value) : input,
-            failures.flatMap(getDetails),
+            failures.flatMap(f => f.details),
         );
     }
 }

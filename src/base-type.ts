@@ -18,7 +18,6 @@ import type { UnionType } from './types/union';
 import {
     addParserInputToDetails,
     bracketsIfNeeded,
-    cachedInstance,
     castArray,
     checkOneOrMore,
     decodeOptionalName,
@@ -75,6 +74,8 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      */
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
 
+    private _instanceCache: { autoCast?: BaseTypeImpl<ResultType>; autoCastAll?: BaseTypeImpl<ResultType> } = {};
+
     /**
      * The same type, but with an auto-casting default parser installed.
      *
@@ -82,33 +83,31 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * Each type implementation provides its own auto-cast rules. See builtin types for examples of auto-cast rules.
      */
     get autoCast(): this {
-        return cachedInstance(this, 'autoCast', () => {
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            const { autoCaster } = this;
-            if (!autoCaster) {
-                return this;
-            }
-            const autoCastParser = (input: unknown) => {
-                const result = autoCaster.call(this, input);
-                return this.createResult(
-                    input,
-                    result,
-                    result === autoCastFailure ? `could not autocast value: ${printValue(input)}` : true,
-                );
-            };
-            const type: this = createType(this, {
-                name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
-                typeParser: { configurable: true, value: autoCastParser },
-            });
-            return type;
-        });
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const { autoCaster } = this;
+        return (this._instanceCache.autoCast ??= !autoCaster
+            ? this
+            : createType(this, {
+                  name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
+                  typeParser: {
+                      configurable: true,
+                      value: (input: unknown) => {
+                          const autoCastResult = autoCaster.call(this, input);
+                          return this.createResult(
+                              input,
+                              autoCastResult,
+                              autoCastResult === autoCastFailure ? `could not autocast value: ${printValue(input)}` : true,
+                          );
+                      },
+                  },
+              })) as this;
     }
 
     /**
      * Create a recursive autocasting version of the current type.
      */
     get autoCastAll(): this {
-        return cachedInstance(this, 'autoCastAll', () => this.createAutoCastAllType());
+        return (this._instanceCache.autoCastAll ??= this.createAutoCastAllType()) as this;
     }
 
     protected createAutoCastAllType(): this {
@@ -447,6 +446,7 @@ export function createType<Impl extends BaseTypeImpl<any>>(
         {
             ...Object.getOwnPropertyDescriptors(impl),
             ...override,
+            _instanceCache: { configurable: true, value: {} },
         },
     ) as TypeImpl<Impl>;
     return type;

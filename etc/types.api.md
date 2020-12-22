@@ -84,6 +84,9 @@ export type Branded<T, BrandName extends string> = T extends WithBrands<infer Ba
 export function createType<Impl extends BaseTypeImpl<any>>(impl: Impl, override?: Partial<Record<keyof BaseTypeImpl<any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>): TypeImpl<Impl>;
 
 // @public
+export type CustomMessage = undefined | string | ((got: string) => string);
+
+// @public
 export interface Failure {
     details: OneOrMore<FailureDetails>;
     input: unknown;
@@ -275,7 +278,13 @@ export function partial<Props extends Properties>(...args: [props: Props] | [nam
 export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
 
 // @public (undocumented)
-export function pattern<BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: string | false): Type<Branded<string, BrandName>>;
+export function pattern<BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: CustomMessage): Type<Branded<string, BrandName>>;
+
+// @public
+export function printPath(path: Array<PropertyKey>): string;
+
+// @public
+export function printValue(input: unknown, budget?: number, visited?: Set<unknown>): string;
 
 // @public
 export type Properties = Record<string, Type<unknown>>;

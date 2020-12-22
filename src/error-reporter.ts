@@ -1,6 +1,6 @@
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { BasicType, Failure, FailureDetails, OneOrMore } from './interfaces';
-import { an, basicType, getDetails, humanList, isSingle, partition, plural, printKey, printPath, printValue } from './utils';
+import { an, basicType, humanList, isSingle, partition, plural, printKey, printPath, printValue } from './utils';
 
 const BULLETS = ['-', '•', '‣', '◦'];
 const DEFAULT_BULLET = '*';
@@ -11,7 +11,7 @@ const DEFAULT_BULLET = '*';
  * @param root - the failure to report
  */
 export function reportError(root: Omit<Failure, 'ok'>, level = -1): string {
-    const details = getDetails(root);
+    const { details } = root;
     // Make sure we get errors breadth first:
     details.sort((a, b) => (a.path?.length || 0) - (b.path?.length || 0));
 
