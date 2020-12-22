@@ -9,7 +9,7 @@ Validates that a value conforms to this type, and returns a result indicating su
 <b>Signature:</b>
 
 ```typescript
-validate(input: unknown, options: ValidationOptions): Result<ResultType>;
+validate(input: unknown, options?: ValidationOptions): Result<ResultType>;
 ```
 
 ## Parameters
@@ -25,4 +25,4 @@ validate(input: unknown, options: ValidationOptions): Result<ResultType>;
 
 ## Remarks
 
-If the given [ValidationOptions.mode](./types.validationoptions.mode.md) is `'construct'` it also calls the parser to pre-process the given input.
+If the given [ValidationOptions.mode](./types.validationoptions.mode.md) is `'construct'` (default) it also calls the parser to pre-process the given input.
