@@ -8,6 +8,10 @@ import { intersection } from './types/intersection';
 /** An example of a simple constraint without a custom message. */
 const SmallString = string.withConstraint('SmallString', s => s.length < 10);
 
+test('autoCast instances should not leak', () => {
+    expect(string.autoCast).not.toBe(SmallString.autoCast);
+});
+
 testTypeImpl({
     name: 'SmallString',
     type: SmallString,

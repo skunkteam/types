@@ -1,5 +1,13 @@
-import type { BasicType, Failure, FailureDetails, OneOrMore, PropertiesInfo, Result, Transposed } from './interfaces';
+import type { OneOrMore, PropertiesInfo } from '../interfaces';
+import { castArray } from './collection-utils';
+import { isOneOrMore, isValidIdentifier } from './type-utils';
 
+/**
+ * Print an unknown value with a given character budget (default: 50).
+ *
+ * @remarks
+ * Note that the budget is a hint and is not guaranteed to be met. It protects against circular references.
+ */
 export function printValue(input: unknown, budget = 50, visited: Set<unknown> = new Set()): string {
     switch (typeof input) {
         case 'boolean':
@@ -26,7 +34,7 @@ export function printValue(input: unknown, budget = 50, visited: Set<unknown> = 
                     ? `[${truncateArray(input, budget - 2, (element, remaining) => printValue(element, remaining, visited))}]`
                     : '[]';
             }
-            if (!input.toString || (input.toString === Object.prototype.toString && isPlainObject(input))) {
+            if (!input.toString || input.toString === Object.prototype.toString) {
                 const entries = Object.entries(input);
                 return isOneOrMore(entries)
                     ? `{ ${truncateArray(entries, budget - 4, ([key, value], remaining) => {
@@ -65,34 +73,9 @@ function truncateArray<T>(arr: OneOrMore<T>, budget: number, printer: (element: 
     return result;
 }
 
-export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-    return typeof value === 'object' && !!value;
-}
-
-export function isOneOrMore<T>(arr: T[]): arr is OneOrMore<T> {
-    return arr.length > 0;
-}
-
-export function checkOneOrMore<T>(arr: T[]): OneOrMore<T> {
-    // istanbul ignore if
-    if (!isOneOrMore(arr)) {
-        throw new Error('expected at least one element, got nothing');
-    }
-    return arr;
-}
-
-export function isSingle<T>(arr: T[]): arr is [T] {
-    return arr.length === 1;
-}
-
-export function hasOwnProperty<Key extends PropertyKey>(obj: Record<PropertyKey, unknown>, key: Key): obj is Record<Key, unknown> {
-    return Object.prototype.hasOwnProperty.call(obj, key);
-}
-
-export function isValidIdentifier(s: string): boolean {
-    return /^[a-z_$][a-z_$0-9]*$/i.test(s);
-}
-
+/**
+ * Print a property-path in a "JavaScripty way".
+ */
 export function printPath(path: Array<PropertyKey>): string {
     let result = '';
     for (const e of path) {
@@ -109,71 +92,13 @@ export function printKey(key: string): string {
     return isValidIdentifier(key) ? key : JSON.stringify(key);
 }
 
-export function castArray<T>(input: undefined | T | T[]): T[] {
-    return input === undefined ? [] : Array.isArray(input) ? input : [input];
-}
-
-export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
-    const arr = castArray(input);
-    const last = arr[arr.length - 1];
-    if (last === undefined) return '';
-    if (arr.length === 1) return map(last);
-    return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
-}
-
-export function plural(amount: number | unknown[], thing: string, things = `${thing}s`): string {
-    return (Array.isArray(amount) ? amount.length : amount) === 1 ? thing : things;
-}
-
-export function prependPathToDetails(failure: Failure, key: PropertyKey): OneOrMore<FailureDetails> {
-    return checkOneOrMore(getDetails(failure).map(d => ({ ...d, path: d.path ? [key, ...d.path] : [key] })));
-}
-
-export function getDetails(failure: Failure | FailureDetails): OneOrMore<FailureDetails> {
-    return 'details' in failure ? failure.details : [failure];
-}
-
-export function prependContextToDetails(failure: Failure | FailureDetails, context: string): OneOrMore<FailureDetails> {
-    return checkOneOrMore(
-        getDetails(failure).map(d => ({
-            ...d,
-            context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
-        })),
-    );
-}
-
-export function addParserInputToDetails(failure: Failure | FailureDetails, parserInput: unknown): OneOrMore<FailureDetails> {
-    return checkOneOrMore(getDetails(failure).map(d => ({ ...d, parserInput })));
-}
-
 /**
- * Function to test if an object is a plain object, i.e. is constructed
- * by the built-in Object constructor or inherits directly from Object.prototype
- * or null. Some built-in objects pass the test, e.g. Math which is a plain object
- * and some host or exotic objects may pass also.
- */
-export function isPlainObject(obj: unknown): obj is Record<string, unknown> {
-    if (!isObject(obj)) {
-        return false;
-    }
-
-    const proto: unknown = Object.getPrototypeOf(obj);
-    return proto === Object.prototype || proto === null || obj.constructor === Object;
-}
-
-export function decodeOptionalName<Rest extends unknown[]>(args: [string, ...Rest] | Rest): [string | undefined, ...Rest] {
-    return (typeof args[0] === 'string' ? args : [undefined, ...args]) as [string | undefined, ...Rest];
-}
-
-export function basicType(value: unknown): BasicType {
-    return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
-}
-
-/**
- * Try to guess the indefinite article for an English word. English is unbelievably irregular! :-|
+ * Try to guess the indefinite article for an English word.
  *
+ * @remarks
  * Based on the excellent work in Perl's Lingua::EN::Inflect: http://search.cpan.org/perldoc/Lingua::EN::Inflect (borrowed most regexes)
  */
+// istanbul ignore next because it is approximate anyway
 export function an(name: string): string {
     const s = name.startsWith('[') ? name.slice(1) : name;
 
@@ -205,26 +130,16 @@ export function an(name: string): string {
     return `a ${name}`;
 }
 
-export function partition<Base, Filtered extends Base>(
-    array: readonly Base[],
-    filter: (value: Base) => value is Filtered,
-): [Filtered[], Exclude<Base, Filtered>[]];
-export function partition<Base>(array: readonly Base[], filter: (value: Base) => boolean): [Base[], Base[]];
-export function partition<T>(array: readonly T[], filter: (value: T) => boolean): [T[], T[]] {
-    const yes: T[] = [];
-    const no: T[] = [];
-    for (const element of array) {
-        if (filter(element)) {
-            yes.push(element);
-        } else {
-            no.push(element);
-        }
-    }
-    return [yes, no];
+export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
+    const arr = castArray(input);
+    const last = arr[arr.length - 1];
+    if (last === undefined) return '';
+    if (arr.length === 1) return map(last);
+    return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
 }
 
-export function isFailure(result: Result<unknown>): result is Failure {
-    return !result.ok;
+export function plural(amount: unknown[], thing: string, things = `${thing}s`): string {
+    return amount.length === 1 ? thing : things;
 }
 
 export function defaultObjectRep(propsInfo: PropertiesInfo): string {
@@ -234,14 +149,6 @@ export function defaultObjectRep(propsInfo: PropertiesInfo): string {
     }
 
     return `{ ${props.map(([key, { partial, type }]) => `${printKey(key)}${partial ? '?' : ''}: ${type.name}`).join(', ')} }`;
-}
-
-export function transpose<T extends Record<string, string>>(obj: T): Transposed<T> {
-    const result = {} as Transposed<T>;
-    for (const [key, value] of Object.entries(obj)) {
-        result[value as T[keyof T]] = key;
-    }
-    return result;
 }
 
 export function bracketsIfNeeded(name: string, allowedSeparator?: '|' | '&'): string {
@@ -275,29 +182,42 @@ const MATCHING_BRACKET = {
     '<': '>',
 } as const;
 
-function evalBrackets(chars: PeekableIterator<string>, allowedSeparator?: '|' | '&', endGroup?: string) {
-    let hasGroup = false;
+/**
+ * Validate the character stream for valid bracket-pairs.
+ *
+ * @remarks
+ * Used to determine whether to add brackets or not.
+ *
+ * @param chars - the peekable character iterator
+ * @param allowedSeparator - an optional allowed group-separator that does not fail validation
+ * @param groupEndChar - the end character for the current group, when specified we are currently inside brackets
+ * @returns `true` iff brackets match up and no additional bracket is needed for clarity
+ */
+function evalBrackets(chars: PeekableIterator<string>, allowedSeparator?: '|' | '&', groupEndChar?: string) {
+    let hasBracketGroup = false;
     while (chars.advance()) {
         switch (chars.current) {
-            case endGroup:
+            case groupEndChar:
+                // we've reached the end of the current bracket-group
                 return true;
             case '[':
             case '{':
             case '(':
             case '<':
+                // consume the entire bracket-group
                 if (!evalBrackets(chars, undefined, MATCHING_BRACKET[chars.current])) return false;
-                hasGroup = true;
+                hasBracketGroup = true;
                 break;
             case '"':
             case "'":
                 if (!evalString(chars, chars.current)) return false;
-                hasGroup = true;
+                hasBracketGroup = true;
                 break;
             case '|':
             case '&':
             case ' ':
-                if (!endGroup) {
-                    // not inside a group, so spaces and allowed separators need special care
+                if (!groupEndChar) {
+                    // not inside brackets, so spaces and allowed separators need special care
                     if (!allowedSeparator) return false;
                     let foundSeparator;
                     do {
@@ -307,38 +227,31 @@ function evalBrackets(chars: PeekableIterator<string>, allowedSeparator?: '|' | 
                 }
                 break;
             default:
-                if (!endGroup && hasGroup) return false;
+                // when we're not inside brackets and we encounter a character after we've already encountered a bracket group,
+                // then fail the validation
+                if (!groupEndChar && hasBracketGroup) return false;
         }
     }
-    return !endGroup;
+    // we've reached the end of the character-stream, return true if we're not inside brackets
+    return !groupEndChar;
 }
 
+/**
+ * Consume characters from the iterator until the end of string is reached.
+ *
+ * @param chars - the peekable character iterator
+ * @param until - the end-of-string indicator to look for
+ * @returns `true` iff the string terminated correctly
+ */
 function evalString(chars: PeekableIterator<string>, until?: string) {
     while (chars.advance()) {
         switch (chars.current) {
             case until:
                 return true;
             case '\\':
+                // consume the next (escaped) character
                 chars.advance();
         }
     }
     return false;
-}
-
-// Using weakmap to make sure it never gets copied into a different type with `createType`.
-const instanceCache = new WeakMap<any, Record<string, unknown>>();
-export function cachedInstance<T>(instance: unknown, name: string, factory: () => T): T {
-    let types = instanceCache.get(instance);
-    if (!types) {
-        instanceCache.set(instance, (types = {}));
-    }
-    return (types[name] ??= factory()) as T;
-}
-
-export function define<Constructor extends new (...args: any) => any, Key extends string>(
-    constructor: Constructor,
-    key: Key,
-    value: InstanceType<Constructor>[Key],
-): void {
-    Object.defineProperty(constructor.prototype, key, { configurable: true, value });
 }

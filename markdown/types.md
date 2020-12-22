@@ -24,23 +24,25 @@ Runtime type-validation with derived TypeScript types.
 
 ## Functions
 
-| Function                                                   | Description                                                                                                                                       |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [array(args)](./types.array.md)                            | Create a type that checks whether the input is an array and all elements conform to the given <code>elementType</code>.                           |
-| [booleanAutoCaster(input)](./types.booleanautocaster.md)   |                                                                                                                                                   |
-| [createType(impl, override)](./types.createtype.md)        | Create a Type from the given type-implementation.                                                                                                 |
-| [intersection(args)](./types.intersection.md)              | Intersect the given types.                                                                                                                        |
-| [isType(value)](./types.istype.md)                         | Type-guard that asserts that a given value is a Type.                                                                                             |
-| [keyof(args)](./types.keyof.md)                            |                                                                                                                                                   |
-| [literal(value)](./types.literal.md)                       |                                                                                                                                                   |
-| [numberAutoCaster(input)](./types.numberautocaster.md)     |                                                                                                                                                   |
-| [object(args)](./types.object.md)                          | Create a type-validator that validates (or parses) an object structure.                                                                           |
-| [partial(args)](./types.partial.md)                        | Create a type-validator that validates (or parses) an object structure with only optional properties.                                             |
-| [pattern(name, regExp, customMessage)](./types.pattern.md) |                                                                                                                                                   |
-| [record(args)](./types.record.md)                          | Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document |
-| [reportError(root, level)](./types.reporterror.md)         | Creates an human-readable error report of the given failure.                                                                                      |
-| [union(args)](./types.union.md)                            |                                                                                                                                                   |
-| [valueof(args)](./types.valueof.md)                        |                                                                                                                                                   |
+| Function                                                    | Description                                                                                                                                       |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [array(args)](./types.array.md)                             | Create a type that checks whether the input is an array and all elements conform to the given <code>elementType</code>.                           |
+| [booleanAutoCaster(input)](./types.booleanautocaster.md)    |                                                                                                                                                   |
+| [createType(impl, override)](./types.createtype.md)         | Create a Type from the given type-implementation.                                                                                                 |
+| [intersection(args)](./types.intersection.md)               | Intersect the given types.                                                                                                                        |
+| [isType(value)](./types.istype.md)                          | Type-guard that asserts that a given value is a Type.                                                                                             |
+| [keyof(args)](./types.keyof.md)                             |                                                                                                                                                   |
+| [literal(value)](./types.literal.md)                        |                                                                                                                                                   |
+| [numberAutoCaster(input)](./types.numberautocaster.md)      |                                                                                                                                                   |
+| [object(args)](./types.object.md)                           | Create a type-validator that validates (or parses) an object structure.                                                                           |
+| [partial(args)](./types.partial.md)                         | Create a type-validator that validates (or parses) an object structure with only optional properties.                                             |
+| [pattern(name, regExp, customMessage)](./types.pattern.md)  |                                                                                                                                                   |
+| [printPath(path)](./types.printpath.md)                     | Print a property-path in a "JavaScripty way".                                                                                                     |
+| [printValue(input, budget, visited)](./types.printvalue.md) | Print an unknown value with a given character budget (default: 50).                                                                               |
+| [record(args)](./types.record.md)                           | Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document |
+| [reportError(root, level)](./types.reporterror.md)          | Creates an human-readable error report of the given failure.                                                                                      |
+| [union(args)](./types.union.md)                             |                                                                                                                                                   |
+| [valueof(args)](./types.valueof.md)                         |                                                                                                                                                   |
 
 ## Interfaces
 
@@ -73,6 +75,7 @@ Runtime type-validation with derived TypeScript types.
 | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [BasicType](./types.basictype.md)                                 | Basic categories of types.                                                                                                                                                                     |
 | [Branded](./types.branded.md)                                     | Create a Branded type with a given <code>BrandName</code>.                                                                                                                                     |
+| [CustomMessage](./types.custommessage.md)                         | The type for optional custom messages                                                                                                                                                          |
 | [FailureDetails](./types.failuredetails.md)                       |                                                                                                                                                                                                |
 | [FullType](./types.fulltype.md)                                   |                                                                                                                                                                                                |
 | [int](./types.int.md)                                             |                                                                                                                                                                                                |

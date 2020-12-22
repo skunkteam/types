@@ -10,10 +10,10 @@ const config = {
     restoreMocks: true,
     coverageThreshold: {
         global: {
-            statements: 96,
-            branches: 92,
-            functions: 97,
-            lines: 98,
+            statements: 99,
+            branches: 95,
+            functions: 98,
+            lines: 99,
         },
     },
 };

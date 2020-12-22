@@ -1,5 +1,6 @@
-import type { Branded, Type } from '../interfaces';
+import type { Branded, CustomMessage, Type } from '../interfaces';
 import { SimpleType } from '../simple-type';
+import { evalCustomMessage } from '../utils';
 
 /**
  * Built-in validator for string-values.
@@ -14,7 +15,7 @@ export const string: Type<string> = SimpleType.create(
 export function pattern<BrandName extends string>(
     name: BrandName,
     regExp: RegExp,
-    customMessage: string | false = false,
+    customMessage?: CustomMessage,
 ): Type<Branded<string, BrandName>> {
-    return string.withConstraint(name, s => regExp.test(s) || customMessage);
+    return string.withConstraint(name, s => regExp.test(s) || evalCustomMessage(customMessage, s));
 }

@@ -17,7 +17,6 @@ import {
     defaultObjectRep,
     define,
     extensionName,
-    getDetails,
     humanList,
     isFailure,
     isObject,
@@ -57,7 +56,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
             this.types.map(type => type.validate(input, options)),
             isFailure,
         );
-        const details = failures.flatMap(getDetails);
+        const details = failures.flatMap(f => f.details);
         return this.createResult(
             input,
             !details.length && options.mode === 'construct'

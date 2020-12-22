@@ -10,17 +10,17 @@
 export declare function pattern<BrandName extends string>(
     name: BrandName,
     regExp: RegExp,
-    customMessage?: string | false,
+    customMessage?: CustomMessage,
 ): Type<Branded<string, BrandName>>;
 ```
 
 ## Parameters
 
-| Parameter     | Type            | Description |
-| ------------- | --------------- | ----------- |
-| name          | BrandName       |             |
-| regExp        | RegExp          |             |
-| customMessage | string \| false |             |
+| Parameter     | Type                                      | Description |
+| ------------- | ----------------------------------------- | ----------- |
+| name          | BrandName                                 |             |
+| regExp        | RegExp                                    |             |
+| customMessage | [CustomMessage](./types.custommessage.md) |             |
 
 <b>Returns:</b>
 
