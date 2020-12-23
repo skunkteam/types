@@ -1,8 +1,8 @@
 import type {
     BasicType,
     Branded,
-    FailureDetails,
     LiteralValue,
+    MessageDetails,
     Properties,
     PropertiesInfo,
     Result,
@@ -96,7 +96,11 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
                           return this.createResult(
                               input,
                               autoCastResult,
-                              autoCastResult === autoCastFailure ? `could not autocast value: ${printValue(input)}` : true,
+                              autoCastResult !== autoCastFailure || {
+                                  kind: 'custom message',
+                                  message: `could not autocast value: ${printValue(input)}`,
+                                  omitInput: true,
+                              },
                           );
                       },
                   },
@@ -385,16 +389,18 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             return { ok: true, value: result as ResultType };
         }
         if (validatorResult === false) {
-            return this.createResult(input, result, { type: this, input });
+            return { ok: false, input, type: this, details: [{ type: this, input }] };
         }
         return {
             ok: false,
             input,
             type: this,
             details: checkOneOrMore(
-                castArray(validatorResult).map(result =>
-                    typeof result === 'string' ? { type: this, input, kind: 'custom message', message: result } : result,
-                ),
+                castArray(validatorResult).map(result => ({
+                    type: this,
+                    input,
+                    ...(typeof result === 'string' ? { kind: 'custom message', message: result } : result),
+                })),
             ),
         };
     }
@@ -465,6 +471,6 @@ function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType>, options: Valida
     return valueMap as Map<unknown, Result<ResultType>>;
 }
 
-function isOk(validatorResult: boolean | string | string[] | FailureDetails | FailureDetails[]): validatorResult is true | [] {
+function isOk(validatorResult: boolean | string | string[] | MessageDetails | MessageDetails[]): validatorResult is true | [] {
     return validatorResult === true || (Array.isArray(validatorResult) && !validatorResult.length);
 }

@@ -17,9 +17,8 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
     }
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        const baseFailure = { type: this, input } as const;
         if (!Array.isArray(input)) {
-            return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'array' });
+            return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'array' });
         }
         const innerResults = input.map(
             (element, index): Result<Element> => {

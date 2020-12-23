@@ -9,7 +9,7 @@ Creates an human-readable error report of the given failure.
 <b>Signature:</b>
 
 ```typescript
-export declare function reportError(root: Omit<Failure, 'ok'>, level?: number): string;
+export declare function reportError(root: Omit<Failure, 'ok'>, level?: number, omitInput?: boolean): string;
 ```
 
 ## Parameters
@@ -18,6 +18,7 @@ export declare function reportError(root: Omit<Failure, 'ok'>, level?: number): 
 | --------- | ------------------------------------------------------- | --------------------- |
 | root      | Omit&lt;[Failure](./types.failure.md)<!-- -->, 'ok'&gt; | the failure to report |
 | level     | number                                                  |                       |
+| omitInput | boolean                                                 |                       |
 
 <b>Returns:</b>
 

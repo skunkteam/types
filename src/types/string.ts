@@ -8,7 +8,7 @@ import { evalCustomMessage } from '../utils';
 export const string: Type<string> = SimpleType.create(
     'string',
     'string',
-    (type, input) => typeof input === 'string' || { type, kind: 'invalid basic type', expected: 'string', input },
+    input => typeof input === 'string' || { kind: 'invalid basic type', expected: 'string' },
     { autoCaster: String },
 );
 

@@ -9,7 +9,7 @@ Create a simple (limited) type implementation.
 <b>Signature:</b>
 
 ```typescript
-static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (type: SimpleType<ResultType>, input: unknown, options: ValidationOptions) => ValidationResult, options?: Pick<BaseTypeImpl<ResultType>, 'enumerableLiteralDomain'> & {
+static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType>) => ValidationResult, options?: Pick<BaseTypeImpl<ResultType>, 'enumerableLiteralDomain'> & {
         autoCaster: BaseTypeImpl<ResultType>['autoCaster'];
     }): Type<ResultType>;
 ```
@@ -20,7 +20,7 @@ static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleVa
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
 | name            | string                                                                                                                                                                                                            | the name for the Type                  |
 | basicType       | [BasicType](./types.basictype.md) \| 'mixed'                                                                                                                                                                      | the fixed basic type of the Type       |
-| simpleValidator | (type: [SimpleType](./types.simpletype.md)<!-- -->&lt;ResultType&gt;, input: unknown, options: [ValidationOptions](./types.validationoptions.md)<!-- -->) =&gt; [ValidationResult](./types.validationresult.md)   | validation logic                       |
+| simpleValidator | (input: unknown, options: [ValidationOptions](./types.validationoptions.md)<!-- -->, type: [SimpleType](./types.simpletype.md)<!-- -->&lt;ResultType&gt;) =&gt; [ValidationResult](./types.validationresult.md)   | validation logic                       |
 | options         | Pick&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;, 'enumerableLiteralDomain'&gt; &amp; { autoCaster: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;\['autoCaster'\]; } | some optional features of BaseTypeImpl |
 
 <b>Returns:</b>

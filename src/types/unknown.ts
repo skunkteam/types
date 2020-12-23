@@ -19,7 +19,7 @@ export const unknown: Type<unknown> = SimpleType.create('unknown', 'mixed', () =
 export const unknownRecord: Type<Record<string, unknown>> = SimpleType.create(
     'Record<string, unknown>',
     'object',
-    (type, input) => isObject(input) || { type, input, kind: 'invalid basic type', expected: 'object' },
+    input => isObject(input) || { kind: 'invalid basic type', expected: 'object' },
 );
 
 /**
@@ -31,6 +31,6 @@ export const unknownRecord: Type<Record<string, unknown>> = SimpleType.create(
 export const unknownArray: Type<unknown[]> = SimpleType.create(
     'unknown[]',
     'array',
-    (type, input) => Array.isArray(input) || { type, input, kind: 'invalid basic type', expected: 'array' },
+    input => Array.isArray(input) || { kind: 'invalid basic type', expected: 'array' },
     { autoCaster: castArray },
 );

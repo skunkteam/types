@@ -10,5 +10,5 @@ export * from './interfaces';
 export * from './simple-type';
 export * from './type-guard';
 export * from './types';
-export { printPath, printValue } from './utils/print-utils';
+export { printKey, printPath, printValue } from './utils/print-utils';
 export * from './validation-error';

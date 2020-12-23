@@ -1,4 +1,4 @@
-import type { CustomMessage, Failure, FailureDetails, OneOrMore } from '../interfaces';
+import type { CustomMessage, Failure, FailureDetails, MessageDetails, OneOrMore } from '../interfaces';
 import { printValue } from './print-utils';
 import { checkOneOrMore } from './type-utils';
 
@@ -19,9 +19,9 @@ export function addParserInputToDetails(failure: Failure, parserInput: unknown):
     return checkOneOrMore(failure.details.map(d => ({ ...d, parserInput })));
 }
 
-export function evalCustomMessage(customMessage: CustomMessage, input: unknown): string | false {
+export function evalCustomMessage(message: CustomMessage, input: unknown): MessageDetails | string | false {
     return (
-        !!customMessage &&
-        (typeof customMessage === 'function' ? customMessage(printValue(input)) : `${customMessage}, got: ${printValue(input)}`)
+        !!message &&
+        (typeof message === 'function' ? { kind: 'custom message', message: message(printValue(input), input), omitInput: true } : message)
     );
 }

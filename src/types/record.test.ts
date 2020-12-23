@@ -1,5 +1,6 @@
-import type { The } from '../interfaces';
+import type { MessageDetails, The } from '../interfaces';
 import { defaultUsualSuspects, testTypeImpl } from '../testutils';
+import { printKey, printValue } from '../utils';
 import { object } from './interface';
 import { keyof } from './keyof';
 import { literal } from './literal';
@@ -169,7 +170,13 @@ type StrangeRecord = The<typeof StrangeRecord>;
 const StrangeRecord = record('StrangeRecord', string, string).withValidation(r =>
     Object.entries(r)
         .filter(([key, value]) => key + key !== value)
-        .map(([key, value]) => `key: ${key} should have value ${key}${key}, got: ${value}`),
+        .map(
+            ([key, value]): MessageDetails => ({
+                kind: 'custom message',
+                message: `key: <${printKey(key)}> should have value ${printValue(key + key)}`,
+                input: value, // override `input` to be the property value, instead of the complete object
+            }),
+        ),
 );
 testTypeImpl({
     name: 'StrangeRecord',
@@ -182,9 +189,9 @@ testTypeImpl({
             [
                 'encountered multiple errors in [StrangeRecord]:',
                 '',
-                '- key: a should have value aa, got: aaa',
+                '- key: <a> should have value "aa", got: "aaa"',
                 '',
-                '- key: b should have value bb, got: bbbb',
+                '- key: <b> should have value "bb", got: "bbbb"',
             ],
         ],
     ],

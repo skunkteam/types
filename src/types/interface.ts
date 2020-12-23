@@ -1,7 +1,7 @@
 import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType } from '../base-type';
 import type {
-    FailureDetails,
     LiteralValue,
+    MessageDetails,
     Properties,
     PropertiesInfo,
     Result,
@@ -50,12 +50,11 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const { strictMissingKeys, partial } = this.options;
-        const baseFailure = { type: this, input } as const;
         if (!isObject(input)) {
-            return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
+            return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
         const constructResult = {} as Record<string, unknown>;
-        const details: FailureDetails[] = [];
+        const details: MessageDetails[] = [];
         for (const [key, innerType] of Object.entries(this.props)) {
             const missingKey = !hasOwnProperty(input, key);
             if (partial) {
@@ -63,14 +62,14 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
                     continue;
                 }
             } else if (missingKey && strictMissingKeys) {
-                details.push(missingProperty(input, key, innerType));
+                details.push(missingProperty(key, innerType));
                 continue;
             }
             const innerResult = innerType.validate(input[key], options);
             if (innerResult.ok) {
                 constructResult[key] = innerResult.value;
             } else if (missingKey) {
-                details.push(missingProperty(input, key, innerType));
+                details.push(missingProperty(key, innerType));
             } else {
                 details.push(...prependPathToDetails(innerResult, key));
             }
@@ -104,8 +103,8 @@ define(InterfaceType, 'createAutoCastAllType', function (this: InterfaceType<Pro
     return createType(new InterfaceType(props, { ...this.options, name }).autoCast);
 });
 
-function missingProperty(input: unknown, property: string, type: BaseTypeImpl<unknown>): FailureDetails {
-    return { kind: 'missing property', input, property, type };
+function missingProperty(property: string, type: BaseTypeImpl<unknown>): MessageDetails {
+    return { kind: 'missing property', property, type };
 }
 
 export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;

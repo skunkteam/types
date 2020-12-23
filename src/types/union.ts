@@ -44,7 +44,7 @@ export class UnionType<
             }
             failures.push(result);
         }
-        return this.createResult(input, undefined, { type: this, input, kind: 'union', failures });
+        return this.createResult(input, undefined, { kind: 'union', failures });
     }
 }
 

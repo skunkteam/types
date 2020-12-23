@@ -40,9 +40,9 @@ testTypeImpl({
         [
             3,
             [
-                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
-                '  • expected a [LessThanMinus10], got: 3',
-                '  • expected the literal 0, got: 3',
+                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union, got: 3',
+                '  • expected a [LessThanMinus10]',
+                '  • expected the literal 0',
                 '  • error in [number]: additional validation failed',
             ],
         ],
@@ -55,9 +55,9 @@ testTypeImpl({
         [
             '-5',
             [
-                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
-                '  • expected a [LessThanMinus10], got: -5, parsed from: "-5"',
-                '  • expected the literal 0, got: -5, parsed from: "-5"',
+                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union, got: "-5"',
+                '  • expected a [LessThanMinus10]',
+                '  • expected the literal 0',
                 '  • error in [number]: additional validation failed',
             ],
         ],
@@ -114,12 +114,12 @@ testTypeImpl({
         [
             {},
             [
-                'error in [NetworkState]: failed every element in union:',
-                '  • error in [NetworkLoadingState]: missing property <state> ["loading"], got: {}',
+                'error in [NetworkState]: failed every element in union, got: {}',
+                '  • error in [NetworkLoadingState]: missing property <state> ["loading"]',
                 '  • encountered multiple errors in [NetworkFailedState]:',
-                '    ‣ missing properties <state> ["failed"] and <code> [number], got: {}',
+                '    ‣ missing properties <state> ["failed"] and <code> [number]',
                 '  • encountered multiple errors in [NetworkSuccessState]:',
-                '    ‣ missing properties <state> ["success"] and <response> [Response], got: {}',
+                '    ‣ missing properties <state> ["success"] and <response> [Response]',
             ],
         ],
         [
