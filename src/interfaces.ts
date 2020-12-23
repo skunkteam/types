@@ -16,7 +16,7 @@ export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
  * @remarks
  * The validation is considered a success if the result is `true` or an empty array, anything else is considered to be a failure.
  */
-export type ValidationResult = boolean | string | string[] | MessageDetails | MessageDetails[];
+export type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
 
 /**
  * The type for optional custom messages
@@ -142,6 +142,7 @@ export type MessageDetails = Partial<ValidationDetails> & {
         | { kind: 'invalid basic type'; expected: BasicType | BasicType[]; expectedValue?: LiteralValue }
         | { kind: 'union'; failures: Failure[] }
         | { kind: 'custom message'; message: string }
+        | { kind: 'report input' }
     );
 
 /**

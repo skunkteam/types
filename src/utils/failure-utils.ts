@@ -8,15 +8,22 @@ export function prependPathToDetails(failure: Failure, key: PropertyKey): OneOrM
 
 export function prependContextToDetails(failure: Failure, context: string): OneOrMore<FailureDetails> {
     return checkOneOrMore(
-        failure.details.map(d => ({
-            ...d,
-            context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
-        })),
+        failure.details.map(d =>
+            d.path
+                ? d
+                : {
+                      ...d,
+                      context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
+                  },
+        ),
     );
 }
 
 export function addParserInputToDetails(failure: Failure, parserInput: unknown): OneOrMore<FailureDetails> {
-    return checkOneOrMore(failure.details.map(d => ({ ...d, parserInput })));
+    if (failure.details.every(d => d.path)) {
+        return [{ ...failure, kind: 'report input', parserInput }, ...failure.details];
+    }
+    return checkOneOrMore(failure.details.map(d => (d.path ? d : { ...d, parserInput })));
 }
 
 export function evalCustomMessage(message: CustomMessage, input: unknown): MessageDetails | string | false {

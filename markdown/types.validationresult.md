@@ -9,7 +9,7 @@ The possible return values inside validation and constraint functions.
 <b>Signature:</b>
 
 ```typescript
-export declare type ValidationResult = boolean | string | string[] | MessageDetails | MessageDetails[];
+export declare type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
 ```
 
 <b>References:</b> [MessageDetails](./types.messagedetails.md)

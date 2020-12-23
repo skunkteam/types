@@ -252,6 +252,8 @@ export type MessageDetails = Partial<ValidationDetails> & {
 } | {
     kind: 'custom message';
     message: string;
+} | {
+    kind: 'report input';
 });
 
 // @public (undocumented)
@@ -464,7 +466,7 @@ export interface ValidationOptions {
 }
 
 // @public
-export type ValidationResult = boolean | string | string[] | MessageDetails | MessageDetails[];
+export type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
 
 // @public
 export type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;

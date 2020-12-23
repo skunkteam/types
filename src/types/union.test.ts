@@ -5,6 +5,7 @@ import { literal, nullType, undefinedType } from './literal';
 import { number } from './number';
 import { string } from './string';
 import { union } from './union';
+import { unknownRecord } from './unknown';
 
 testTypeImpl({
     name: 'number | null',
@@ -26,7 +27,12 @@ testTypeImpl({
 const StrangeNumberUnion = union('StrangeNumberUnion', [
     number.withConstraint('LessThanMinus10', n => n < -10),
     literal(0),
-    number.withValidation(n => n > 10),
+    number.withValidation(n => {
+        const messages = [];
+        n > 10 || messages.push('should be more than 10');
+        n > 5 || messages.push('not even close');
+        return messages;
+    }),
 ]);
 
 // No autoCast feature
@@ -40,25 +46,66 @@ testTypeImpl({
         [
             3,
             [
-                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union, got: 3',
+                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
+                '(got: 3)',
                 '  • expected a [LessThanMinus10]',
                 '  • expected the literal 0',
-                '  • error in [number]: additional validation failed',
+                '  • errors in [number]:',
+                '    ‣ should be more than 10',
+                '    ‣ not even close',
+            ],
+        ],
+        [
+            7,
+            [
+                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
+                '(got: 7)',
+                '  • expected a [LessThanMinus10]',
+                '  • expected the literal 0',
+                '  • error in [number]: should be more than 10',
             ],
         ],
     ],
     validConversions: [
         ['-15', -15],
+        ['0', 0],
         ['15', 15],
     ],
     invalidConversions: [
         [
             '-5',
             [
-                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union, got: "-5"',
+                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
+                '(got: "-5")',
                 '  • expected a [LessThanMinus10]',
                 '  • expected the literal 0',
-                '  • error in [number]: additional validation failed',
+                '  • errors in [number]:',
+                '    ‣ should be more than 10',
+                '    ‣ not even close',
+            ],
+        ],
+    ],
+});
+
+testTypeImpl({
+    name: 'StrangeNumberUnionWithParser',
+    type: StrangeNumberUnion.withParser('StrangeNumberUnionWithParser', number.autoCast),
+    validConversions: [
+        ['-15', -15],
+        ['0', 0],
+        ['15', 15],
+    ],
+    invalidConversions: [
+        [
+            '-5',
+            [
+                'error in [StrangeNumberUnionWithParser]: failed every element in union:',
+                '(got: -5, parsed from: "-5")',
+                '  • expected a [LessThanMinus10]',
+                '  • expected the literal 0',
+                '  • errors in [number]:',
+                '    ‣ should be more than 10',
+                '    ‣ not even close',
             ],
         ],
     ],
@@ -103,7 +150,7 @@ testTypeImpl({
 const NetworkState = union('NetworkState', [
     object('NetworkLoadingState', { state: literal('loading') }),
     object('NetworkFailedState', { state: literal('failed'), code: number }),
-    object('NetworkSuccessState', { state: literal('success'), response: object('Response', {}) }),
+    object('NetworkSuccessState', { state: literal('success'), response: unknownRecord.withName('Response') }),
 ]);
 testTypeImpl({
     name: 'NetworkState',
@@ -114,11 +161,12 @@ testTypeImpl({
         [
             {},
             [
-                'error in [NetworkState]: failed every element in union, got: {}',
+                'error in [NetworkState]: failed every element in union:',
+                '(got: {})',
                 '  • error in [NetworkLoadingState]: missing property <state> ["loading"]',
-                '  • encountered multiple errors in [NetworkFailedState]:',
+                '  • errors in [NetworkFailedState]:',
                 '    ‣ missing properties <state> ["failed"] and <code> [number]',
-                '  • encountered multiple errors in [NetworkSuccessState]:',
+                '  • errors in [NetworkSuccessState]:',
                 '    ‣ missing properties <state> ["success"] and <response> [Response]',
             ],
         ],
@@ -129,6 +177,17 @@ testTypeImpl({
                 '  • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>',
             ],
         ],
+    ],
+});
+
+testTypeImpl({
+    name: 'NetworkStateWithParser',
+    type: NetworkState.withParser('NetworkStateWithParser', i =>
+        typeof i === 'number' ? { state: 'failed', code: i } : typeof i === 'object' ? { state: 'success', response: i } : i,
+    ),
+    validConversions: [
+        [500, { state: 'failed', code: 500 }],
+        [{ result: 'ok' }, { state: 'success', response: { result: 'ok' } }],
     ],
 });
 
@@ -244,7 +303,7 @@ testTypeImpl({
         [
             { nested: {} },
             [
-                'encountered multiple errors in [NestedCombinedMultiLiterals]:',
+                'errors in [NestedCombinedMultiLiterals]:',
                 '',
                 '- missing property <c> [string], got: { nested: {} }',
                 '',
@@ -254,7 +313,7 @@ testTypeImpl({
         [
             { nested: true },
             [
-                'encountered multiple errors in [NestedCombinedMultiLiterals]:',
+                'errors in [NestedCombinedMultiLiterals]:',
                 '',
                 '- missing property <c> [string], got: { nested: true }',
                 '',
@@ -265,7 +324,7 @@ testTypeImpl({
         [
             { nested: 789 },
             [
-                'encountered multiple errors in [NestedCombinedMultiLiterals]:',
+                'errors in [NestedCombinedMultiLiterals]:',
                 '',
                 '- missing property <c> [string], got: { nested: 789 }',
                 '',

@@ -11,9 +11,9 @@ const DEFAULT_BULLET = '*';
  * @param root - the failure to report
  */
 export function reportError(root: Omit<Failure, 'ok'>, level = -1, omitInput?: boolean): string {
-    const details = checkOneOrMore(root.details.map(d => (omitInput ? { ...d, omitInput } : d)));
+    const details = omitInput ? checkOneOrMore(root.details.map(d => (!d.path ? { ...d, omitInput: true } : d))) : root.details;
     // Make sure we get errors breadth first:
-    details.sort((a, b) => (a.path?.length || 0) - (b.path?.length || 0));
+    details.sort(detailSorter);
 
     if (details.length === 1) {
         const [detail] = details;
@@ -26,7 +26,7 @@ export function reportError(root: Omit<Failure, 'ok'>, level = -1, omitInput?: b
         msg && (msg += ': ');
         return msg + detailMessage(detail, level + 1);
     } else {
-        return `encountered multiple errors in [${root.type.name}]:` + reportDetails(details, level + 1);
+        return `errors in [${root.type.name}]:` + reportDetails(details, level + 1);
     }
 }
 
@@ -49,13 +49,21 @@ function reportDetails(details: FailureDetails[], level: number) {
     }
     const otherDetails = details.filter(d => d.kind !== 'missing property');
     for (const detail of otherDetails) {
-        msg += `${bullet} ${detailMessageWithContext(detail, level)}`;
+        msg += detail.kind === 'report input' ? reportInput(detail, level) : `${bullet} ${detailMessageWithContext(detail, level)}`;
     }
     return msg;
 }
 
+function reportInput(detail: FailureDetails & { kind: 'report input' }, level: number) {
+    return `\n${indent(level)}(${detailMessage(detail, level)})`;
+}
+
 function newBullet(level: number) {
-    return `${level ? '\n' : '\n\n'}${'  '.repeat(level)}${BULLETS[level] || DEFAULT_BULLET}`;
+    return `${level ? '\n' : '\n\n'}${indent(level)}${BULLETS[level] || DEFAULT_BULLET}`;
+}
+
+function indent(level: number) {
+    return '  '.repeat(level);
 }
 
 function detailMessageWithContext(detail: FailureDetails, level: number) {
@@ -93,19 +101,21 @@ function detailMessage(detail: FailureDetails, level: number) {
             return unionMessage(detail, level);
         case 'custom message':
             return `${detail.message}${maybePrintInputValue(detail)}`;
+        case 'report input':
+            return maybePrintInputValue(detail, '');
     }
 }
 
-function maybePrintInputValue(details: FailureDetails) {
+function maybePrintInputValue(details: FailureDetails, separator = ', ') {
     if (details.omitInput) {
         return '';
     }
     const printedValue = printValue(details.input);
     if ('parserInput' in details) {
         const printedParserInput = printValue(details.parserInput);
-        if (printedParserInput !== printedValue) return `, got: ${printedValue}, parsed from: ${printedParserInput}`;
+        if (printedParserInput !== printedValue) return `${separator}got: ${printedValue}, parsed from: ${printedParserInput}`;
     }
-    return `, got: ${printedValue}`;
+    return `${separator}got: ${printedValue}`;
 }
 
 function printBasicTypeAndValue(bt: BasicType | BasicType[], value: unknown) {
@@ -237,7 +247,11 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
 
     const bullet = newBullet(level + 1);
     return (
-        detailMessageWithContext({ ...failureBase, kind: 'custom message', message: 'failed every element in union' }, level + 1) +
+        detailMessageWithContext(
+            { ...failureBase, kind: 'custom message', message: 'failed every element in union:', omitInput: true },
+            level + 1,
+        ) +
+        reportInput({ ...detail, kind: 'report input' }, level) +
         otherNonTopLevelFailures.map(f => `${bullet} ${reportError(f, level + 1, true)}`).join('') +
         (details.length ? reportDetails(details, level + 1) : '')
     );
@@ -273,4 +287,14 @@ function isDiscriminatorMismatchForType(type: BaseTypeImpl<unknown> | BaseObject
 function hasKind<K extends FailureDetails['kind']>(kind: K) {
     return (failure: Failure & { details: [FailureDetails] }): failure is Failure & { details: [FailureDetails & { kind: K }] } =>
         failure.details[0].kind === kind;
+}
+
+function detailSorter(a: FailureDetails, b: FailureDetails) {
+    if (a.kind === 'report input') {
+        return -1;
+    }
+    if (b.kind === 'report input') {
+        return 1;
+    }
+    return (a.path?.length || 0) - (b.path?.length || 0);
 }

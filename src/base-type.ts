@@ -2,7 +2,6 @@ import type {
     BasicType,
     Branded,
     LiteralValue,
-    MessageDetails,
     Properties,
     PropertiesInfo,
     Result,
@@ -311,7 +310,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
                 // if no name is given, then default to the message "additional validation failed"
                 () => validation(baseResult.value, options) || 'additional validation failed',
             );
-            return tryResult.ok ? type.createResult(input, baseResult.value, tryResult.value) : tryResult;
+            return tryResult.ok ? type.createResult(baseResult.value, baseResult.value, tryResult.value) : tryResult;
         };
         const type = createType(this, { typeValidator: { configurable: true, value: fn } });
         return type;
@@ -337,7 +336,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
                 return newType.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
             }
             const tryResult = ValidationError.try({ type: newType, input }, () => constraint(baseResult.value, options));
-            return tryResult.ok ? newType.createResult(input, baseResult.value, tryResult.value) : tryResult;
+            return tryResult.ok ? newType.createResult(baseResult.value, baseResult.value, tryResult.value) : tryResult;
         };
         const newType = createType(branded<ResultType, BrandName>(this), {
             name: { configurable: true, value: name },
@@ -471,6 +470,6 @@ function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType>, options: Valida
     return valueMap as Map<unknown, Result<ResultType>>;
 }
 
-function isOk(validatorResult: boolean | string | string[] | MessageDetails | MessageDetails[]): validatorResult is true | [] {
+function isOk(validatorResult: ValidationResult): validatorResult is true | [] {
     return validatorResult === true || (Array.isArray(validatorResult) && !validatorResult.length);
 }

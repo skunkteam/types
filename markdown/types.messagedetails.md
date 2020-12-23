@@ -43,6 +43,9 @@ export declare type MessageDetails = Partial<ValidationDetails> & {
               kind: 'custom message';
               message: string;
           }
+        | {
+              kind: 'report input';
+          }
     );
 ```
 
