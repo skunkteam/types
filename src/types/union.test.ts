@@ -1,3 +1,4 @@
+import type { The } from '../interfaces';
 import { testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 import { object } from './interface';
@@ -147,6 +148,7 @@ testTypeImpl({
     ],
 });
 
+type NetworkState = The<typeof NetworkState>;
 const NetworkState = union('NetworkState', [
     object('NetworkLoadingState', { state: literal('loading') }),
     object('NetworkFailedState', { state: literal('failed'), code: number }),
@@ -182,12 +184,34 @@ testTypeImpl({
 
 testTypeImpl({
     name: 'NetworkStateWithParser',
-    type: NetworkState.withParser('NetworkStateWithParser', i =>
-        typeof i === 'number' ? { state: 'failed', code: i } : typeof i === 'object' ? { state: 'success', response: i } : i,
+    type: NetworkState.withParser(
+        'NetworkStateWithParser',
+        number
+            .or(unknownRecord)
+            .or(undefinedType)
+            .andThen(
+                (input): NetworkState => {
+                    switch (typeof input) {
+                        case 'number':
+                            return { state: 'failed', code: input };
+                        case 'object':
+                            return { state: 'success', response: input };
+                        case 'undefined':
+                            return { state: 'loading' };
+                    }
+                },
+            ),
     ),
     validConversions: [
         [500, { state: 'failed', code: 500 }],
         [{ result: 'ok' }, { state: 'success', response: { result: 'ok' } }],
+        [undefined, { state: 'loading' }],
+    ],
+    invalidConversions: [
+        [
+            'what about a string?',
+            'error in parser precondition of [NetworkStateWithParser]: expected a number, an object or an undefined, got a string ("what about a string?")',
+        ],
     ],
 });
 
