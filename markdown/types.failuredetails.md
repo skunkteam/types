@@ -4,46 +4,12 @@
 
 ## FailureDetails type
 
+Individual message with info about the performed validation for error-reporting.
+
 <b>Signature:</b>
 
 ```typescript
-export declare type FailureDetails = {
-    type: BaseTypeImpl<unknown>;
-    input: unknown;
-    parserInput?: unknown;
-    path?: PropertyKey[];
-    context?: string;
-} & (
-    | {
-          kind?: undefined;
-      }
-    | {
-          kind: 'missing property';
-          property: string;
-      }
-    | {
-          kind: 'invalid key';
-          property: string;
-          failure: Failure;
-      }
-    | {
-          kind: 'invalid literal';
-          expected: LiteralValue | LiteralValue[];
-      }
-    | {
-          kind: 'invalid basic type';
-          expected: BasicType | BasicType[];
-          expectedValue?: LiteralValue;
-      }
-    | {
-          kind: 'union';
-          failures: Failure[];
-      }
-    | {
-          kind: 'custom message';
-          message: string;
-      }
-);
+export declare type FailureDetails = ValidationDetails & MessageDetails;
 ```
 
-<b>References:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->, [Failure](./types.failure.md)<!-- -->, [LiteralValue](./types.literalvalue.md)<!-- -->, [BasicType](./types.basictype.md)
+<b>References:</b> [ValidationDetails](./types.validationdetails.md)<!-- -->, [MessageDetails](./types.messagedetails.md)

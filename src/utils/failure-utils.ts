@@ -1,4 +1,4 @@
-import type { CustomMessage, Failure, FailureDetails, OneOrMore } from '../interfaces';
+import type { CustomMessage, Failure, FailureDetails, MessageDetails, OneOrMore } from '../interfaces';
 import { printValue } from './print-utils';
 import { checkOneOrMore } from './type-utils';
 
@@ -8,20 +8,27 @@ export function prependPathToDetails(failure: Failure, key: PropertyKey): OneOrM
 
 export function prependContextToDetails(failure: Failure, context: string): OneOrMore<FailureDetails> {
     return checkOneOrMore(
-        failure.details.map(d => ({
-            ...d,
-            context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
-        })),
+        failure.details.map(d =>
+            d.path
+                ? d
+                : {
+                      ...d,
+                      context: !d.context ? context : d.context.startsWith(context) ? d.context : `${context} ${d.context}`,
+                  },
+        ),
     );
 }
 
 export function addParserInputToDetails(failure: Failure, parserInput: unknown): OneOrMore<FailureDetails> {
-    return checkOneOrMore(failure.details.map(d => ({ ...d, parserInput })));
+    if (failure.details.every(d => d.path)) {
+        return [{ ...failure, kind: 'report input', parserInput }, ...failure.details];
+    }
+    return checkOneOrMore(failure.details.map(d => (d.path ? d : { ...d, parserInput })));
 }
 
-export function evalCustomMessage(customMessage: CustomMessage, input: unknown): string | false {
+export function evalCustomMessage(message: CustomMessage, input: unknown): MessageDetails | string | false {
     return (
-        !!customMessage &&
-        (typeof customMessage === 'function' ? customMessage(printValue(input)) : `${customMessage}, got: ${printValue(input)}`)
+        !!message &&
+        (typeof message === 'function' ? { kind: 'custom message', message: message(printValue(input), input), omitInput: true } : message)
     );
 }

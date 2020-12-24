@@ -5,7 +5,7 @@ import { autoCastFailure } from '../symbols';
 export const number: Type<number> = SimpleType.create(
     'number',
     'number',
-    (type, input) => (typeof input !== 'number' ? { type, kind: 'invalid basic type', expected: 'number', input } : !Number.isNaN(input)),
+    input => (typeof input !== 'number' ? { kind: 'invalid basic type', expected: 'number' } : !Number.isNaN(input)),
     { autoCaster: numberAutoCaster },
 );
 

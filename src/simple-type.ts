@@ -16,7 +16,7 @@ export class SimpleType<ResultType> extends BaseTypeImpl<ResultType> {
     static create<ResultType>(
         name: string,
         basicType: BasicType | 'mixed',
-        simpleValidator: (type: SimpleType<ResultType>, input: unknown, options: ValidationOptions) => ValidationResult,
+        simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType>) => ValidationResult,
         options?: Pick<BaseTypeImpl<ResultType>, 'enumerableLiteralDomain'> & { autoCaster: BaseTypeImpl<ResultType>['autoCaster'] },
     ): Type<ResultType> {
         const type = new SimpleType(name, basicType, simpleValidator);
@@ -27,12 +27,12 @@ export class SimpleType<ResultType> extends BaseTypeImpl<ResultType> {
     private constructor(
         readonly name: string,
         readonly basicType: BasicType | 'mixed',
-        private readonly simpleValidator: (type: SimpleType<ResultType>, input: unknown, options: ValidationOptions) => ValidationResult,
+        private readonly simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType>) => ValidationResult,
     ) {
         super();
     }
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        return this.createResult(input, input, this.simpleValidator(this, input, options));
+        return this.createResult(input, input, this.simpleValidator(input, options, this));
     }
 }

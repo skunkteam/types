@@ -17,7 +17,7 @@ testTypeImpl({
         [
             [1, 2, 3],
             [
-                'encountered multiple errors in [string[]]:',
+                'errors in [string[]]:',
                 '',
                 '- at <[0]>: expected a string, got a number (1)',
                 '',
@@ -42,7 +42,7 @@ testTypeImpl({
         [
             [1, 2, 3],
             [
-                'encountered multiple errors in [string[].autoCast]:',
+                'errors in [string[].autoCast]:',
                 '',
                 '- at <[0]>: expected a string, got a number (1)',
                 '',
@@ -56,7 +56,9 @@ testTypeImpl({
         [undefined, []],
         ['str', ['str']],
     ],
-    invalidConversions: [[1, 'error in [string[].autoCast] at <[0]>: expected a string, got a number (1)']],
+    invalidConversions: [
+        [1, ['errors in [string[].autoCast]:', '(got: [1], parsed from: 1)', '', '- at <[0]>: expected a string, got a number (1)']],
+    ],
 });
 
 testTypeImpl({

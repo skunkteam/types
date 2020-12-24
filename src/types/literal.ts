@@ -25,8 +25,8 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
             input,
             input === this.value ||
                 (basicType(input) !== this.basicType
-                    ? { type: this, input, kind: 'invalid basic type', expected: this.basicType, expectedValue: this.value }
-                    : { type: this, input, kind: 'invalid literal', expected: this.value }),
+                    ? { kind: 'invalid basic type', expected: this.basicType, expectedValue: this.value }
+                    : { kind: 'invalid literal', expected: this.value }),
         );
     }
 }

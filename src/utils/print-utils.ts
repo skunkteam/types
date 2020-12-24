@@ -88,6 +88,12 @@ export function printPath(path: Array<PropertyKey>): string {
     return result;
 }
 
+/**
+ * Print a property-key in a JavaScript compatible way.
+ *
+ * @remarks
+ * This means that if the the `key` is a valid identifier it will be returned as is, otherwise it will be quoted.
+ */
 export function printKey(key: string): string {
     return isValidIdentifier(key) ? key : JSON.stringify(key);
 }

@@ -8,7 +8,7 @@ import { autoCastFailure } from '../symbols';
 export const boolean: Type<boolean> = SimpleType.create(
     'boolean',
     'boolean',
-    (type, input) => typeof input === 'boolean' || { type, kind: 'invalid basic type', expected: 'boolean', input },
+    input => typeof input === 'boolean' || { kind: 'invalid basic type', expected: 'boolean' },
     { autoCaster: booleanAutoCaster, enumerableLiteralDomain: [true, false] },
 );
 

@@ -1,6 +1,6 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { FailureDetails, Result, TypeImpl, ValidationOptions } from '../interfaces';
-import { decodeOptionalName, define, extensionName, isObject, prependPathToDetails, printValue } from '../utils';
+import type { MessageDetails, Result, TypeImpl, ValidationOptions } from '../interfaces';
+import { decodeOptionalName, define, extensionName, isObject, prependPathToDetails } from '../utils';
 
 /**
  * The implementation behind types created with {@link record}.
@@ -23,18 +23,17 @@ export class RecordType<
     }
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        const baseFailure = { type: this, input } as const;
         if (!isObject(input)) {
-            return this.createResult(input, undefined, { ...baseFailure, kind: 'invalid basic type', expected: 'object' });
+            return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
         const constructResult = {} as Record<KeyType, ValueType>;
-        const details: FailureDetails[] = [];
+        const details: MessageDetails[] = [];
         const missingKeys = this.keyType.enumerableLiteralDomain && new Set(this.keyType.enumerableLiteralDomain);
         for (const [key, value] of Object.entries(input)) {
             const keyResult = this.keyType.validate(key, options);
             const valueResult = this.valueType.validate(value, options);
             if (!keyResult.ok) {
-                this.strict && details.push({ ...baseFailure, kind: 'invalid key', property: key, failure: keyResult });
+                this.strict && details.push({ kind: 'invalid key', property: key, failure: keyResult });
                 continue;
             }
             missingKeys?.delete(keyResult.value);
@@ -46,7 +45,7 @@ export class RecordType<
         }
         if (missingKeys?.size) {
             for (const key of missingKeys) {
-                details.push({ input, type: this.valueType, kind: 'missing property', property: String(key) });
+                details.push({ type: this.valueType, kind: 'missing property', property: String(key) });
             }
         }
         return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
@@ -93,11 +92,7 @@ class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const number = input === '' ? NaN : +String(input);
         if (Number.isNaN(number)) {
-            return this.createResult(
-                input,
-                undefined,
-                `expected key to be numeric (because the key-type is: ${this.name}), got: ${printValue(input)}`,
-            );
+            return this.createResult(input, undefined, `expected key to be numeric (because the key-type is: ${this.name})`);
         }
         const innerResult = this.innerType.validate(number, options);
         return this.createResult(input, String(input), innerResult.ok || innerResult.details);

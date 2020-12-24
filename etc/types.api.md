@@ -84,7 +84,7 @@ export type Branded<T, BrandName extends string> = T extends WithBrands<infer Ba
 export function createType<Impl extends BaseTypeImpl<any>>(impl: Impl, override?: Partial<Record<keyof BaseTypeImpl<any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>): TypeImpl<Impl>;
 
 // @public
-export type CustomMessage = undefined | string | ((got: string) => string);
+export type CustomMessage = undefined | string | ((got: string, input: unknown) => string);
 
 // @public
 export interface Failure {
@@ -95,36 +95,8 @@ export interface Failure {
     type: BaseTypeImpl<unknown>;
 }
 
-// @public (undocumented)
-export type FailureDetails = {
-    type: BaseTypeImpl<unknown>;
-    input: unknown;
-    parserInput?: unknown;
-    path?: PropertyKey[];
-    context?: string;
-} & ({
-    kind?: undefined;
-} | {
-    kind: 'missing property';
-    property: string;
-} | {
-    kind: 'invalid key';
-    property: string;
-    failure: Failure;
-} | {
-    kind: 'invalid literal';
-    expected: LiteralValue | LiteralValue[];
-} | {
-    kind: 'invalid basic type';
-    expected: BasicType | BasicType[];
-    expectedValue?: LiteralValue;
-} | {
-    kind: 'union';
-    failures: Failure[];
-} | {
-    kind: 'custom message';
-    message: string;
-});
+// @public
+export type FailureDetails = ValidationDetails & MessageDetails;
 
 // @public (undocumented)
 export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
@@ -253,6 +225,37 @@ export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? {
     [P in keyof T]: MergeIntersection<T[P]>;
 } : T;
 
+// @public
+export type MessageDetails = Partial<ValidationDetails> & {
+    path?: PropertyKey[];
+    context?: string;
+    omitInput?: boolean;
+} & ({
+    kind?: undefined;
+} | {
+    kind: 'missing property';
+    property: string;
+} | {
+    kind: 'invalid key';
+    property: string;
+    failure: Failure;
+} | {
+    kind: 'invalid literal';
+    expected: LiteralValue | LiteralValue[];
+} | {
+    kind: 'invalid basic type';
+    expected: BasicType | BasicType[];
+    expectedValue?: LiteralValue;
+} | {
+    kind: 'union';
+    failures: Failure[];
+} | {
+    kind: 'custom message';
+    message: string;
+} | {
+    kind: 'report input';
+});
+
 // @public (undocumented)
 export const nullType: TypeImpl<LiteralType<null>>;
 
@@ -279,6 +282,9 @@ export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props
 
 // @public (undocumented)
 export function pattern<BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: CustomMessage): Type<Branded<string, BrandName>>;
+
+// @public
+export function printKey(key: string): string;
 
 // @public
 export function printPath(path: Array<PropertyKey>): string;
@@ -323,7 +329,7 @@ export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType exten
 }
 
 // @public
-export function reportError(root: Omit<Failure, 'ok'>, level?: number): string;
+export function reportError(root: Omit<Failure, 'ok'>, level?: number, omitInput?: boolean): string;
 
 // @public
 export type Result<T> = Success<T> | Failure;
@@ -332,7 +338,7 @@ export type Result<T> = Success<T> | Failure;
 export class SimpleType<ResultType> extends BaseTypeImpl<ResultType> {
     // (undocumented)
     readonly basicType: BasicType | 'mixed';
-    static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (type: SimpleType<ResultType>, input: unknown, options: ValidationOptions) => ValidationResult, options?: Pick<BaseTypeImpl<ResultType>, 'enumerableLiteralDomain'> & {
+    static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType>) => ValidationResult, options?: Pick<BaseTypeImpl<ResultType>, 'enumerableLiteralDomain'> & {
         autoCaster: BaseTypeImpl<ResultType>['autoCaster'];
     }): Type<ResultType>;
     // (undocumented)
@@ -426,6 +432,13 @@ export const unknownArray: Type<unknown[]>;
 export const unknownRecord: Type<Record<string, unknown>>;
 
 // @public
+export type ValidationDetails = {
+    type: BaseTypeImpl<unknown>;
+    input: unknown;
+    parserInput?: unknown;
+};
+
+// @public
 export class ValidationError extends Error implements Failure {
     // (undocumented)
     details: OneOrMore<FailureDetails>;
@@ -453,7 +466,7 @@ export interface ValidationOptions {
 }
 
 // @public
-export type ValidationResult = boolean | string | string[] | FailureDetails | FailureDetails[];
+export type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
 
 // @public
 export type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;

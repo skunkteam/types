@@ -14,7 +14,7 @@ describe(ValidationError, () => {
         ],
         [
             { type, input, details: [{ type, input, kind: 'custom message', message: 'custom message, hurray' }] },
-            { message: 'error in [GreatType]: custom message, hurray', type, input },
+            { message: 'error in [GreatType]: custom message, hurray, got: [custom string]', type, input },
         ],
         [
             {
@@ -27,6 +27,7 @@ describe(ValidationError, () => {
                         path: ['a', 'with space', 123],
                         kind: 'custom message',
                         message: 'expected a valid something, got something else',
+                        omitInput: true,
                     },
                 ],
             },

@@ -1,5 +1,6 @@
-import type { The } from '../interfaces';
+import type { MessageDetails, The } from '../interfaces';
 import { defaultUsualSuspects, testTypeImpl } from '../testutils';
+import { printKey, printValue } from '../utils';
 import { object } from './interface';
 import { keyof } from './keyof';
 import { literal } from './literal';
@@ -42,7 +43,7 @@ testTypeImpl({
         [
             { a: 'b', c: 'd', 123: 'this is ok, though' },
             [
-                'encountered multiple errors in [NumberRecord]:',
+                'errors in [NumberRecord]:',
                 '',
                 '- key <a> is invalid: expected key to be numeric (because the key-type is: number), got: "a"',
                 '',
@@ -67,7 +68,7 @@ testTypeImpl({
         [
             { a: 'b', c: 'd', 123.4: 'not ok', 123: 'ok' },
             [
-                'encountered multiple errors in [IntRecord]:',
+                'errors in [IntRecord]:',
                 '',
                 '- key <a> is invalid: expected key to be numeric (because the key-type is: int), got: "a"',
                 '',
@@ -96,7 +97,7 @@ testTypeImpl({
         [
             { '': 'not ok', 123: 'not ok' },
             [
-                'encountered multiple errors in [NumberLiteralUnionRecord]:',
+                'errors in [NumberLiteralUnionRecord]:',
                 '',
                 '- missing properties <"42"> [string] and <"3.14"> [string], got: { "123": "not ok", "": "not ok" }',
                 '',
@@ -116,14 +117,7 @@ testTypeImpl({
     basicType: 'object',
     validValues: [{ one: 'mississippi', two: 'mississippi' }],
     invalidValues: [
-        [
-            {},
-            [
-                'encountered multiple errors in [StrictKeyofRecord]:',
-                '',
-                '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}',
-            ],
-        ],
+        [{}, ['errors in [StrictKeyofRecord]:', '', '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}']],
         [{ one: 'mississippi' }, 'error in [StrictKeyofRecord]: missing property <two> ["mississippi"], got: { one: "mississippi" }'],
         [
             { one: 'mississippi', two: 'mississippi', three: 'mississippi' },
@@ -149,14 +143,7 @@ testTypeImpl({
         { one: 'mississippi', two: 'mississippi', three: 'amazon' },
     ],
     invalidValues: [
-        [
-            {},
-            [
-                'encountered multiple errors in [NonStrictKeyofRecord]:',
-                '',
-                '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}',
-            ],
-        ],
+        [{}, ['errors in [NonStrictKeyofRecord]:', '', '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}']],
         [{ one: 'mississippi' }, 'error in [NonStrictKeyofRecord]: missing property <two> ["mississippi"], got: { one: "mississippi" }'],
         [
             { one: 'mississippi', two: 'amazon' },
@@ -169,7 +156,13 @@ type StrangeRecord = The<typeof StrangeRecord>;
 const StrangeRecord = record('StrangeRecord', string, string).withValidation(r =>
     Object.entries(r)
         .filter(([key, value]) => key + key !== value)
-        .map(([key, value]) => `key: ${key} should have value ${key}${key}, got: ${value}`),
+        .map(
+            ([key, value]): MessageDetails => ({
+                kind: 'custom message',
+                message: `key: <${printKey(key)}> should have value ${printValue(key + key)}`,
+                input: value, // override `input` to be the property value, instead of the complete object
+            }),
+        ),
 );
 testTypeImpl({
     name: 'StrangeRecord',
@@ -180,11 +173,11 @@ testTypeImpl({
         [
             { a: 'aaa', b: 'bbbb' },
             [
-                'encountered multiple errors in [StrangeRecord]:',
+                'errors in [StrangeRecord]:',
                 '',
-                '- key: a should have value aa, got: aaa',
+                '- key: <a> should have value "aa", got: "aaa"',
                 '',
-                '- key: b should have value bb, got: bbbb',
+                '- key: <b> should have value "bb", got: "bbbb"',
             ],
         ],
     ],

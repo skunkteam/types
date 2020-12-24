@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import type { FailureDetails, The, Type } from './interfaces';
+import type { MessageDetails, The, Type } from './interfaces';
 import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
 import { boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
 import { intersection } from './types/intersection';
+import { printValue } from './utils';
 
 /** An example of a simple constraint without a custom message. */
 const SmallString = string.withConstraint('SmallString', s => s.length < 10);
@@ -25,7 +26,10 @@ testTypeImpl({
 });
 
 /** Same constraint as SmallString, but with a custom message. */
-const SmallStringCustomMsg = string.withConstraint('SmallString', s => s.length < 10 || `your string "${s}" is too long! :-(`);
+const SmallStringCustomMsg = string.withConstraint(
+    'SmallString',
+    s => s.length < 10 || { kind: 'custom message', message: `your string ${printValue(s)} is too long! :-(`, omitInput: true },
+);
 
 testTypeImpl({
     name: 'SmallString',
@@ -41,7 +45,7 @@ testTypeImpl({
 
 /** A Percentage must be between 0 and 100 inclusive, with custom error message. */
 type Percentage = The<typeof Percentage>;
-const Percentage = number.withConstraint('Percentage', n => (n >= 0 && n <= 100) || `should be between 0 and 100 inclusive, got: ${n}`);
+const Percentage = number.withConstraint('Percentage', n => (n >= 0 && n <= 100) || `should be between 0 and 100 inclusive`);
 
 testTypeImpl({
     name: 'Percentage',
@@ -64,7 +68,7 @@ testTypeImpl({
  */
 type Age = The<typeof Age>;
 const Age = int
-    .withConstraint('Age', n => (n < 0 ? 'the unborn miracle?' : n > 199 ? 'wow, that is really old!' : true))
+    .withConstraint('Age', n => (n < 0 ? 'the unborn miracle' : n > 199 ? 'wow, that is really old' : true))
     .extendWith(() => ({ MAX: 199 }));
 type ConfirmedAge = The<typeof ConfirmedAge>;
 const ConfirmedAge = Age.withBrand('ConfirmedAge').withParser(Age.andThen(age => age % 16));
@@ -75,8 +79,8 @@ testTypeImpl({
     basicType: 'number',
     validValues: [0, 1, Age.MAX],
     invalidValues: [
-        [-1, 'error in [Age]: the unborn miracle?'],
-        [200, 'error in [Age]: wow, that is really old!'],
+        [-1, 'error in [Age]: the unborn miracle, got: -1'],
+        [200, 'error in [Age]: wow, that is really old, got: 200'],
         [-1.5, defaultMessage(Age, -1.5, int)],
         [1.5, defaultMessage(Age, 1.5, int)],
     ],
@@ -88,8 +92,8 @@ testTypeImpl({
     basicType: 'number',
     validValues: [0, 1, Age.MAX],
     invalidValues: [
-        [-1, 'error in [Age]: the unborn miracle?'],
-        [200, 'error in [Age]: wow, that is really old!'],
+        [-1, 'error in [Age]: the unborn miracle, got: -1'],
+        [200, 'error in [Age]: wow, that is really old, got: 200'],
         [-1.5, defaultMessage(Age, -1.5, int)],
         [1.5, defaultMessage(Age, 1.5, int)],
         ...defaultUsualSuspects(Age, number),
@@ -100,7 +104,7 @@ testTypeImpl({
     ],
     invalidConversions: [
         ['abc', 'error in parser of [Age.autoCast]: could not autocast value: "abc"'],
-        ['-1', 'error in [Age]: the unborn miracle?'],
+        ['-1', 'error in [Age]: the unborn miracle, got: -1, parsed from: "-1"'],
     ],
 });
 
@@ -131,7 +135,7 @@ testTypeImpl({
         [
             {},
             [
-                'encountered multiple errors in [User]:',
+                'errors in [User]:',
                 '',
                 '- missing properties <name> [{ first: SmallString, last: LastNameType }] and <shoeSize> [int], got: {}',
             ],
@@ -139,7 +143,7 @@ testTypeImpl({
         [
             { name: {} },
             [
-                'encountered multiple errors in [User]:',
+                'errors in [User]:',
                 '',
                 '- missing property <shoeSize> [int], got: { name: {} }',
                 '',
@@ -148,11 +152,7 @@ testTypeImpl({
         ],
         [
             { name: {}, shoeSize: 1 },
-            [
-                'encountered multiple errors in [User]:',
-                '',
-                '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
-            ],
+            ['errors in [User]:', '', '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}'],
         ],
         [
             { name: { first: 'first' }, shoeSize: 2 },
@@ -161,11 +161,11 @@ testTypeImpl({
         [
             { name: { first: 'I have a long name!' }, shoeSize: -3 },
             [
-                'encountered multiple errors in [User]:',
+                'errors in [User]:',
                 '',
                 '- at <name>: missing property <last> [LastNameType], got: { first: "I have a long name!" }',
                 '',
-                '- at <shoeSize>: should not be negative',
+                '- at <shoeSize>: should not be negative, got: -3',
                 '',
                 '- at <name.first>: your string "I have a long name!" is too long! :-(',
             ],
@@ -173,7 +173,7 @@ testTypeImpl({
         [
             { name: { first: 'very very long' }, shoeSize: Symbol('4') },
             [
-                'encountered multiple errors in [User]:',
+                'errors in [User]:',
                 '',
                 '- at <name>: missing property <last> [LastNameType], got: { first: "very very long" }',
                 '',
@@ -204,16 +204,12 @@ testTypeImpl({
         ...defaultUsualSuspects(User.toPartial()),
         [
             { name: {} },
-            [
-                'encountered multiple errors in [Partial<User>]:',
-                '',
-                '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
-            ],
+            ['errors in [Partial<User>]:', '', '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}'],
         ],
         [
             { name: { first: 'incredibly long name' } },
             [
-                'encountered multiple errors in [Partial<User>]:',
+                'errors in [Partial<User>]:',
                 '',
                 '- at <name>: missing property <last> [LastNameType], got: { first: "incredibly long name" }',
                 '',
@@ -230,14 +226,20 @@ testTypeImpl({
 
 /** RestrictedUser is the User type with additional validation logic. */
 const RestrictedUser = User.withConstraint('RestrictedUser', user => {
-    const errors: FailureDetails[] = [];
+    const errors: MessageDetails[] = [];
     if (user.name.first === 'Bobby' && user.name.last === 'Tables') {
-        errors.push({ type: RestrictedUser, input: user.name, path: ['name'], context: 'the Bobby Tables detector' });
+        errors.push({ input: user.name, path: ['name'], context: 'the Bobby Tables detector' });
     }
     if (user.name.first.length === 5 && user.name.last.length === 6) {
-        errors.push({ type: RestrictedUser, input: user, kind: 'custom message', message: 'this User is suspicious' });
+        errors.push({ kind: 'custom message', message: 'this User is suspicious', omitInput: true });
     }
     return errors;
+}).withParser(i => {
+    if (typeof i !== 'string') {
+        return i;
+    }
+    const [first, last, shoeSize] = i.split(' ');
+    return { name: { first, last }, shoeSize: +shoeSize };
 });
 
 testTypeImpl({
@@ -256,11 +258,35 @@ testTypeImpl({
         [
             { name: { first: 'Bobby', last: 'Tables' }, shoeSize: 5 },
             [
-                'encountered multiple errors in [RestrictedUser]:',
+                'errors in [RestrictedUser]:',
                 '',
                 '- this User is suspicious',
                 '',
                 '- in the Bobby Tables detector at <name>: expected a [RestrictedUser], got: { first: "Bobby", last: "Tables" }',
+            ],
+        ],
+    ],
+    validConversions: [['Pete Johnson 20', { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 }]],
+    invalidConversions: [
+        [
+            'Bobby Tables 5',
+            [
+                'errors in [RestrictedUser]:',
+                '',
+                '- this User is suspicious',
+                '',
+                '- in the Bobby Tables detector at <name>: expected a [RestrictedUser], got: { first: "Bobby", last: "Tables" }',
+            ],
+        ],
+        [
+            'Pete',
+            [
+                'errors in [RestrictedUser]:',
+                '(got: { name: { first: "Pete", last: undefined }, shoeSize: NaN }, parsed from: "Pete")',
+                '',
+                '- in base type at <shoeSize>: expected a [number], got: NaN',
+                '',
+                '- at <name.last>: expected a string, got an undefined',
             ],
         ],
     ],
@@ -269,7 +295,7 @@ testTypeImpl({
 /** NestedFromString is an interface type that uses other types with constructors. */
 const NumberFromString = number.withParser(
     string.andThen(n => {
-        if (isNaN(+n)) throw `could not convert value to number: ${JSON.stringify(n)}`;
+        if (isNaN(+n)) throw 'could not convert value to number';
         return +n;
     }),
 );
@@ -288,7 +314,7 @@ testTypeImpl({
         [
             { a: '1', b: '2' },
             [
-                'encountered multiple errors in [NestedFromString]:',
+                'errors in [NestedFromString]:',
                 '',
                 '- at <a>: expected a number, got a string ("1")',
                 '',
@@ -312,7 +338,7 @@ testTypeImpl({
         [
             { a: 1, b: 2 },
             [
-                'encountered multiple errors in [NestedFromString]:',
+                'errors in [NestedFromString]:',
                 '',
                 '- in parser precondition at <a>: expected a string, got a number (1)',
                 '',
@@ -322,12 +348,54 @@ testTypeImpl({
         [
             { a: 'a' },
             [
-                'encountered multiple errors in [NestedFromString]:',
+                'errors in [NestedFromString]:',
                 '',
                 '- missing property <b> [number], got: { a: "a" }',
                 '',
-                '- in parser at <a>: could not convert value to number: "a"',
+                '- in parser at <a>: could not convert value to number, got: "a"',
             ],
+        ],
+    ],
+});
+
+const ComplexNesting = object('ComplexNesting', {
+    pos: NumberFromString.withValidation(n => n > 0 || 'should be positive'),
+    neg: NumberFromString.withValidation(n => n < 0 || 'should be negative'),
+})
+    .withValidation(obj => obj.pos === -obj.neg || '<pos> and <neg> should be opposites')
+    .withParser(i => (typeof i === 'string' ? { pos: i, neg: `-${i}` } : i));
+
+testTypeImpl({
+    name: 'ComplexNesting',
+    type: ComplexNesting,
+    validValues: [{ pos: 4, neg: -4 }],
+    invalidValues: [
+        [{ pos: -2, neg: -2 }, 'error in [ComplexNesting] at <pos>: should be positive, got: -2'],
+        [{ pos: 2, neg: -1 }, 'error in [ComplexNesting]: <pos> and <neg> should be opposites, got: { pos: 2, neg: -1 }'],
+    ],
+    validConversions: [
+        ['1', { pos: 1, neg: -1 }],
+        [
+            { pos: '2', neg: '-2' },
+            { pos: 2, neg: -2 },
+        ],
+    ],
+    invalidConversions: [
+        [1, 'error in base type of [ComplexNesting]: expected an object, got a number (1)'],
+        [
+            '-1',
+            [
+                'errors in [ComplexNesting]:',
+                '(got: { pos: "-1", neg: "--1" }, parsed from: "-1")',
+                '',
+                '- at <pos>: should be positive, got: -1, parsed from: "-1"',
+                '',
+                '- in parser at <neg>: could not convert value to number, got: "--1"',
+            ],
+        ],
+        [
+            { pos: '2', neg: '-3' },
+            'error in [ComplexNesting]: <pos> and <neg> should be opposites, got: { pos: 2, neg: -3 }, parsed from: { pos: "2", neg: "-3" }',
         ],
     ],
 });
@@ -356,7 +424,7 @@ testTypeImpl({
         [
             { first: {} },
             [
-                'encountered multiple errors in [IntersectionTest]:',
+                'errors in [IntersectionTest]:',
                 '',
                 '- missing property <nr> [number], got: { first: {} }',
                 '',
@@ -366,7 +434,7 @@ testTypeImpl({
         [
             { nr: true, ok: 1 },
             [
-                'encountered multiple errors in [IntersectionTest]:',
+                'errors in [IntersectionTest]:',
                 '',
                 '- at <nr>: expected a number, got a boolean (true)',
                 '',
@@ -395,11 +463,11 @@ testTypeImpl({
         [
             { a: 123, b: { name: { first: 'too long a name' }, shoeSize: -5 } },
             [
-                'encountered multiple errors in [{ a: number, b?: Partial<User> }]:',
+                'errors in [{ a: number, b?: Partial<User> }]:',
                 '',
                 '- at <b.name>: missing property <last> [LastNameType], got: { first: "too long a name" }',
                 '',
-                '- at <b.shoeSize>: should not be negative',
+                '- at <b.shoeSize>: should not be negative, got: -5',
                 '',
                 '- at <b.name.first>: your string "too long a name" is too long! :-(',
             ],
@@ -410,7 +478,7 @@ testTypeImpl({
 // Historic bug: `withValidation` did not take constructed result of prior validation into account.
 const ShoutMessage = object('ShoutMessage', {
     msg: string.withParser(string.andThen(s => s + '!')),
-}).withValidation(o => o.msg.endsWith('!') || 'speak up');
+}).withValidation(o => o.msg.endsWith('!') || { kind: 'custom message', message: 'speak up', omitInput: true });
 testTypeImpl({
     name: 'ShoutMessage',
     type: ShoutMessage,

@@ -16,7 +16,7 @@ export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
  * @remarks
  * The validation is considered a success if the result is `true` or an empty array, anything else is considered to be a failure.
  */
-export type ValidationResult = boolean | string | string[] | FailureDetails | FailureDetails[];
+export type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
 
 /**
  * The type for optional custom messages
@@ -26,7 +26,7 @@ export type ValidationResult = boolean | string | string[] | FailureDetails | Fa
  *
  * - When of type `function`, it will receive the `got` part to use inside the message.
  */
-export type CustomMessage = undefined | string | ((got: string) => string);
+export type CustomMessage = undefined | string | ((got: string, input: unknown) => string);
 
 /**
  * The validation-logic as needed by {@link BaseTypeImpl.withConstraint} and {@link BaseTypeImpl.withValidation}.
@@ -105,7 +105,50 @@ export interface Failure {
     details: OneOrMore<FailureDetails>;
 }
 
-export type FailureDetails = {
+/**
+ * Individual message with info about the performed validation for error-reporting.
+ */
+export type FailureDetails = ValidationDetails & MessageDetails;
+
+/**
+ * Individual message details with optional info about the performed validation.
+ */
+export type MessageDetails = Partial<ValidationDetails> & {
+    /**
+     * A array of keys indicating the location at which validation failed.
+     */
+    path?: PropertyKey[];
+
+    /**
+     * A message describing some context to what part of the type generated the failure.
+     *
+     * @remarks
+     * This libarary uses the contexts: `parser`, `precondition`, and `base type`, but consuming code is welcome to use any string as context.
+     */
+    context?: string;
+
+    /**
+     * Optionally omit the input after the message.
+     *
+     * @remarks
+     * By default every message is followed by `", got: ..."` or `, got: ..., parsed from: ...`, unless this setting is set to `true`.
+     */
+    omitInput?: boolean;
+} & (
+        | { kind?: undefined }
+        | { kind: 'missing property'; property: string }
+        | { kind: 'invalid key'; property: string; failure: Failure }
+        | { kind: 'invalid literal'; expected: LiteralValue | LiteralValue[] }
+        | { kind: 'invalid basic type'; expected: BasicType | BasicType[]; expectedValue?: LiteralValue }
+        | { kind: 'union'; failures: Failure[] }
+        | { kind: 'custom message'; message: string }
+        | { kind: 'report input' }
+    );
+
+/**
+ * Information about the performed validation for error-reporting.
+ */
+export type ValidationDetails = {
     /**
      * The name of the type that failed validation.
      *
@@ -127,28 +170,7 @@ export type FailureDetails = {
      * Note that a parser is applied first, yielding the input to the validator, which is then validated. So this is, when given, the real user-input.
      */
     parserInput?: unknown;
-
-    /**
-     * A array of keys indicating the location at which validation failed.
-     */
-    path?: PropertyKey[];
-
-    /**
-     * A message describing some context to what part of the type generated the failure.
-     *
-     * @remarks
-     * This libarary uses the contexts: `parser`, `precondition`, and `base type`, but consuming code is welcome to use any string as context.
-     */
-    context?: string;
-} & (
-    | { kind?: undefined }
-    | { kind: 'missing property'; property: string }
-    | { kind: 'invalid key'; property: string; failure: Failure }
-    | { kind: 'invalid literal'; expected: LiteralValue | LiteralValue[] }
-    | { kind: 'invalid basic type'; expected: BasicType | BasicType[]; expectedValue?: LiteralValue }
-    | { kind: 'union'; failures: Failure[] }
-    | { kind: 'custom message'; message: string }
-);
+};
 
 /**
  * Create a Branded type with a given `BrandName`.

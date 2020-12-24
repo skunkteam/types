@@ -151,7 +151,7 @@ The error-message is ok, but to get better error messages provide one in your va
 ```typescript
 /** A Percentage must be between 0 and 100 inclusive. */
 type Percentage = The<typeof Percentage>;
-const Percentage = number.withConstraint('Percentage', n => (n >= 0 && n <= 100) || `should be between 0 and 100 inclusive, got: ${n}`);
+const Percentage = number.withConstraint('Percentage', n => (n >= 0 && n <= 100) || 'should be between 0 and 100 inclusive');
 
 Percentage(123);
 // throws ValidationError: error in [Percentage]: should be between 0 and 100 inclusive, got: 123
@@ -181,14 +181,14 @@ User({ shoeSize: -5 });
 //
 // - missing property <name> [{ first: SmallString, last: string }], got: { shoeSize: -5 }
 //
-// - at <shoeSize>: reverse running-shoes are not supported yet
+// - at <shoeSize>: reverse running-shoes are not supported yet, got: -5
 
 User({ name: { first: "my name is so incredibly long, you wouldn't believe it" }, shoeSize: -4 });
 // throws ValidationError: encountered multiple errors in [User]:
 //
 // - at <name>: missing property <last> [string], got: { first: "my name is so  .. n't believe it" }
 //
-// - at <shoeSize>: reverse running-shoes are not supported yet
+// - at <shoeSize>: reverse running-shoes are not supported yet, got: -4
 //
 // - at <name.first>: expected a [SmallString], got: "my name is so incred ..  wouldn't believe it"
 
@@ -274,12 +274,12 @@ When reporting errors, in case of unions, the library tries to be as helpful as 
 
 ```typescript
 NetworkState({});
-// throws ValidationError: error in [NetworkState]: failed every element in union:
-//   • error in [NetworkLoadingState]: missing property <state> ["loading"], got: {}
+// throws ValidationError: error in [NetworkState]: failed every element in union, got: {}
+//   • error in [NetworkLoadingState]: missing property <state> ["loading"]
 //   • encountered multiple errors in [NetworkFailedState]:
-//     ‣ missing properties <state> ["failed"] and <code> [number], got: {}
+//     ‣ missing properties <state> ["failed"] and <code> [number]
 //   • encountered multiple errors in [NetworkSuccessState]:
-//     ‣ missing properties <state> ["success"] and <response> [Response], got: {}
+//     ‣ missing properties <state> ["success"] and <response> [Response]
 ```
 
 But whenever possible, the validation-messages will be limited to the (most likely) intended union-element:
@@ -358,7 +358,7 @@ Take the following (questionable) definition of `Age`:
 
 ```typescript
 type Age = The<typeof Age>;
-const Age = int.withConstraint('Age', n => (n >= 0 && n < 200) || `Unexpected age: ${n}`);
+const Age = int.withConstraint('Age', n => (n >= 0 && n < 200) || 'unexpected age');
 
 Age(123); // => 123
 Age('123');
@@ -369,7 +369,7 @@ When we turn on the `autoCast` feature, it will accept anything it can reasonabl
 
 ```typescript
 type Age = The<typeof Age>;
-const Age = int.withConstraint('Age', n => (n >= 0 && n < 200) || `Unexpected age: ${n}`).autoCast;
+const Age = int.withConstraint('Age', n => (n >= 0 && n < 200) || 'unexpected age').autoCast;
 
 Age(123); // => 123
 Age('123'); // => 123
