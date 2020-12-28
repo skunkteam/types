@@ -514,6 +514,47 @@ testTypeImpl({
     ],
 });
 
+const NestedParsers = object('NestedParsers', {
+    outer: object({ inner: object({ value: number.autoCast }) }).withParser(inner => ({ inner })),
+}).withParser(outer => ({ outer }));
+
+testTypeImpl({
+    name: 'NestedParsers',
+    type: NestedParsers,
+    validValues: [{ outer: { inner: { value: 123 } } }],
+    validConversions: [[{ value: '123' }, { outer: { inner: { value: 123 } } }]],
+    invalidConversions: [
+        [
+            {},
+            [
+                'errors in [NestedParsers]:',
+                // Only showing outer parse-result here by design as we have not yet found with a decent way to show multiple translations
+                // and especially how they are related without bloating the error report.
+                '(got: { outer: {} }, parsed from: {})',
+                '',
+                '- at <outer.inner>: missing property <value> [number.autoCast], got: {}',
+            ],
+        ],
+        [
+            { value: 'received' },
+            [
+                'errors in [NestedParsers]:',
+                // Only showing outer parse-result here by design as we have not yet found with a decent way to show multiple translations
+                // and especially how they are related without bloating the error report.
+                '(got: { outer: { value: "received" } }, parsed from: { value: "received" })',
+                '',
+                '- in parser at <outer.inner.value>: could not autocast value: "received"',
+            ],
+        ],
+    ],
+});
+
+testTypeImpl({
+    name: 'EdgeCase1',
+    type: number.withParser('EdgeCase1', String),
+    invalidConversions: [[1, 'error in [EdgeCase1]: expected a number, got a string ("1"), parsed from: 1']],
+});
+
 // Static types tests
 
 testTypes('TypeOf', () => {

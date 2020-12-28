@@ -15,7 +15,7 @@ export class ValidationError extends Error implements Failure {
      *
      * @param failure - the failure to throw
      */
-    static fromFailure(failure: Omit<Failure, 'ok'>): ValidationError {
+    static fromFailure(failure: Failure): ValidationError {
         return new ValidationError(reportError(failure), failure.type, failure.input, failure.details);
     }
 

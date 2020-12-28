@@ -10,24 +10,26 @@ const DEFAULT_BULLET = '*';
  *
  * @param root - the failure to report
  */
-export function reportError(root: Omit<Failure, 'ok'>, level = -1, omitInput?: boolean): string {
+export function reportError(root: Failure, level = -1, omitInput?: boolean): string {
+    const childLevel = level + 1;
     const details = omitInput ? checkOneOrMore(root.details.map(d => (!d.path ? { ...d, omitInput: true } : d))) : root.details;
     // Make sure we get errors breadth first:
     details.sort(detailSorter);
 
-    if (details.length === 1) {
+    if (details.length === 1 && !('parserInput' in root)) {
         const [detail] = details;
         const ctx = detail.context ? `${detail.context} of ` : '';
-        let msg = detail.path
-            ? `error in [${root.type.name}] at ${ctx}<${printPath(detail.path)}>`
+        const msg = detail.path
+            ? `error in [${root.type.name}] at ${ctx}<${printPath(detail.path)}>: `
             : root.type.name !== detail.type.name || prependWithTypeName(detail)
-            ? `error in ${ctx}[${root.type.name}]`
+            ? `error in ${ctx}[${root.type.name}]: `
             : '';
-        msg && (msg += ': ');
-        return msg + detailMessage(detail, level + 1);
-    } else {
-        return `errors in [${root.type.name}]:` + reportDetails(details, level + 1);
+        return msg + detailMessage(detail, childLevel);
     }
+
+    let msg = `errors in [${root.type.name}]:`;
+    'parserInput' in root && (msg += reportInput(root, childLevel));
+    return msg + reportDetails(details, childLevel);
 }
 
 function reportDetails(details: FailureDetails[], level: number) {
@@ -49,13 +51,13 @@ function reportDetails(details: FailureDetails[], level: number) {
     }
     const otherDetails = details.filter(d => d.kind !== 'missing property');
     for (const detail of otherDetails) {
-        msg += detail.kind === 'report input' ? reportInput(detail, level) : `${bullet} ${detailMessageWithContext(detail, level)}`;
+        msg += `${bullet} ${detailMessageWithContext(detail, level)}`;
     }
     return msg;
 }
 
-function reportInput(detail: FailureDetails & { kind: 'report input' }, level: number) {
-    return `\n${indent(level)}(${detailMessage(detail, level)})`;
+function reportInput(failure: Failure | FailureDetails, level: number) {
+    return `\n${indent(level)}(${maybePrintInputValue(failure, '')})`;
 }
 
 function newBullet(level: number) {
@@ -93,36 +95,36 @@ function detailMessage(detail: FailureDetails, level: number) {
                 ? `expected one of the literals ${humanList(detail.expected, 'or', printValue)}${maybePrintInputValue(detail)}`
                 : `expected the literal ${printValue(detail.expected)}${maybePrintInputValue(detail)}`;
         case 'invalid basic type': {
-            const expected = printBasicTypeAndValue(detail.expected, detail.expectedValue);
-            const got = printBasicTypeAndValue(basicType(detail.input), detail.input);
-            return `expected ${expected}, got ${got}`;
+            const expected = printBasicTypeAndValue(detail.expected, 'expectedValue' in detail ? printValue(detail.expectedValue) : '');
+            const printedValue = printValue(detail.input);
+            const got = printBasicTypeAndValue(basicType(detail.input), printedValue);
+            return `expected ${expected}, got ${got}${maybePrintParserInput(detail, printedValue)}`;
         }
         case 'union':
             return unionMessage(detail, level);
         case 'custom message':
             return `${detail.message}${maybePrintInputValue(detail)}`;
-        case 'report input':
-            return maybePrintInputValue(detail, '');
     }
 }
 
-function maybePrintInputValue(details: FailureDetails, separator = ', ') {
-    if (details.omitInput) {
+function maybePrintInputValue(details: FailureDetails | Failure, separator = ', ') {
+    if ('omitInput' in details && details.omitInput) {
         return '';
     }
     const printedValue = printValue(details.input);
-    if ('parserInput' in details) {
-        const printedParserInput = printValue(details.parserInput);
-        if (printedParserInput !== printedValue) return `${separator}got: ${printedValue}, parsed from: ${printedParserInput}`;
-    }
-    return `${separator}got: ${printedValue}`;
+    return `${separator}got: ${printedValue}${maybePrintParserInput(details, printedValue)}`;
 }
 
-function printBasicTypeAndValue(bt: BasicType | BasicType[], value: unknown) {
+function maybePrintParserInput(details: FailureDetails | Failure, printedValue: string) {
+    if ('parserInput' in details) {
+        const printedParserInput = printValue(details.parserInput);
+        if (printedParserInput !== printedValue) return `, parsed from: ${printedParserInput}`;
+    }
+    return '';
+}
+
+function printBasicTypeAndValue(bt: BasicType | BasicType[], printedValue?: string) {
     const first = Array.isArray(bt) ? bt[0] : bt;
-    // We can explicitly ignore the `undefined` value here, because `undefined` should also be reflected in the corresponding
-    // basicType `undefined`.
-    const printedValue = value !== undefined && printValue(value);
     return `${humanList(bt, 'or', an)}${printedValue && printedValue !== first ? ` (${printedValue})` : ''}`;
 }
 
@@ -251,7 +253,7 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
             { ...failureBase, kind: 'custom message', message: 'failed every element in union:', omitInput: true },
             level + 1,
         ) +
-        reportInput({ ...detail, kind: 'report input' }, level) +
+        reportInput(detail, level) +
         otherNonTopLevelFailures.map(f => `${bullet} ${reportError(f, level + 1, true)}`).join('') +
         (details.length ? reportDetails(details, level + 1) : '')
     );
@@ -290,11 +292,5 @@ function hasKind<K extends FailureDetails['kind']>(kind: K) {
 }
 
 function detailSorter(a: FailureDetails, b: FailureDetails) {
-    if (a.kind === 'report input') {
-        return -1;
-    }
-    if (b.kind === 'report input') {
-        return 1;
-    }
     return (a.path?.length || 0) - (b.path?.length || 0);
 }

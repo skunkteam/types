@@ -15,7 +15,7 @@ import { autoCastFailure, designType } from './symbols';
 import type { IntersectionType } from './types/intersection';
 import type { UnionType } from './types/union';
 import {
-    addParserInputToDetails,
+    addParserInputToFailure,
     bracketsIfNeeded,
     castArray,
     checkOneOrMore,
@@ -90,7 +90,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
                   name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
                   typeParser: {
                       configurable: true,
-                      value: (input: unknown) => {
+                      value(this: BaseTypeImpl<ResultType>, input: unknown) {
                           const autoCastResult = autoCaster.call(this, input);
                           return this.createResult(
                               input,
@@ -108,6 +108,9 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
 
     /**
      * Create a recursive autocasting version of the current type.
+     *
+     * @remarks
+     * This will replace any parser in the nested structure with the appropriate autocaster when applicable.
      */
     get autoCastAll(): this {
         return (this._instanceCache.autoCastAll ??= this.createAutoCastAllType()) as this;
@@ -125,7 +128,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      *
      * @param value - the input value to try to autocast to the appropriate form
      */
-    protected autoCaster?(this: this, value: unknown): unknown;
+    protected autoCaster?(this: BaseTypeImpl<ResultType>, value: unknown): unknown;
 
     /**
      * Verifies that a value conforms to this Type.
@@ -201,18 +204,17 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
         const previousResult = valueMap?.get(input);
         if (previousResult) return previousResult;
 
-        const baseFailure = { type: this, value: input } as const;
         let value = input;
         if (this.typeParser && options.mode === 'construct') {
             const constructorResult = this.typeParser(value, options);
             if (!constructorResult.ok) {
-                return { ...constructorResult, ...baseFailure, details: prependContextToDetails(constructorResult, 'parser') };
+                return { ...constructorResult, details: prependContextToDetails(constructorResult, 'parser') };
             }
             value = constructorResult.value;
         }
         let result = this.typeValidator(value, options);
         if (this.typeParser && options.mode === 'construct' && !result.ok) {
-            result = { ...result, details: addParserInputToDetails(result, input) };
+            result = addParserInputToFailure(result, input);
         }
         valueMap?.set(input, result);
         return result;

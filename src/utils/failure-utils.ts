@@ -19,11 +19,11 @@ export function prependContextToDetails(failure: Failure, context: string): OneO
     );
 }
 
-export function addParserInputToDetails(failure: Failure, parserInput: unknown): OneOrMore<FailureDetails> {
+export function addParserInputToFailure(failure: Failure, parserInput: unknown): Failure {
     if (failure.details.every(d => d.path)) {
-        return [{ ...failure, kind: 'report input', parserInput }, ...failure.details];
+        return { ...failure, parserInput };
     }
-    return checkOneOrMore(failure.details.map(d => (d.path ? d : { ...d, parserInput })));
+    return { ...failure, details: checkOneOrMore(failure.details.map(d => (d.path ? d : { ...d, parserInput }))) };
 }
 
 export function evalCustomMessage(message: CustomMessage, input: unknown): MessageDetails | string | false {
