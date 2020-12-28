@@ -1,5 +1,5 @@
 import type { The } from '../interfaces';
-import { testTypeImpl } from '../testutils';
+import { defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 import { object } from './interface';
 import { literal, nullType, undefinedType } from './literal';
@@ -225,8 +225,9 @@ testTypeImpl({
         [
             200,
             [
-                // TODO: expected some kind of parser report here...
-                'error in [NetworkStateWithParser]: in union element [NetworkFailedState] at <code>: numbers in 2xx range indicate success, got: 200',
+                'error in [NetworkStateWithParser]: failed every element in union:',
+                '(got: { state: "failed", code: 200 }, parsed from: 200)',
+                '  • error in [NetworkFailedState] at <code>: numbers in 2xx range indicate success, got: 200',
                 '  • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>',
             ],
         ],
@@ -256,7 +257,7 @@ testTypeImpl({
     invalidValues: [
         [{}, 'error in [StringLiteralUnion]: expected a string, got an object ({})'],
         [true, 'error in [StringLiteralUnion]: expected a string, got a boolean (true)'],
-        // TODO:
+        ...defaultUsualSuspects(StringLiteralUnion.withName('StringLiteralUnion')),
     ],
 });
 

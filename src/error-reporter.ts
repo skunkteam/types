@@ -1,6 +1,6 @@
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { BasicType, Failure, FailureDetails, OneOrMore, ValidationDetails } from './interfaces';
-import { an, basicType, checkOneOrMore, humanList, isSingle, partition, plural, printKey, printPath, printValue } from './utils';
+import { an, basicType, checkOneOrMore, humanList, isSingle, plural, printKey, printPath, printValue, remove } from './utils';
 
 const BULLETS = ['-', '•', '‣', '◦'];
 const DEFAULT_BULLET = '*';
@@ -146,126 +146,114 @@ function missingPropertyMessage(details: OneOrMore<FailureDetails & { kind: 'mis
 }
 
 function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number): string {
-    const { type, input, failures } = detail;
-    const failureBase: ValidationDetails = { type, input };
-    'parserInput' in detail && (failureBase.parserInput = detail.parserInput);
-    const [topLevelFailures, nonTopLevelFailures] = partition(failures, isTopLevelFailure);
-    const [wrongBasicTypes, otherTopLevelFailures] = partition(topLevelFailures, hasKind('invalid basic type'));
-    const details: FailureDetails[] = [];
+    const messages: string[] = [];
+    const failureBase: ValidationDetails = { type: detail.type, input: detail.input };
+    const remainingFailures = detail.failures.slice();
+    const remainingTopLevelFailures = remove(remainingFailures, isTopLevelFailure);
+    const wrongBasicTypes = remove(remainingTopLevelFailures, hasKind('invalid basic type'));
+    if (wrongBasicTypes.length === detail.failures.length) {
+        // only wrong basic types, no need for additional details here...
+        return printDetails({
+            ...failureBase,
+            kind: 'invalid basic type',
+            expected: [...new Set(wrongBasicTypes.flatMap(d => d.details[0].expected))].sort(),
+        });
+    }
+    // otherwise, add a "disregarded N union-subtypes because of wrong basic type"-message.
     if (wrongBasicTypes.length) {
-        details.push(
-            msg(
-                `disregarded ${wrongBasicTypes.length} ${plural(wrongBasicTypes, 'union-subtype')} that ${plural(
-                    wrongBasicTypes,
-                    'does',
-                    'do',
-                )} not accept ${an(basicType(input))}`,
-            ),
+        messages.push(
+            `disregarded ${wrongBasicTypes.length} ${plural(wrongBasicTypes, 'union-subtype')} that ${plural(
+                wrongBasicTypes,
+                'does',
+                'do',
+            )} not accept ${an(basicType(detail.input))}`,
         );
     }
-    // let remainingFailures: Failure[];
-    if (!nonTopLevelFailures.length) {
-        if (!otherTopLevelFailures.length) {
-            // no need for additional details here
-            return detailMessageWithContext(
-                {
-                    ...failureBase,
-                    kind: 'invalid basic type',
-                    expected: [...new Set(wrongBasicTypes.flatMap(d => d.details[0].expected))].sort(),
-                },
-                level + 1,
-            );
+    // now, we have processed wrongBasicTypes, all our failures are now in `remainingFailures` and `remainingTopLevelFailures`
+    if (!remainingFailures.length) {
+        // apparently only top-level failures...
+        if (isSingle(remainingTopLevelFailures)) {
+            return printDetails(remainingTopLevelFailures[0].details, `union element [${remainingTopLevelFailures[0].type.name}]`);
         }
-        if (isSingle(otherTopLevelFailures)) {
-            return printSingleMessage({
-                ...otherTopLevelFailures[0].details[0],
-                context: `union element [${otherTopLevelFailures[0].type.name}]`,
-            });
-        }
-        if (otherTopLevelFailures.every(hasKind('invalid literal'))) {
-            return printSingleMessage({
+        if (remainingTopLevelFailures.every(hasKind('invalid literal'))) {
+            return printDetails({
                 ...failureBase,
                 kind: 'invalid literal',
-                expected: otherTopLevelFailures.flatMap(f => f.details[0].expected),
+                expected: remainingTopLevelFailures.flatMap(f => f.details[0].expected),
                 context: 'subset of union',
             });
         }
     }
-    const [withDiscriminatorMismatch, otherNonTopLevelFailures] = partition(
-        [...otherTopLevelFailures, ...nonTopLevelFailures],
-        hasDiscriminatorMismatch,
-    );
-    const mismatchedDiscriminators = withDiscriminatorMismatch.map(fail => {
+    // ok, put our unhandled top-level failures back in `remainingFailures` and try a different strategy
+    remainingFailures.unshift(...remainingTopLevelFailures);
+
+    // we ignore all other errors from union-elements that have a mismatched discriminator
+    const mismatchedDiscriminators = remove(remainingFailures, hasDiscriminatorMismatch).map(fail => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const detail = fail.details.find(isDiscriminatorMismatchForType(fail.type))!;
         return { type: fail.type, path: detail.path, detail };
     });
-    if (!otherNonTopLevelFailures.length) {
-        // TODO: make first-class failure kind
+    if (!remainingFailures.length) {
+        // only mismatched discriminators left
         for (const mismatch of mismatchedDiscriminators) {
             const requiredValues = humanList(
                 mismatch.detail.kind === 'invalid literal' ? mismatch.detail.expected : mismatch.detail.expectedValue,
                 'or',
                 printValue,
             );
-            details.push(
-                msg(
-                    `[${mismatch.type.name}] requires <${printPath(mismatch.path)}> to be ${requiredValues}${maybePrintInputValue(
-                        mismatch.detail,
-                    )}`,
-                ),
+            messages.push(
+                `[${mismatch.type.name}] requires <${printPath(mismatch.path)}> to be ${requiredValues}${maybePrintInputValue(
+                    mismatch.detail,
+                )}`,
             );
         }
-        return printSingleMessage({
-            ...failureBase,
-            kind: 'custom message',
-            message: `every subtype of union has at least one discriminator mismatch`,
-            omitInput: true,
-        });
+        return printDetails(customMessage('every subtype of union has at least one discriminator mismatch'));
     }
+
+    // the failures in remainingFailures are now failures that have correct basic type and no discriminator-mismatch
     if (mismatchedDiscriminators.length) {
         const mismatchedDiscriminatorPaths = [...new Set(mismatchedDiscriminators.map(d => printPath(d.path)))];
-        details.push(
-            msg(
-                `disregarded ${mismatchedDiscriminators.length} ${plural(
-                    mismatchedDiscriminators,
-                    'union-subtype',
-                )} due to a mismatch in values of ${plural(mismatchedDiscriminatorPaths, 'discriminator')} ${humanList(
-                    mismatchedDiscriminatorPaths,
-                    'and',
-                    p => `<${p}>`,
-                )}`,
-            ),
+        messages.push(
+            `disregarded ${mismatchedDiscriminators.length} ${plural(
+                mismatchedDiscriminators,
+                'union-subtype',
+            )} due to a mismatch in values of ${plural(mismatchedDiscriminatorPaths, 'discriminator')} ${humanList(
+                mismatchedDiscriminatorPaths,
+                'and',
+                p => `<${p}>`,
+            )}`,
         );
     }
-    if (isSingle(otherNonTopLevelFailures)) {
-        const detailsOfSingleFailure = otherNonTopLevelFailures[0].details;
-        const context = `union element [${otherNonTopLevelFailures[0].type.name}]`;
-        if (isSingle(detailsOfSingleFailure)) {
-            return printSingleMessage({ ...detailsOfSingleFailure[0], context });
-        }
-        return reportDetails([...otherNonTopLevelFailures[0].details.map(d => ({ ...d, context })), ...details], level + 1);
+    if (isSingle(remainingFailures) && !('parserInput' in detail)) {
+        return printDetails(remainingFailures[0].details, `union element [${remainingFailures[0].type.name}]`);
     }
 
     const bullet = newBullet(level + 1);
     return (
-        detailMessageWithContext(
-            { ...failureBase, kind: 'custom message', message: 'failed every element in union:', omitInput: true },
-            level + 1,
-        ) +
+        detailMessageWithContext(customMessage('failed every element in union:'), level + 1) +
         reportInput(detail, level) +
-        otherNonTopLevelFailures.map(f => `${bullet} ${reportError(f, level + 1, true)}`).join('') +
-        (details.length ? reportDetails(details, level + 1) : '')
+        remainingFailures.map(f => `${bullet} ${reportError(f, level + 1, true)}`).join('') +
+        printMessages()
     );
 
-    function msg(message: string): FailureDetails {
-        return { type, input, kind: 'custom message', message, omitInput: true };
+    function printDetails(details: FailureDetails | FailureDetails[], context?: string) {
+        if (Array.isArray(details) && isSingle(details)) {
+            [details] = details;
+        }
+        if (context) {
+            details = Array.isArray(details) ? details.map(d => ({ ...d, context })) : { ...details, context };
+        }
+        return (
+            (Array.isArray(details) ? reportDetails(details, level + 1) : detailMessageWithContext(details, level + 1)) + printMessages()
+        );
     }
 
-    function printSingleMessage(mainDetail: FailureDetails) {
-        let msg = detailMessageWithContext(mainDetail, level + 1);
-        if (details.length) msg += reportDetails(details, level + 1);
-        return msg;
+    function printMessages() {
+        return messages.length ? reportDetails(messages.map(customMessage), level + 1) : '';
+    }
+
+    function customMessage(message: string): FailureDetails {
+        return { ...failureBase, kind: 'custom message', message, omitInput: true };
     }
 }
 
