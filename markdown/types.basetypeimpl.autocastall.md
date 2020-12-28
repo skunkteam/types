@@ -11,3 +11,7 @@ Create a recursive autocasting version of the current type.
 ```typescript
 get autoCastAll(): this;
 ```
+
+## Remarks
+
+This will replace any parser in the nested structure with the appropriate autocaster when applicable.

@@ -9,16 +9,16 @@ Creates an human-readable error report of the given failure.
 <b>Signature:</b>
 
 ```typescript
-export declare function reportError(root: Omit<Failure, 'ok'>, level?: number, omitInput?: boolean): string;
+export declare function reportError(root: Failure, level?: number, omitInput?: boolean): string;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                    | Description           |
-| --------- | ------------------------------------------------------- | --------------------- |
-| root      | Omit&lt;[Failure](./types.failure.md)<!-- -->, 'ok'&gt; | the failure to report |
-| level     | number                                                  |                       |
-| omitInput | boolean                                                 |                       |
+| Parameter | Type                          | Description           |
+| --------- | ----------------------------- | --------------------- |
+| root      | [Failure](./types.failure.md) | the failure to report |
+| level     | number                        |                       |
+| omitInput | boolean                       |                       |
 
 <b>Returns:</b>
 

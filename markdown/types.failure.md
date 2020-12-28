@@ -14,9 +14,10 @@ export interface Failure
 
 ## Properties
 
-| Property                              | Type                                                                                                 | Description                                |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| [details](./types.failure.details.md) | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; | The details of the failure (at least one), |
-| [input](./types.failure.input.md)     | unknown                                                                                              | The input value.                           |
-| [ok](./types.failure.ok.md)           | false                                                                                                |                                            |
-| [type](./types.failure.type.md)       | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       | The type that failed validation.           |
+| Property                                       | Type                                                                                                 | Description                                                           |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| [details](./types.failure.details.md)          | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; | The details of the failure (at least one),                            |
+| [input](./types.failure.input.md)              | unknown                                                                                              | The input value.                                                      |
+| [ok](./types.failure.ok.md)                    | false                                                                                                |                                                                       |
+| [parserInput?](./types.failure.parserinput.md) | unknown                                                                                              | <i>(Optional)</i> The value input value to the parser, if applicable. |
+| [type](./types.failure.type.md)                | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       | The type that failed validation.                                      |

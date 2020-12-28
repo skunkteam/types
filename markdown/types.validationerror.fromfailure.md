@@ -9,14 +9,14 @@ Creates a ValidationError with a human-readable error-report based on the given 
 <b>Signature:</b>
 
 ```typescript
-static fromFailure(failure: Omit<Failure, 'ok'>): ValidationError;
+static fromFailure(failure: Failure): ValidationError;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                    | Description          |
-| --------- | ------------------------------------------------------- | -------------------- |
-| failure   | Omit&lt;[Failure](./types.failure.md)<!-- -->, 'ok'&gt; | the failure to throw |
+| Parameter | Type                          | Description          |
+| --------- | ----------------------------- | -------------------- |
+| failure   | [Failure](./types.failure.md) | the failure to throw |
 
 <b>Returns:</b>
 

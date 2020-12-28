@@ -46,7 +46,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     assert(input: unknown): asserts input is ResultType;
     get autoCast(): this;
     get autoCastAll(): this;
-    protected autoCaster?(this: this, value: unknown): unknown;
+    protected autoCaster?(this: BaseTypeImpl<ResultType>, value: unknown): unknown;
     abstract readonly basicType: BasicType | 'mixed';
     check(input: unknown): ResultType;
     construct(input: unknown): ResultType;
@@ -92,6 +92,7 @@ export interface Failure {
     input: unknown;
     // (undocumented)
     ok: false;
+    parserInput?: unknown;
     type: BaseTypeImpl<unknown>;
 }
 
@@ -252,8 +253,6 @@ export type MessageDetails = Partial<ValidationDetails> & {
 } | {
     kind: 'custom message';
     message: string;
-} | {
-    kind: 'report input';
 });
 
 // @public (undocumented)
@@ -329,7 +328,7 @@ export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType exten
 }
 
 // @public
-export function reportError(root: Omit<Failure, 'ok'>, level?: number, omitInput?: boolean): string;
+export function reportError(root: Failure, level?: number, omitInput?: boolean): string;
 
 // @public
 export type Result<T> = Success<T> | Failure;
@@ -442,7 +441,7 @@ export type ValidationDetails = {
 export class ValidationError extends Error implements Failure {
     // (undocumented)
     details: OneOrMore<FailureDetails>;
-    static fromFailure(failure: Omit<Failure, 'ok'>): ValidationError;
+    static fromFailure(failure: Failure): ValidationError;
     // (undocumented)
     input: unknown;
     // (undocumented)
