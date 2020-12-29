@@ -39,7 +39,7 @@ describe(ValidationError, () => {
         ],
     ];
     test.each(CASES)('with input: %p', (input, props) => {
-        const err = ValidationError.fromFailure(input);
+        const err = ValidationError.fromFailure({ ...input, ok: false });
         expect({ ...err, message: err.message }).toMatchObject(props);
         expect(err).toBeInstanceOf(ValidationError);
         expect(err).toBeInstanceOf(Error);

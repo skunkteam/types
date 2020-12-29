@@ -103,6 +103,14 @@ export interface Failure {
      * The details of the failure (at least one),
      */
     details: OneOrMore<FailureDetails>;
+
+    /**
+     * The value input value to the parser, if applicable.
+     *
+     * @remarks
+     * Note that a parser is applied first, yielding the input to the validator, which is then validated. So this is, when given, the real user-input.
+     */
+    parserInput?: unknown;
 }
 
 /**
@@ -142,7 +150,6 @@ export type MessageDetails = Partial<ValidationDetails> & {
         | { kind: 'invalid basic type'; expected: BasicType | BasicType[]; expectedValue?: LiteralValue }
         | { kind: 'union'; failures: Failure[] }
         | { kind: 'custom message'; message: string }
-        | { kind: 'report input' }
     );
 
 /**

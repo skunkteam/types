@@ -1,5 +1,5 @@
 import type { The } from '../interfaces';
-import { testTypeImpl } from '../testutils';
+import { defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 import { object } from './interface';
 import { literal, nullType, undefinedType } from './literal';
@@ -151,7 +151,10 @@ testTypeImpl({
 type NetworkState = The<typeof NetworkState>;
 const NetworkState = union('NetworkState', [
     object('NetworkLoadingState', { state: literal('loading') }),
-    object('NetworkFailedState', { state: literal('failed'), code: number }),
+    object('NetworkFailedState', {
+        state: literal('failed'),
+        code: number.withValidation(n => n >= 300 || 'numbers in 2xx range indicate success'),
+    }),
     object('NetworkSuccessState', { state: literal('success'), response: unknownRecord.withName('Response') }),
 ]);
 testTypeImpl({
@@ -176,6 +179,13 @@ testTypeImpl({
             { state: 'failed' },
             [
                 'error in [NetworkState]: in union element [NetworkFailedState]: missing property <code> [number], got: { state: "failed" }',
+                '  • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>',
+            ],
+        ],
+        [
+            { state: 'failed', code: 201 },
+            [
+                'error in [NetworkState]: in union element [NetworkFailedState] at <code>: numbers in 2xx range indicate success, got: 201',
                 '  • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>',
             ],
         ],
@@ -212,6 +222,15 @@ testTypeImpl({
             'what about a string?',
             'error in parser precondition of [NetworkStateWithParser]: expected a number, an object or an undefined, got a string ("what about a string?")',
         ],
+        [
+            200,
+            [
+                'error in [NetworkStateWithParser]: failed every element in union:',
+                '(got: { state: "failed", code: 200 }, parsed from: 200)',
+                '  • error in [NetworkFailedState] at <code>: numbers in 2xx range indicate success, got: 200',
+                '  • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>',
+            ],
+        ],
     ],
 });
 
@@ -238,7 +257,7 @@ testTypeImpl({
     invalidValues: [
         [{}, 'error in [StringLiteralUnion]: expected a string, got an object ({})'],
         [true, 'error in [StringLiteralUnion]: expected a string, got a boolean (true)'],
-        // TODO:
+        ...defaultUsualSuspects(StringLiteralUnion.withName('StringLiteralUnion')),
     ],
 });
 

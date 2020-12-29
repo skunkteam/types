@@ -9,15 +9,15 @@ The logic that is used in the autocasting version of the current type.
 <b>Signature:</b>
 
 ```typescript
-protected autoCaster?(this: this, value: unknown): unknown;
+protected autoCaster?(this: BaseTypeImpl<ResultType>, value: unknown): unknown;
 ```
 
 ## Parameters
 
-| Parameter | Type    | Description                                                |
-| --------- | ------- | ---------------------------------------------------------- |
-| this      | this    |                                                            |
-| value     | unknown | the input value to try to autocast to the appropriate form |
+| Parameter | Type                                                              | Description                                                |
+| --------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
+| this      | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt; |                                                            |
+| value     | unknown                                                           | the input value to try to autocast to the appropriate form |
 
 <b>Returns:</b>
 
