@@ -1,0 +1,15 @@
+name: PR
+on:
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    build-docs:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install deps
+              run: npm ci
+            - name: Run PR script
+              run: npm run pr
