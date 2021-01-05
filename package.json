@@ -5,17 +5,17 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "tsc --build",
+        "build": "npm-run-all clean tsc test lint",
         "clean": "rm -rf dist temp coverage && tsc --build --clean",
+        "tsc": "tsc --build",
         "test": "jest",
         "lint": "eslint . --ext .ts",
-        "format": "prettier -w src README.md",
-        "prepare": "npm-run-all clean build test lint",
+        "pr": "npm-run-all api format",
+        "api": "npm-run-all api:*",
         "api:extract": "api-extractor run --local --verbose --typescript-compiler-folder=node_modules/typescript",
         "api:document": "api-documenter markdown --input-folder temp",
         "api:prettier": "prettier -w markdown",
-        "api": "npm-run-all api:*",
-        "pr": "npm-run-all api format"
+        "format": "prettier -w src README.md"
     },
     "repository": {
         "type": "git",
