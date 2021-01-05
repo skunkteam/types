@@ -9,11 +9,13 @@
         "clean": "rm -rf dist temp coverage && tsc --build --clean",
         "test": "jest",
         "lint": "eslint . --ext .ts",
+        "format": "prettier -w src README.md",
+        "prepare": "npm-run-all clean build test lint",
         "api:extract": "api-extractor run --local --verbose --typescript-compiler-folder=node_modules/typescript",
         "api:document": "api-documenter markdown --input-folder temp",
-        "api": "npm-run-all api:* && prettier -w markdown",
-        "prepare": "npm-run-all clean build test lint",
-        "pr": "npm-run-all prepare api && prettier -w src README.md"
+        "api:prettier": "prettier -w markdown",
+        "api": "npm-run-all api:*",
+        "pr": "npm-run-all api format"
     },
     "repository": {
         "type": "git",

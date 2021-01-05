@@ -9,7 +9,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - name: Install deps
-              run: npm ci
             - name: Run PR script
-              run: npm run pr
+              run: |
+                  npm ci
+                  npm run pr
+                  [[ -z $(git status -s) ]]
