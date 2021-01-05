@@ -13,4 +13,7 @@ jobs:
               run: |
                   npm ci
                   npm run pr
+            - name: Check no changes
+              run: |
+                  git status -s
                   [[ -z $(git status -s) ]]

@@ -1,4 +1,4 @@
-#  Runtime type-validation with auto-derived TypeScript types
+# Runtime type-validation with auto-derived TypeScript types
 
 Inspired by [io-ts](https://github.com/gcanti/io-ts), but without the functional programming (lingo).
 
