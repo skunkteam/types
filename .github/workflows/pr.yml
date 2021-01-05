@@ -2,17 +2,18 @@ name: PR
 on:
     pull_request:
         branches: [main]
-    workflow_dispatch:
 
 jobs:
     build-docs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - name: Run PR script
-              run: |
-                  npm ci
-                  npm run pr
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: '12.x'
+            - run: npm ci
+            - run: npm run build
+            - run: npm run pr
             - name: Check no changes
               run: |
                   git status -s

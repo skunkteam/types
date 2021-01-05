@@ -1,21 +1,21 @@
 {
     "name": "@skunkteam/types",
-    "version": "1.1.0",
+    "version": "0.0.0-development",
     "description": "Runtime type-validation with TypeScript support",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "tsc --build",
+        "build": "npm-run-all clean tsc test lint",
         "clean": "rm -rf dist temp coverage && tsc --build --clean",
+        "tsc": "tsc --build",
         "test": "jest",
         "lint": "eslint . --ext .ts",
-        "format": "prettier -w src README.md",
-        "prepare": "npm-run-all clean build test lint",
+        "pr": "npm-run-all api format",
+        "api": "npm-run-all api:*",
         "api:extract": "api-extractor run --local --verbose --typescript-compiler-folder=node_modules/typescript",
         "api:document": "api-documenter markdown --input-folder temp",
         "api:prettier": "prettier -w markdown",
-        "api": "npm-run-all api:*",
-        "pr": "npm-run-all api format"
+        "format": "prettier -w src README.md"
     },
     "repository": {
         "type": "git",
@@ -42,6 +42,7 @@
         "npm-run-all": "^4.1.5",
         "prettier": "^2.2.1",
         "reflect-metadata": "^0.1.13",
+        "semantic-release": "^17.3.1",
         "ts-jest": "^26.4.4",
         "typescript": "^4.1.3"
     },

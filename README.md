@@ -177,14 +177,14 @@ const User = object('User', {
 });
 
 User({ shoeSize: -5 });
-// throws ValidationError: encountered multiple errors in [User]:
+// throws ValidationError: errors in [User]:
 //
 // - missing property <name> [{ first: SmallString, last: string }], got: { shoeSize: -5 }
 //
 // - at <shoeSize>: reverse running-shoes are not supported yet, got: -5
 
 User({ name: { first: "my name is so incredibly long, you wouldn't believe it" }, shoeSize: -4 });
-// throws ValidationError: encountered multiple errors in [User]:
+// throws ValidationError: errors in [User]:
 //
 // - at <name>: missing property <last> [string], got: { first: "my name is so  .. n't believe it" }
 //
@@ -210,7 +210,7 @@ const Name = object('Name', {
 });
 
 Name({ first: 1 });
-// throws ValidationError: encountered multiple errors in [Name]:
+// throws ValidationError: errors in [Name]:
 //
 // - missing property <last> [string], got: { first: 1 }
 //
@@ -274,11 +274,12 @@ When reporting errors, in case of unions, the library tries to be as helpful as 
 
 ```typescript
 NetworkState({});
-// throws ValidationError: error in [NetworkState]: failed every element in union, got: {}
+// throws ValidationError: error in [NetworkState]: failed every element in union:
+// (got: {})
 //   • error in [NetworkLoadingState]: missing property <state> ["loading"]
-//   • encountered multiple errors in [NetworkFailedState]:
+//   • errors in [NetworkFailedState]:
 //     ‣ missing properties <state> ["failed"] and <code> [number]
-//   • encountered multiple errors in [NetworkSuccessState]:
+//   • errors in [NetworkSuccessState]:
 //     ‣ missing properties <state> ["success"] and <response> [Response]
 ```
 
