@@ -21,6 +21,11 @@
         "type": "git",
         "url": "git+https://github.com/skunkteam/types.git"
     },
+    "release": {
+        "branches": [
+            "main"
+        ]
+    },
     "author": "Skunk Team",
     "license": "MIT",
     "bugs": {
