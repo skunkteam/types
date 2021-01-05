@@ -1,0 +1,19 @@
+name: PR
+on:
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    build-docs:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Run PR script
+              run: |
+                  npm ci
+                  npm run pr
+            - name: Check no changes
+              run: |
+                  git status -s
+                  [[ -z $(git status -s) ]]
