@@ -49,7 +49,7 @@ Sometimes however, it would be really nice to have nominal types (i.e. types tha
 TypeScript currently has limited support for nominal types, but we can work around this limitation with "branding". Without going into too much details, this allows us to do the following:
 
 ```typescript
-// This is a built-in type, so you don't need to do this yourself, but is a good
+// This is a built-in type, so you don't need to do this yourself, but it's a good
 // example of a branded type. The type `int` defined here is a subtype of number,
 // checked by the `Number.isInteger` function and given the brand `int`.
 const int = number.withConstraint('int', Number.isInteger);
@@ -91,8 +91,8 @@ setPageNumber(myValue);
 setPageNumber(1234);
 
 // It is also possible to sub-type branded types. Example:
-const uint = int.withConstraint('uint', n => n >= 0);
 type uint = The<typeof uint>;
+const uint = int.withConstraint('uint', n => n >= 0);
 
 // Valid:
 const a: number = uint(123);
@@ -110,7 +110,7 @@ Note that brands are string-literals, so make sure to use unique brand-names for
 
 When using the `emitDecoratorMetadata` feature of the TypeScript compiler, the compiler will emit some runtime-accessible metadata about all declarations that have decorators. This metadata includes the actual classes that are used as types for parameters or return-types (see https://www.typescriptlang.org/docs/handbook/decorators.html for examples).
 
-It enables libraries that perform automatic type-validation based on TypeScript typings of a method or constructor. This is done in several frameworks/libraries and can be very convenient. It is limited to classes however, because in TypeScript other types have no runtime aspect. When defining types using this library, types **do** have a runtime aspect. So This library enables the use of any type (even a regexp-validated string, an enum, etc.) as type in a decorated method and makes sure the right metadata is available at runtime for runtime validation. (see [this example of Nest.js integration](#nest.js-integration))
+It enables libraries that perform automatic type-validation based on TypeScript typings of a method or constructor. This is done in several frameworks/libraries and can be very convenient. It is limited to classes however, because in TypeScript other types have no runtime aspect. When defining types using this library, types **do** have a runtime aspect. So this library enables the use of any type (even a regexp-validated string, an enum, etc.) as type in a decorated method and makes sure the right metadata is available at runtime for runtime validation. (see [this example of Nest.js integration](#nest.js-integration))
 
 When using types in combination with the `emitDecoratorMetadata` feature, make sure to always create a TypeScript type with the same name as the runtime type-validator, as follows:
 
@@ -219,7 +219,7 @@ Name({ first: 1 });
 
 Note that `Name` does not complain about a missing `middle` property (because that property is optional).
 
-By default, `object` validators strip unknown properties. In a future version, that will be configurable.
+By default, `object` validators strip unknown properties. In a future version, this behavior will be configurable.
 
 ```typescript
 Name({ first: 'first', last: 'last', middle: 'middle', title: 'title' });
