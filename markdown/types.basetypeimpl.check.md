@@ -24,4 +24,6 @@ ResultType
 
 ## Remarks
 
+When given a value that does not conform to the Type, throws an exception.
+
 Note that this does not invoke the parser (including the auto-caster). Use [BaseTypeImpl.construct()](./types.basetypeimpl.construct.md)
