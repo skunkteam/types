@@ -164,7 +164,6 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * @remarks
      * When given a value that does not conform to the Type, throws an exception.
      *
-     * @remarks
      * Note that this does not invoke the parser (including the auto-caster). Use {@link BaseTypeImpl.construct}
      *
      * @param input - the value to check
