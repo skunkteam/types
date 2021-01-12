@@ -422,7 +422,7 @@ Answer('nope');
 ### Literals
 
 It is quite common to construct (large) object literals in code or in unit tests. Since the type-constructors accepts
-`unknown` as an argument, you run the risk of loosing code completion. However, each type also has a
+`unknown` as an argument, you run the risk of losing code completion. However, each type also has a
 [`.literal`](markdown/types.basetypeimpl.literal.md) feature
 
 ```typescript
@@ -447,7 +447,7 @@ const fullUser: User = {
     shoeSize: int(48),
 };
 const literalUser = User.literal({
-    // code completion and no need for guarding simple literals due to autoCasting :-)
+    // code completion and no need for guarding simple literals :-)
     name: {
         first: 'John',
         last: 'Doe',
