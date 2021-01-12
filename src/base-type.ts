@@ -180,6 +180,8 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * @remarks
      * When given a value that either cannot be parsed by the optional parser or does not conform to the Type, throws an exception.
      *
+     * `SomeType(...)` is shorthand for `SomeType.construct(...)`
+     *
      * @param input - the input value to parse and validate
      */
     construct(input: unknown): ResultType {

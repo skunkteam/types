@@ -25,3 +25,5 @@ ResultType
 ## Remarks
 
 When given a value that either cannot be parsed by the optional parser or does not conform to the Type, throws an exception.
+
+`SomeType(...)` is shorthand for `SomeType.construct(...)`
