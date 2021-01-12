@@ -419,6 +419,51 @@ Answer('nope');
 // throws ValidationError: error in parser of [Answer]: expected a ["yes" | "no"], got: "nope"
 ```
 
+### Literals
+
+It is quite common to construct (large) object literals in code or in unit tests. Since the type-constructors accepts
+`unknown` as an argument, you run the risk of loosing code completion. However, each type also has a
+[`.literal`](markdown/types.basetypeimpl.literal.md) feature
+
+```typescript
+const NonEmptyString = string.withConstraint('NonEmptyString', s => !!s.length);
+type User = The<typeof User>;
+const User = object('User', {
+    name: object({
+        first: NonEmptyString,
+        last: NonEmptyString,
+    }),
+    shoeSize: int,
+});
+const user = User({
+    // this would not get code completion as the functions accepts `unknown` :-(
+});
+const fullUser: User = {
+    // gets code completion, but requires you to type guard every literal :-(
+    name: {
+        first: NonEmptyString('John'),
+        last: NonEmptyString('Doe'),
+    },
+    shoeSize: int(48),
+};
+const literalUser = User.literal({
+    // code completion and no need for guarding simple literals due to autoCasting :-)
+    name: {
+        first: 'John',
+        last: 'Doe',
+    },
+    shoeSize: 48,
+});
+// constructing a simple object with the same code completion support using DeepUnbranded utility
+const simpleUser: DeepUnbranded<User> = {
+    name: {
+        first: 'John',
+        last: 'Doe',
+    },
+    shoeSize: 48,
+};
+```
+
 ## Nest.js integration
 
 One of the frameworks that provides features for runtime validation based on the TypeScript types of parameters is [Nest.js](https://nestjs.com/). The following is an example of integration with Nest.js using a generic type-validation pipe:

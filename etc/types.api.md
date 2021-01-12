@@ -56,6 +56,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
     extendWith<E>(factory: (type: this) => E): this & E;
     is(input: unknown): input is ResultType;
+    literal(input: DeepUnbranded<ResultType>): ResultType;
     abstract readonly name: string;
     or<Other extends BaseTypeImpl<unknown>>(_other: Other): TypeImpl<UnionType<[this, Other]>>;
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
@@ -85,6 +86,11 @@ export function createType<Impl extends BaseTypeImpl<any>>(impl: Impl, override?
 
 // @public
 export type CustomMessage = undefined | string | ((got: string, input: unknown) => string);
+
+// @public
+export type DeepUnbranded<T> = T extends WithBrands<infer Base, any> ? Base : T extends Record<string, unknown> ? {
+    [P in keyof T]: DeepUnbranded<T[P]>;
+} : T;
 
 // @public
 export interface Failure {
