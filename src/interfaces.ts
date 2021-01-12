@@ -197,6 +197,13 @@ export type WithBrands<T, BrandNames extends string> = T & { [brands]: { [P in B
 /** Unbrand a given type (not recursive). */
 export type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
 
+/** Unbrand a given type (recursive). */
+export type DeepUnbranded<T> = T extends WithBrands<infer Base, any>
+    ? Base
+    : T extends Record<string, unknown>
+    ? { [P in keyof T]: DeepUnbranded<T[P]> }
+    : T;
+
 /**
  * The properties of an object type.
  *
