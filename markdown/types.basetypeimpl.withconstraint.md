@@ -25,4 +25,4 @@ withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<
 
 ## Remarks
 
-Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a seperate type, see [Branded](./types.branded.md) for more information.
+Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a separate type, see [Branded](./types.branded.md) for more information.

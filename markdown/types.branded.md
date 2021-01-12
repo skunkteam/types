@@ -18,4 +18,4 @@ export declare type Branded<T, BrandName extends string> = T extends WithBrands<
 
 ## Remarks
 
-In order for TypeScript to consider a type seperate from another type, we need to brand it. When a type is branded TypeScript will manage correct assignability during TypeScript-compilation, e.g. `int` is assignable to `number`<!-- -->, but `number` is not assignable to `int`<!-- -->.
+In order for TypeScript to consider a type separate from another type, we need to brand it. When a type is branded TypeScript will manage correct assignability during TypeScript-compilation, e.g. `int` is assignable to `number`<!-- -->, but `number` is not assignable to `int`<!-- -->.

@@ -18,4 +18,4 @@ Used by [BaseTypeImpl.validate()](./types.basetypeimpl.validate.md)<!-- -->.
 
 -   `'check'`<!-- -->: Only validate, no auto-casting or parsing performed
 
--   `'construct'`<!-- -->: First parse (if applicable), then valdate and return the result of the parsing step when succesful.
+-   `'construct'`<!-- -->: First parse (if applicable), then valdate and return the result of the parsing step when successful.

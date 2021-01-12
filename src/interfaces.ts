@@ -131,7 +131,7 @@ export type MessageDetails = Partial<ValidationDetails> & {
      * A message describing some context to what part of the type generated the failure.
      *
      * @remarks
-     * This libarary uses the contexts: `parser`, `precondition`, and `base type`, but consuming code is welcome to use any string as context.
+     * This library uses the contexts: `parser`, `precondition`, and `base type`, but consuming code is welcome to use any string as context.
      */
     context?: string;
 
@@ -183,7 +183,7 @@ export type ValidationDetails = {
  * Create a Branded type with a given `BrandName`.
  *
  * @remarks
- * In order for TypeScript to consider a type seperate from another type, we need to brand it. When a type is branded TypeScript will
+ * In order for TypeScript to consider a type separate from another type, we need to brand it. When a type is branded TypeScript will
  * manage correct assignability during TypeScript-compilation, e.g. `int` is assignable to `number`, but `number` is not assignable to
  * `int`.
  */
@@ -229,7 +229,7 @@ export type Writable<T> = { -readonly [P in keyof T]: T[P] };
  *
  * - `'check'`: Only validate, no auto-casting or parsing performed
  *
- * - `'construct'`: First parse (if applicable), then valdate and return the result of the parsing step when succesful.
+ * - `'construct'`: First parse (if applicable), then valdate and return the result of the parsing step when successful.
  */
 export type ValidationMode = 'check' | 'construct';
 
