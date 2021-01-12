@@ -269,7 +269,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * Create a new instance of this Type with the given name.
      *
      * @remarks
-     * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a seperate type, see {@link Branded} for more information.
+     * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a separate type, see {@link Branded} for more information.
      *
      * @param name - the new name to use in error messages
      */
@@ -348,7 +348,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * Create a new type use the given constraint function to restrict the current type.
      *
      * @remarks
-     * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a seperate type, see {@link Branded} for more information.
+     * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a separate type, see {@link Branded} for more information.
      *
      * @param name - the new name to use in error messages
      * @param constraint - the additional validation to restrict the current type
