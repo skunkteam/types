@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import type { MessageDetails, The, Type } from './interfaces';
+import type { DeepUnbranded, MessageDetails, The, Type, Unbranded } from './interfaces';
 import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
 import { boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
@@ -591,6 +591,29 @@ testTypes('TypeOf', () => {
     assignableTo<MyGenericWrapper<User>>({ ok: true, inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: int(5) } });
     assignableTo<{ ok: boolean; inner: User }>({} as MyGenericWrapper<User>);
     assignableTo<{ ok: boolean; inner: User }>({} as WithUser);
+});
+
+testTypes('unbranding and literals', () => {
+    User.literal({
+        name: {
+            first: 'John',
+            last: 'Doe',
+        },
+        shoeSize: 48,
+    });
+    type WithUser = The<typeof WithUser>;
+    const WithUser = MyGenericWrapper(User);
+    WithUser.literal({
+        ok: true,
+        inner: {
+            name: { first: 'John', last: 'Doe' },
+            shoeSize: 48,
+        },
+    });
+    assignableTo<Unbranded<Percentage>>(42);
+    assignableTo<DeepUnbranded<Percentage>>(42);
+    assignableTo<DeepUnbranded<User>>({ name: { first: 'John', last: 'Doe' }, shoeSize: 48 });
+    assignableTo<DeepUnbranded<WithUser>>({ ok: true, inner: { name: { first: 'John', last: 'Doe' }, shoeSize: 48 } });
 });
 
 testTypes('assignability of sub-brands', () => {

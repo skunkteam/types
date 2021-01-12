@@ -1,6 +1,7 @@
 import type {
     BasicType,
     Branded,
+    DeepUnbranded,
     LiteralValue,
     Properties,
     PropertiesInfo,
@@ -187,6 +188,30 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
         const result = this.validate(input);
         if (!result.ok) throw ValidationError.fromFailure(result);
         return result.value;
+    }
+
+    /**
+     * Calls any registered parsers or auto-caster, verifies that the resulting value conforms to this Type and returns it if it does.
+     *
+     * @remarks
+     * When given a value that either cannot be parsed by the optional parser or does not conform to the Type, throws an exception.
+     *
+     * This is the same as {@link BaseTypeImpl.construct}, but accepts an argument that has a similar structure to the type itself, so
+     * code editors will offer code completion for this literal argument.
+     *
+     * Example:
+     * ```typescript
+     * const User = object('User', { id: int });
+     * const user = User.literal({
+     *     // proper code completion here
+     *     id: 1234,
+     * })
+     * ```
+     *
+     * @param input - the input value to parse and validate
+     */
+    literal(input: DeepUnbranded<ResultType>): ResultType {
+        return this.construct(input);
     }
 
     /**
