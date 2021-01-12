@@ -236,7 +236,7 @@ export type Writable<T> = { -readonly [P in keyof T]: T[P] };
  *
  * - `'check'`: Only validate, no auto-casting or parsing performed
  *
- * - `'construct'`: First parse (if applicable), then valdate and return the result of the parsing step when successful.
+ * - `'construct'`: First parse (if applicable), then validate and return the result of the parsing step when successful.
  */
 export type ValidationMode = 'check' | 'construct';
 
