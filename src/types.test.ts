@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import type { DeepUnbranded, MessageDetails, The, Type, Unbranded } from './interfaces';
 import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
-import { boolean, int, number, object, string } from './types';
+import { array, boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
 import { intersection } from './types/intersection';
 import { printValue } from './utils';
@@ -614,6 +614,13 @@ testTypes('unbranding and literals', () => {
     assignableTo<DeepUnbranded<Percentage>>(42);
     assignableTo<DeepUnbranded<User>>({ name: { first: 'John', last: 'Doe' }, shoeSize: 48 });
     assignableTo<DeepUnbranded<WithUser>>({ ok: true, inner: { name: { first: 'John', last: 'Doe' }, shoeSize: 48 } });
+
+    type BrandedWithArray = The<typeof BrandedWithArray>;
+    const BrandedWithArray = object({
+        int,
+        array: array(User).withConstraint('SpecialArray', () => true),
+    }).withConstraint('SpecialObject', () => true);
+    assignableTo<DeepUnbranded<BrandedWithArray>>({ int: 123, array: [{ name: { first: 'first', last: 'last' }, shoeSize: 12 }] });
 });
 
 testTypes('assignability of sub-brands', () => {

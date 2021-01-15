@@ -88,9 +88,11 @@ export function createType<Impl extends BaseTypeImpl<any>>(impl: Impl, override?
 export type CustomMessage = undefined | string | ((got: string, input: unknown) => string);
 
 // @public
-export type DeepUnbranded<T> = T extends WithBrands<infer Base, any> ? Base : T extends Record<string, unknown> ? {
-    [P in keyof T]: DeepUnbranded<T[P]>;
-} : T;
+export type DeepUnbranded<T> = T extends ReadonlyArray<unknown> ? {
+    [P in keyof T & number]: DeepUnbranded<T[P]>;
+} : T extends Record<string, unknown> ? {
+    [P in Exclude<keyof T, typeof brands>]: DeepUnbranded<T[P]>;
+} : Unbranded<T>;
 
 // @public
 export interface Failure {
