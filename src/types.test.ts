@@ -615,12 +615,19 @@ testTypes('unbranding and literals', () => {
     assignableTo<DeepUnbranded<User>>({ name: { first: 'John', last: 'Doe' }, shoeSize: 48 });
     assignableTo<DeepUnbranded<WithUser>>({ ok: true, inner: { name: { first: 'John', last: 'Doe' }, shoeSize: 48 } });
 
-    type BrandedWithArray = The<typeof BrandedWithArray>;
-    const BrandedWithArray = object({
+    type ComplexBrandedScenario = The<typeof ComplexBrandedScenario>;
+    const ComplexBrandedScenario = object({
         int,
-        array: array(User).withConstraint('SpecialArray', () => true),
-    }).withConstraint('SpecialObject', () => true);
-    assignableTo<DeepUnbranded<BrandedWithArray>>({ int: 123, array: [{ name: { first: 'first', last: 'last' }, shoeSize: 12 }] });
+        array: array(
+            User.withOptional({
+                optional: int,
+            }).withConstraint('SpecialUser', () => true),
+        ).withConstraint('SpecialArray', () => true),
+    })
+        .withOptional({ optional: SmallString })
+        .withConstraint('SpecialObject', () => true);
+
+    assignableTo<DeepUnbranded<ComplexBrandedScenario>>({ int: 123, array: [{ name: { first: 'first', last: 'last' }, shoeSize: 12 }] });
 });
 
 testTypes('assignability of sub-brands', () => {

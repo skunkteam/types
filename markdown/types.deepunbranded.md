@@ -14,9 +14,12 @@ export declare type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
           [P in keyof T & number]: DeepUnbranded<T[P]>;
       }
     : T extends Record<string, unknown>
-    ? {
-          [P in Exclude<keyof T, typeof brands>]: DeepUnbranded<T[P]>;
-      }
+    ? Omit<
+          {
+              [P in keyof T]: DeepUnbranded<T[P]>;
+          },
+          typeof brands
+      >
     : Unbranded<T>;
 ```
 
