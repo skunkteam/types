@@ -9,10 +9,6 @@ import { printValue } from './utils';
 /** An example of a simple constraint without a custom message. */
 const SmallString = string.withConstraint('SmallString', s => s.length < 10);
 
-test('autoCast instances should not leak', () => {
-    expect(string.autoCast).not.toBe(SmallString.autoCast);
-});
-
 testTypeImpl({
     name: 'SmallString',
     type: SmallString,
@@ -107,6 +103,8 @@ testTypeImpl({
         ['-1', 'error in [Age]: the unborn miracle, got: -1, parsed from: "-1"'],
     ],
 });
+
+testTypeImpl({ name: 'ConfirmedAge', type: ConfirmedAge, validConversions: [[18, 2]] });
 
 /** User is a basic interface type. */
 type User = The<typeof User>;

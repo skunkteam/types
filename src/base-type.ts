@@ -84,27 +84,28 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      */
     get autoCast(): this {
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        const { autoCaster } = this;
-        return (this._instanceCache.autoCast ??= !autoCaster
-            ? this
-            : createType(this, {
-                  name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
-                  typeParser: {
-                      configurable: true,
-                      value(this: BaseTypeImpl<ResultType>, input: unknown) {
-                          const autoCastResult = autoCaster.call(this, input);
-                          return this.createResult(
-                              input,
-                              autoCastResult,
-                              autoCastResult !== autoCastFailure || {
-                                  kind: 'custom message',
-                                  message: `could not autocast value: ${printValue(input)}`,
-                                  omitInput: true,
-                              },
-                          );
+        const { autoCaster, typeParser } = this;
+        return (this._instanceCache.autoCast ??=
+            !autoCaster || typeParser
+                ? this
+                : createType(this, {
+                      name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
+                      typeParser: {
+                          configurable: true,
+                          value(this: BaseTypeImpl<ResultType>, input: unknown) {
+                              const autoCastResult = autoCaster.call(this, input);
+                              return this.createResult(
+                                  input,
+                                  autoCastResult,
+                                  autoCastResult !== autoCastFailure || {
+                                      kind: 'custom message',
+                                      message: `could not autocast value: ${printValue(input)}`,
+                                      omitInput: true,
+                                  },
+                              );
+                          },
                       },
-                  },
-              })) as this;
+                  })) as this;
     }
 
     /**
