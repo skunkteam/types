@@ -16,6 +16,7 @@ export interface InterfaceTypeOptions
 
 | Property                                                                | Type    | Description                                                                                                                       |
 | ----------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| [checkOnly?](./types.interfacetypeoptions.checkonly.md)                 | boolean | <i>(Optional)</i> Force this type (including all nested property-types recursively) to be validated in 'check' mode.              |
 | [name?](./types.interfacetypeoptions.name.md)                           | string  | <i>(Optional)</i> The optional name for the type, uses a default TypeScript-like name if no name is given.                        |
 | [partial?](./types.interfacetypeoptions.partial.md)                     | boolean | <i>(Optional)</i> Mark all properties as optional in this type.                                                                   |
 | [strictMissingKeys?](./types.interfacetypeoptions.strictmissingkeys.md) | boolean | <i>(Optional)</i> Discriminate between missing keys and undefined values. Is off by default because that is what TypeScript does. |
