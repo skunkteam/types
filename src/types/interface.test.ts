@@ -133,3 +133,38 @@ describe(object, () => {
         value.s = 'str';
     });
 });
+
+describe('checkOnly', () => {
+    type CheckOnlyType = The<typeof CheckOnlyType>;
+    const CheckOnlyType = object({ name: 'CheckOnlyType', checkOnly: true }, { s: string, n: number });
+
+    type RegularType = The<typeof RegularType>;
+    const RegularType = object('RegularType', { s: string, n: number });
+
+    const correctObj = { s: '2', n: 3 };
+    const wrongObj = { s: 2, n: '3' };
+
+    test('return the original object', () => {
+        expect(CheckOnlyType(correctObj)).toBe(correctObj);
+
+        expect(RegularType(correctObj)).not.toBe(correctObj);
+        expect(RegularType(correctObj)).toEqual(correctObj);
+    });
+
+    test('not fail on extra properties', () => {
+        const objWithExtraProps = { ...correctObj, foo: 'bar' };
+
+        expect(CheckOnlyType(objWithExtraProps)).toBe(objWithExtraProps);
+
+        expect(RegularType(objWithExtraProps)).not.toBe(objWithExtraProps);
+        expect(RegularType(objWithExtraProps)).toEqual(correctObj);
+    });
+
+    test('fail if applicable', () => {
+        expect(() => CheckOnlyType(wrongObj)).toThrow();
+        expect(() => CheckOnlyType.autoCastAll(wrongObj)).toThrow();
+
+        expect(() => RegularType(wrongObj)).toThrow();
+        expect(RegularType.autoCastAll(wrongObj)).toEqual(correctObj);
+    });
+});

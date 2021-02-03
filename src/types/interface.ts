@@ -27,6 +27,11 @@ export interface InterfaceTypeOptions {
     strictMissingKeys?: boolean;
     // /** When constructing values, allow unknown properties to pass unvalidated into the constructed value. */
     // TODO: allowUnknownProperties?: boolean; // default: false
+    /**
+     * Mark this type and al sub types as 'checkOnly'. When set, the validator will always use 'check' mode and returns the original object if it passes.
+     * _Note: This will also disable any parser or autoCast set on this type_
+     */
+    checkOnly?: boolean;
 }
 
 /**
@@ -50,6 +55,9 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const { strictMissingKeys, partial } = this.options;
+        if (this.options.checkOnly) {
+            options = { ...options, mode: 'check' };
+        }
         if (!isObject(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
