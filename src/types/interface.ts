@@ -27,9 +27,11 @@ export interface InterfaceTypeOptions {
     strictMissingKeys?: boolean;
     /**
      * Force this type (including all nested property-types recursively) to be validated in 'check' mode.
+     *
      * @remarks
      * The result of the validation (when successful) will be the original input.
-     * _Note: Any autoCast or parser on nested types will have no effect in 'check' mode._
+     *
+     * Note: Any autoCast or parser on nested types will have no effect in 'check' mode.
      */
     checkOnly?: boolean;
     // /** When constructing values, allow unknown properties to pass unvalidated into the constructed value. */

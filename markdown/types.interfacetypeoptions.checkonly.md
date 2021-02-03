@@ -14,4 +14,6 @@ checkOnly?: boolean;
 
 ## Remarks
 
-The result of the validation (when successful) will be the original input. \_Note: Any autoCast or parser on nested types will have no effect in 'check' mode.\_
+The result of the validation (when successful) will be the original input.
+
+Note: Any autoCast or parser on nested types will have no effect in 'check' mode.
