@@ -145,6 +145,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
 
 // @public
 export interface InterfaceTypeOptions {
+    checkOnly?: boolean;
     name?: string;
     partial?: boolean;
     strictMissingKeys?: boolean;
