@@ -25,13 +25,15 @@ export interface InterfaceTypeOptions {
     partial?: boolean;
     /** Discriminate between missing keys and undefined values. Is off by default because that is what TypeScript does. */
     strictMissingKeys?: boolean;
-    // /** When constructing values, allow unknown properties to pass unvalidated into the constructed value. */
-    // TODO: allowUnknownProperties?: boolean; // default: false
     /**
-     * Mark this type and al sub types as 'checkOnly'. When set, the validator will always use 'check' mode and returns the original object if it passes.
-     * _Note: This will also disable any autoCast set on this type_
+     * Force this type (including all nested property-types recursively) to be validated in 'check' mode.
+     * @remarks
+     * The result of the validation (when successful) will be the original input.
+     * _Note: Any autoCast or parser on nested types will have no effect in 'check' mode._
      */
     checkOnly?: boolean;
+    // /** When constructing values, allow unknown properties to pass unvalidated into the constructed value. */
+    // TODO: allowUnknownProperties?: boolean; // default: false
 }
 
 /**
@@ -56,6 +58,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const { strictMissingKeys, partial } = this.options;
         if (this.options.checkOnly) {
+            // can copy here, because this is done after adding the 'visitedMap'
             options = { ...options, mode: 'check' };
         }
         if (!isObject(input)) {

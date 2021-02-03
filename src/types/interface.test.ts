@@ -157,6 +157,7 @@ describe('checkOnly', () => {
         expect(CheckOnlyType(objWithExtraProps)).toBe(objWithExtraProps);
 
         expect(RegularType(objWithExtraProps)).not.toBe(objWithExtraProps);
+        expect(RegularType(objWithExtraProps)).not.toEqual(objWithExtraProps);
         expect(RegularType(objWithExtraProps)).toEqual(correctObj);
     });
 
