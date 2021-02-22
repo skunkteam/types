@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
         "target": "ES2019",
-        "module": "CommonJS",
+        "module": "ES2015",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-        "outDir": "dist",
+        "outDir": "dist/esm",
         "rootDir": "src",
         "moduleResolution": "node",
         "importHelpers": true,
