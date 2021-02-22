@@ -7,3 +7,5 @@ node_modules
 /api-extractor.json
 /tsconfig.*
 /coverage
+*.tsbuildinfo
+*.tgz
