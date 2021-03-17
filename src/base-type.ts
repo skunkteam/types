@@ -459,6 +459,8 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
     }
 }
 
+const FUNCTION_PROTOTYPE_DESCRIPTORS = Object.getOwnPropertyDescriptors(Function.prototype);
+
 /**
  * Create a Type from the given type-implementation.
  *
@@ -478,6 +480,7 @@ export function createType<Impl extends BaseTypeImpl<any>>(
     const type = Object.defineProperties(
         Object.setPrototypeOf((input: unknown) => type.construct(input) as unknown, Object.getPrototypeOf(impl)),
         {
+            ...FUNCTION_PROTOTYPE_DESCRIPTORS,
             ...Object.getOwnPropertyDescriptors(impl),
             ...override,
             _instanceCache: { configurable: true, value: {} },
