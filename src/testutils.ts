@@ -60,6 +60,9 @@ export function testTypeImpl({
         validConversions &&
             test.each(validConversions)('converting input %p into %p', (input, output) => {
                 expect(type(input)).toEqual(output);
+                expect(type.apply(undefined, [input])).toEqual(output);
+                expect(type.bind(undefined, input)()).toEqual(output);
+                expect(type.call(undefined, input)).toEqual(output);
             });
 
         invalidConversions &&
