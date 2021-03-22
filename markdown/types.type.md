@@ -16,4 +16,4 @@ export declare type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
 
 ## Remarks
 
-This is the most generic interface that describes a type. It does not provide access to type-specific utilities / properties. Use [TypeImpl](./types.typeimpl.md) for an interface that describes the actual Type implementation.
+This is the most generic interface that describes a type. It does not provide access to type-specific utilities / properties. Use [TypeImpl](./types.typeimpl.md) for an interface that describes the actual Type implementation. `ResultType` can be any type, both scalar and object-like. Use `ObjectType<ResultType>` to restrict `ResultType` to object-like types.

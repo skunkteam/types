@@ -276,6 +276,9 @@ export function numberAutoCaster(input: unknown): number | typeof autoCastFailur
 // @public
 export function object<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]): FullType<Props>;
 
+// @public
+export type ObjectType<ResultType> = TypeImpl<BaseObjectLikeTypeImpl<ResultType>>;
+
 // @public (undocumented)
 export type ObjectUnionToIntersection<Union> = (Union extends unknown ? (k: Union) => void : never) extends (k: infer Intersection) => void ? MergeIntersection<Intersection> : never;
 
