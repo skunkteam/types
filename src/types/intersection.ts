@@ -11,18 +11,9 @@ import type {
     TypeOf,
     ValidationOptions,
 } from '../interfaces';
-import {
-    bracketsIfNeeded,
-    decodeOptionalName,
-    defaultObjectRep,
-    define,
-    extensionName,
-    humanList,
-    isFailure,
-    isObject,
-    partition,
-} from '../utils';
+import { bracketsIfNeeded, decodeOptionalName, defaultObjectRep, define, extensionName, humanList, isFailure, partition } from '../utils';
 import { UnionType } from './union';
+import { unknownRecord } from './unknown';
 
 /**
  * The implementation behind types created with {@link intersection} and {@link BaseObjectLikeTypeImpl.and}.
@@ -49,7 +40,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly possibleDiscriminators: Array<{ path: string[]; values: LiteralValue[] }> = this.types.flatMap(t => t.possibleDiscriminators);
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>> {
-        if (!isObject(input)) {
+        if (!unknownRecord.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
         const [failures, successes] = partition(

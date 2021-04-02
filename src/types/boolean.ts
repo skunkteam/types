@@ -1,16 +1,15 @@
 import type { Type } from '../interfaces';
 import { SimpleType } from '../simple-type';
 import { autoCastFailure } from '../symbols';
+import { basicTypeChecker } from '../utils';
 
 /**
  * Built-in validator for boolean-values.
  */
-export const boolean: Type<boolean> = SimpleType.create(
-    'boolean',
-    'boolean',
-    input => typeof input === 'boolean' || { kind: 'invalid basic type', expected: 'boolean' },
-    { autoCaster: booleanAutoCaster, enumerableLiteralDomain: [true, false] },
-);
+export const boolean: Type<boolean> = SimpleType.create('boolean', 'boolean', basicTypeChecker('boolean'), {
+    autoCaster: booleanAutoCaster,
+    enumerableLiteralDomain: [true, false],
+});
 
 export function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure {
     switch (input) {

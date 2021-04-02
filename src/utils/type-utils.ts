@@ -1,4 +1,4 @@
-import type { BasicType, Failure, OneOrMore, Result } from '../interfaces';
+import type { BasicType, Failure, OneOrMore, Result, ValidationResult } from '../interfaces';
 
 export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
     return typeof value === 'object' && !!value;
@@ -34,4 +34,8 @@ export function basicType(value: unknown): BasicType {
 
 export function isFailure(result: Result<unknown>): result is Failure {
     return !result.ok;
+}
+
+export function basicTypeChecker(expected: BasicType) {
+    return (input: unknown): ValidationResult => basicType(input) === expected || { kind: 'invalid basic type', expected };
 }

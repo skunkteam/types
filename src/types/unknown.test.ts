@@ -12,11 +12,13 @@ testTypeImpl({
     name: 'Record<string, unknown>',
     type: unknownRecord,
     basicType: 'object',
-    validValues: [{}, { with: { some: 'content' } }, { [123]: Symbol() }, new Error(), [], ['whatever']],
+    validValues: [{}, { with: { some: 'content' } }, { [123]: Symbol() }, new Error()],
     invalidValues: [
         ['', basicTypeMessage(unknownRecord, '')],
         ['a real string', basicTypeMessage(unknownRecord, 'a real string')],
         [123, basicTypeMessage(unknownRecord, 123)],
+        [[], basicTypeMessage(unknownRecord, [])],
+        [['whatever'], basicTypeMessage(unknownRecord, ['whatever'])],
         ...defaultUsualSuspects(unknownRecord),
     ],
 });
