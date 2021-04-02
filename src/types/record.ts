@@ -1,6 +1,7 @@
 import { BaseTypeImpl, createType } from '../base-type';
 import type { MessageDetails, Result, TypeImpl, ValidationOptions } from '../interfaces';
-import { decodeOptionalName, define, extensionName, isObject, prependPathToDetails } from '../utils';
+import { decodeOptionalName, define, extensionName, prependPathToDetails } from '../utils';
+import { unknownRecord } from './unknown';
 
 /**
  * The implementation behind types created with {@link record}.
@@ -23,7 +24,7 @@ export class RecordType<
     }
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        if (!isObject(input)) {
+        if (!unknownRecord.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
         const constructResult = {} as Record<KeyType, ValueType>;

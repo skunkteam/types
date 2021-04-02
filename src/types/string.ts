@@ -1,16 +1,11 @@
 import type { Branded, CustomMessage, Type } from '../interfaces';
 import { SimpleType } from '../simple-type';
-import { evalCustomMessage } from '../utils';
+import { basicTypeChecker, evalCustomMessage } from '../utils';
 
 /**
  * Built-in validator for string-values.
  */
-export const string: Type<string> = SimpleType.create(
-    'string',
-    'string',
-    input => typeof input === 'string' || { kind: 'invalid basic type', expected: 'string' },
-    { autoCaster: String },
-);
+export const string: Type<string> = SimpleType.create('string', 'string', basicTypeChecker('string'), { autoCaster: String });
 
 export function pattern<BrandName extends string>(
     name: BrandName,

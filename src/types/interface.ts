@@ -11,9 +11,10 @@ import type {
     ValidationOptions,
     Writable,
 } from '../interfaces';
-import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, isObject, prependPathToDetails } from '../utils';
+import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, prependPathToDetails } from '../utils';
 import { intersection, IntersectionType } from './intersection';
 import { LiteralType } from './literal';
+import { unknownRecord } from './unknown';
 
 /**
  * Options for {@link object}.
@@ -63,7 +64,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
             // can copy here, because this is done after adding the 'visitedMap'
             options = { ...options, mode: 'check' };
         }
-        if (!isObject(input)) {
+        if (!unknownRecord.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
         const constructResult = {} as Record<string, unknown>;

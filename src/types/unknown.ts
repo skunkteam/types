@@ -1,6 +1,6 @@
 import type { Type } from '../interfaces';
 import { SimpleType } from '../simple-type';
-import { castArray, isObject } from '../utils';
+import { basicTypeChecker, castArray } from '../utils';
 
 /**
  * Built-in validator that accepts all values.
@@ -19,7 +19,7 @@ export const unknown: Type<unknown> = SimpleType.create('unknown', 'mixed', () =
 export const unknownRecord: Type<Record<string, unknown>> = SimpleType.create(
     'Record<string, unknown>',
     'object',
-    input => isObject(input) || { kind: 'invalid basic type', expected: 'object' },
+    basicTypeChecker('object'),
 );
 
 /**
@@ -28,9 +28,4 @@ export const unknownRecord: Type<Record<string, unknown>> = SimpleType.create(
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknownArray: Type<unknown[]> = SimpleType.create(
-    'unknown[]',
-    'array',
-    input => Array.isArray(input) || { kind: 'invalid basic type', expected: 'array' },
-    { autoCaster: castArray },
-);
+export const unknownArray: Type<unknown[]> = SimpleType.create('unknown[]', 'array', basicTypeChecker('array'), { autoCaster: castArray });
