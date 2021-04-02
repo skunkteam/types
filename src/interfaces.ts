@@ -1,4 +1,4 @@
-import type { BaseTypeImpl } from './base-type';
+import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { brands, designType } from './symbols';
 
 /**
@@ -7,8 +7,19 @@ import type { brands, designType } from './symbols';
  * @remarks
  * This is the most generic interface that describes a type. It does not provide
  * access to type-specific utilities / properties. Use {@link TypeImpl} for an interface that describes the actual Type implementation.
+ * `ResultType` can be any type, both scalar and object-like. Use `ObjectType<ResultType>` to restrict `ResultType` to object-like types.
  */
 export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
+
+/**
+ * A type-validator/-parser that validates or parses object-like type `ResultType`.
+ *
+ * @remarks
+ * This is the most generic interface that describes an object-like type. It does not provide
+ * access to type-specific utilities / properties. Use {@link TypeImpl} for an interface that describes the actual Type implementation.
+ * Use `Type<ResultType>` to also allow scalar values for `ResultType`.
+ */
+export type ObjectType<ResultType> = TypeImpl<BaseObjectLikeTypeImpl<ResultType>>;
 
 /**
  * The possible return values inside validation and constraint functions.
