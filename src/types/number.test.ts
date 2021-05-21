@@ -10,6 +10,9 @@ testTypeImpl({
         ['123', basicTypeMessage(number, '123')],
         [NaN, defaultMessage(number, NaN)],
         ['', basicTypeMessage(number, '')],
+        [' ', basicTypeMessage(number, ' ')],
+        ['_', basicTypeMessage(number, '_')],
+        ['\n\r\v\t\f', basicTypeMessage(number, '\n\r\v\t\f')],
         ...defaultUsualSuspects(number),
     ],
 });
@@ -22,6 +25,7 @@ testTypeImpl({
         [NaN, defaultMessage(int, NaN, number)],
         ['a string', basicTypeMessage(int, 'a string', number)],
         ['', basicTypeMessage(int, '', number)],
+        [' ', basicTypeMessage(int, ' ', number)],
         [-10.5, defaultMessage(int, -10.5)],
         [10.123, defaultMessage(int, 10.123)],
         [-Infinity, defaultMessage(int, -Infinity)],
@@ -38,6 +42,7 @@ testTypeImpl({
         ['123', basicTypeMessage(number.autoCast, '123')],
         [NaN, defaultMessage(number.autoCast, NaN)],
         ['', basicTypeMessage(number.autoCast, '')],
+        [' ', basicTypeMessage(number.autoCast, ' ')],
     ],
     validConversions: [
         [123, 123],
@@ -46,6 +51,10 @@ testTypeImpl({
     ],
     invalidConversions: [
         ['', 'error in parser of [number.autoCast]: could not autocast value: ""'],
+        [' ', 'error in parser of [number.autoCast]: could not autocast value: " "'],
+        ['\n\r\v\t\f', 'error in parser of [number.autoCast]: could not autocast value: "\\n\\r\\u000b\\t\\f"'],
+        [{ toString: () => ' ' }, 'error in parser of [number.autoCast]: could not autocast value: " "'],
+        ['_', 'error in parser of [number.autoCast]: could not autocast value: "_"'],
         ['abc', 'error in parser of [number.autoCast]: could not autocast value: "abc"'],
         [NaN, 'error in parser of [number.autoCast]: could not autocast value: NaN'],
     ],

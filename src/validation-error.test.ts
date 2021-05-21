@@ -10,11 +10,11 @@ describe(ValidationError, () => {
     const CASES: [failure: Omit<Failure, 'ok'>, expected: Partial<ValidationError>][] = [
         [
             { type, input, details: [{ type, input }] },
-            { message: 'expected a [GreatType], got: [custom string]', type, input },
+            { message: 'expected a [GreatType], got: "[custom string]"', type, input },
         ],
         [
             { type, input, details: [{ type, input, kind: 'custom message', message: 'custom message, hurray' }] },
-            { message: 'error in [GreatType]: custom message, hurray, got: [custom string]', type, input },
+            { message: 'error in [GreatType]: custom message, hurray, got: "[custom string]"', type, input },
         ],
         [
             {

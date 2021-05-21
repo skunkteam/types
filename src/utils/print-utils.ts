@@ -43,7 +43,7 @@ export function printValue(input: unknown, budget = 50, visited: Set<unknown> = 
                       })} }`
                     : '{}';
             }
-            return truncateString(String(input), budget);
+            return printValue(String(input), budget, visited);
     }
 }
 
