@@ -1,4 +1,4 @@
-import { BaseObjectLikeTypeImpl, createType } from '../base-type';
+import { BaseObjectLikeTypeImpl, createType, TypedPropertyInformation } from '../base-type';
 import type {
     LiteralValue,
     MergeIntersection,
@@ -17,9 +17,9 @@ import { unknownRecord } from './unknown';
 /**
  * The implementation behind types created with {@link intersection} and {@link BaseObjectLikeTypeImpl.and}.
  */
-export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<
-    IntersectionOfTypeTuple<Types>
-> {
+export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>
+    extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>>
+    implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>> {
     readonly name: string;
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;

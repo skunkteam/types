@@ -9,7 +9,7 @@ Create a type with all properties of the current type, plus the given optional p
 <b>Signature:</b>
 
 ```typescript
-withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<Props>>>>>>;
+withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<PartialProps>>>>>> & TypedPropertyInformation<Props & PartialProps>;
 ```
 
 ## Parameters
@@ -20,4 +20,4 @@ withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [
 
 <b>Returns:</b>
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Partial&lt;[TypeOfProperties](./types.typeofproperties.md)<!-- -->&lt;[Writable](./types.writable.md)<!-- -->&lt;Props&gt;&gt;&gt;&gt;&gt;&gt;
+[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Partial&lt;[TypeOfProperties](./types.typeofproperties.md)<!-- -->&lt;[Writable](./types.writable.md)<!-- -->&lt;PartialProps&gt;&gt;&gt;&gt;&gt;&gt; &amp; [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;Props &amp; PartialProps&gt;

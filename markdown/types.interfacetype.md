@@ -9,10 +9,12 @@ The implementation behind types created with [object()](./types.object.md) and [
 <b>Signature:</b>
 
 ```typescript
-export declare class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType>
+export declare class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props>
 ```
 
 <b>Extends:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;ResultType&gt;
+
+<b>Implements:</b> [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;Props&gt;
 
 ## Constructors
 

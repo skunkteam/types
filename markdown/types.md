@@ -47,13 +47,14 @@ Runtime type-validation with derived TypeScript types.
 
 ## Interfaces
 
-| Interface                                               | Description                                        |
-| ------------------------------------------------------- | -------------------------------------------------- |
-| [Failure](./types.failure.md)                           | A failed validation result.                        |
-| [InterfaceTypeOptions](./types.interfacetypeoptions.md) | Options for [object()](./types.object.md)<!-- -->. |
-| [Success](./types.success.md)                           | A successful validation result.                    |
-| [TypeLink](./types.typelink.md)                         | An object that has an associated TypeScript type.  |
-| [ValidationOptions](./types.validationoptions.md)       |                                                    |
+| Interface                                                       | Description                                                                                                                                 |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Failure](./types.failure.md)                                   | A failed validation result.                                                                                                                 |
+| [InterfaceTypeOptions](./types.interfacetypeoptions.md)         | Options for [object()](./types.object.md)<!-- -->.                                                                                          |
+| [Success](./types.success.md)                                   | A successful validation result.                                                                                                             |
+| [TypedPropertyInformation](./types.typedpropertyinformation.md) | Interface that provides more detailed type-information about the <code>props</code> and <code>propsInfo</code> properties of the validator. |
+| [TypeLink](./types.typelink.md)                                 | An object that has an associated TypeScript type.                                                                                           |
+| [ValidationOptions](./types.validationoptions.md)               |                                                                                                                                             |
 
 ## Variables
 

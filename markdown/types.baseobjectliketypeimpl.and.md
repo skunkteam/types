@@ -9,18 +9,18 @@ Intersect this Type with another Type.
 <b>Signature:</b>
 
 ```typescript
-and<Other>(_other: TypeImpl<BaseObjectLikeTypeImpl<Other>>): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>>;
+and<Other, OtherType extends TypeImpl<BaseObjectLikeTypeImpl<Other>>>(_other: OtherType): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>> & TypedPropertyInformation<this['props'] & OtherType['props']>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                            | Description |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| \_other   | [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;Other&gt;&gt; |             |
+| Parameter | Type      | Description |
+| --------- | --------- | ----------- |
+| \_other   | OtherType |             |
 
 <b>Returns:</b>
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Other&gt;&gt;&gt;
+[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Other&gt;&gt;&gt; &amp; [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;this\['props'\] &amp; OtherType\['props'\]&gt;
 
 ## Remarks
 

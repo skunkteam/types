@@ -1,7 +1,7 @@
 import type { The } from '../interfaces';
 import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { boolean } from './boolean';
-import { InterfaceType, object, partial, PartialType } from './interface';
+import { object, partial, PartialType } from './interface';
 import { IntersectionType } from './intersection';
 import { undefinedType } from './literal';
 import { number } from './number';
@@ -107,17 +107,6 @@ describe(object, () => {
         expect(impl).toHaveProperty('name', name);
     });
 
-    test(InterfaceType.prototype.withOptional.name, () => {
-        const t = object({ a: number });
-        const partialProps = { b: string };
-        const result = (t.withOptional(partialProps) as unknown) as IntersectionType<[typeof t, PartialType<typeof partialProps>]>;
-        expect(result).toBeInstanceOf(IntersectionType);
-        expect(result.types).toHaveLength(2);
-        expect(result.types[0]).toBe(t);
-        expect(result.types[1].options.partial).toBeTrue();
-        expect(result.types[1].props).toBe(partialProps);
-    });
-
     testTypes('type of keys and props', () => {
         const { keys, props, propsInfo } = MyType;
         assignableTo<{ s: typeof string; n: typeof number }>(props);
@@ -131,6 +120,44 @@ describe(object, () => {
         const value: MyType = { n: 1, s: 's' };
         value.n = 4;
         value.s = 'str';
+    });
+
+    describe('withOptional', () => {
+        const partialProps = { b: boolean };
+        type MyTypeWithOptional = The<typeof MyTypeWithOptional>;
+        const MyTypeWithOptional = MyType.withOptional(partialProps);
+
+        test('construction', () => {
+            expect(MyTypeWithOptional).toBeInstanceOf(IntersectionType);
+            const intersection = (MyTypeWithOptional as unknown) as IntersectionType<[typeof MyType, PartialType<typeof partialProps>]>;
+            expect(intersection.types).toHaveLength(2);
+            expect(intersection.types[0]).toBe(MyType);
+            expect(intersection.types[1].options.partial).toBeTrue();
+            expect(intersection.types[1].props).toBe(partialProps);
+        });
+
+        testTypes('type of props and the resulting type', () => {
+            const { props, propsInfo } = MyTypeWithOptional;
+            assignableTo<{ s: typeof string; n: typeof number }>(props);
+            assignableTo<typeof props>({ n: number, s: string, b: boolean });
+            assignableTo<{
+                s: { partial: boolean; type: typeof string };
+                n: { partial: boolean; type: typeof number };
+                b: { partial: boolean; type: typeof boolean };
+            }>(propsInfo);
+            assignableTo<typeof propsInfo>({
+                s: { partial: false, type: string },
+                n: { partial: false, type: number },
+                b: { partial: true, type: boolean },
+            });
+            assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf' });
+            assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf', b: true });
+            // @ts-expect-error because q is not included in the type
+            assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf', q: true });
+            assignableTo<{ n: number; s: string; b?: boolean }>(MyTypeWithOptional(0));
+            // @ts-expect-error because b is optional
+            assignableTo<{ n: number; s: string; b: boolean }>(MyTypeWithOptional(0));
+        });
     });
 });
 

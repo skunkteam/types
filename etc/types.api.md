@@ -24,7 +24,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
 
 // @public
 export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<ResultType> {
-    and<Other>(_other: TypeImpl<BaseObjectLikeTypeImpl<Other>>): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>>;
+    and<Other, OtherType extends TypeImpl<BaseObjectLikeTypeImpl<Other>>>(_other: OtherType): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>> & TypedPropertyInformation<this['props'] & OtherType['props']>;
     // (undocumented)
     abstract readonly isDefaultName: boolean;
     // (undocumented)
@@ -117,7 +117,7 @@ export type int = The<typeof int>;
 export const int: Type<Branded<number, 'int'>>;
 
 // @public
-export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> {
+export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props> {
     constructor(props: Props, options: InterfaceTypeOptions);
     // (undocumented)
     readonly basicType: 'object';
@@ -140,7 +140,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     toPartial(name?: string): PartialType<Props>;
     // (undocumented)
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
-    withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<Props>>>>>>;
+    withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<PartialProps>>>>>> & TypedPropertyInformation<Props & PartialProps>;
 }
 
 // @public
@@ -162,7 +162,7 @@ export type IntersectionOfTypeTuple<Tuple> = Tuple extends [{
 }, ...infer Rest] ? MergeIntersection<A & IntersectionOfTypeTuple<Rest>> : Record<string, unknown>;
 
 // @public
-export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>> {
+export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>> {
     constructor(types: Types, name?: string);
     // (undocumented)
     readonly basicType: 'object';
@@ -378,6 +378,14 @@ export type Transposed<T extends Record<string, string>> = Record<T[keyof T], ke
 
 // @public
 export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
+
+// @public
+export interface TypedPropertyInformation<Props extends Properties> {
+    // (undocumented)
+    readonly props: Props;
+    // (undocumented)
+    readonly propsInfo: PropertiesInfo<Props>;
+}
 
 // @public
 export type TypeImpl<Impl extends BaseTypeImpl<any>> = Impl & {

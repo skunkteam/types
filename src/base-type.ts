@@ -453,9 +453,20 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
      * See {@link IntersectionType} for more information about intersections.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    and<Other>(_other: TypeImpl<BaseObjectLikeTypeImpl<Other>>): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>> {
+    and<Other, OtherType extends TypeImpl<BaseObjectLikeTypeImpl<Other>>>(
+        _other: OtherType,
+    ): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>> &
+        TypedPropertyInformation<this['props'] & OtherType['props']> {
         throw new Error('stub');
     }
+}
+
+/**
+ * Interface that provides more detailed type-information about the `props` and `propsInfo` properties of the validator.
+ */
+export interface TypedPropertyInformation<Props extends Properties> {
+    readonly props: Props;
+    readonly propsInfo: PropertiesInfo<Props>;
 }
 
 const FUNCTION_PROTOTYPE_DESCRIPTORS = Object.getOwnPropertyDescriptors(Function.prototype);
