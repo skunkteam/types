@@ -9,7 +9,9 @@ Obtains the TypeScript type of the given runtime Type-checker. Aka [The](./types
 <b>Signature:</b>
 
 ```typescript
-export declare type TypeOf<T> = T extends TypeLink<infer Q> ? Q : never;
+export declare type TypeOf<T> = T extends {
+    readonly [designType]: infer Q;
+}
+    ? Q
+    : never;
 ```
-
-<b>References:</b> [TypeLink](./types.typelink.md)

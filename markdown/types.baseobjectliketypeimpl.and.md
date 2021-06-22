@@ -9,18 +9,18 @@ Intersect this Type with another Type.
 <b>Signature:</b>
 
 ```typescript
-and<Other extends BaseObjectLikeTypeImpl<unknown>>(_other: Other): TypeImpl<IntersectionType<[this, Other]>>;
+and<Other>(_other: TypeImpl<BaseObjectLikeTypeImpl<Other>>): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>>;
 ```
 
 ## Parameters
 
-| Parameter | Type  | Description |
-| --------- | ----- | ----------- |
-| \_other   | Other |             |
+| Parameter | Type                                                                                                                            | Description |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| \_other   | [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;Other&gt;&gt; |             |
 
 <b>Returns:</b>
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[IntersectionType](./types.intersectiontype.md)<!-- -->&lt;\[this, Other\]&gt;&gt;
+[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Other&gt;&gt;&gt;
 
 ## Remarks
 

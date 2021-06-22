@@ -7,10 +7,20 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type PropertiesOfTypeTuple<Tuple extends BaseObjectLikeTypeImpl<unknown>[]> = ObjectUnionToIntersection<
-    Tuple[number]['props']
-> &
-    Properties;
+export declare type PropertiesOfTypeTuple<Tuple> = Tuple extends [
+    {
+        readonly props: infer A;
+    },
+]
+    ? MergeIntersection<A>
+    : Tuple extends [
+          {
+              readonly props: infer A;
+          },
+          ...infer Rest
+      ]
+    ? MergeIntersection<A & PropertiesOfTypeTuple<Rest>>
+    : Properties;
 ```
 
-<b>References:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->, [ObjectUnionToIntersection](./types.objectuniontointersection.md)<!-- -->, [Properties](./types.properties.md)
+<b>References:</b> [MergeIntersection](./types.mergeintersection.md)<!-- -->, [PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->, [Properties](./types.properties.md)

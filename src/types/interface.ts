@@ -1,6 +1,7 @@
 import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType } from '../base-type';
 import type {
     LiteralValue,
+    MergeIntersection,
     MessageDetails,
     Properties,
     PropertiesInfo,
@@ -12,7 +13,6 @@ import type {
     Writable,
 } from '../interfaces';
 import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, prependPathToDetails } from '../utils';
-import { intersection, IntersectionType } from './intersection';
 import { LiteralType } from './literal';
 import { unknownRecord } from './unknown';
 
@@ -99,9 +99,10 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     /** Create a type with all properties of the current type, plus the given optional properties. */
     withOptional<PartialProps extends Properties>(
         ...args: [props: PartialProps] | [name: string, props: PartialProps]
-    ): TypeImpl<IntersectionType<[this, PartialType<PartialProps>]>> {
+    ): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<Props>>>>>> {
         const [name = this.isDefaultName ? undefined : this.name, props] = decodeOptionalName<[PartialProps]>(args);
-        return name ? intersection(name, [this, partial(props)]) : intersection([this, partial(props)]);
+        const newType = this.and(partial(props));
+        return name ? newType.withName(name) : newType;
     }
 }
 define(InterfaceType, 'basicType', 'object');

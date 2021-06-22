@@ -1,7 +1,7 @@
 import type { The } from '../interfaces';
 import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { boolean } from './boolean';
-import { InterfaceType, object, partial } from './interface';
+import { InterfaceType, object, partial, PartialType } from './interface';
 import { IntersectionType } from './intersection';
 import { undefinedType } from './literal';
 import { number } from './number';
@@ -110,7 +110,7 @@ describe(object, () => {
     test(InterfaceType.prototype.withOptional.name, () => {
         const t = object({ a: number });
         const partialProps = { b: string };
-        const result = t.withOptional(partialProps);
+        const result = (t.withOptional(partialProps) as unknown) as IntersectionType<[typeof t, PartialType<typeof partialProps>]>;
         expect(result).toBeInstanceOf(IntersectionType);
         expect(result.types).toHaveLength(2);
         expect(result.types[0]).toBe(t);

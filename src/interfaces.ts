@@ -70,7 +70,7 @@ export type TypeImpl<Impl extends BaseTypeImpl<any>> = Impl & {
 /**
  * Obtains the TypeScript type of the given runtime Type-checker. Aka {@link The}.
  */
-export type TypeOf<T> = T extends TypeLink<infer Q> ? Q : never;
+export type TypeOf<T> = T extends { readonly [designType]: infer Q } ? Q : never;
 
 /**
  * Obtains the TypeScript type of the given runtime Type-checker. Aka {@link TypeOf}.
