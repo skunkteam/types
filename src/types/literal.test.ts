@@ -55,7 +55,7 @@ testTypeImpl({
     name: '"specific string".autoCast',
     type: literal('specific string').autoCast,
     validValues: ['specific string'],
-    invalidValues: [[{ toString: () => 'specific string' }, 'expected a string ("specific string"), got an object (specific string)']],
+    invalidValues: [[{ toString: () => 'specific string' }, 'expected a string ("specific string"), got an object ("specific string")']],
     validConversions: [[{ toString: () => 'specific string' }, 'specific string']],
 });
 
