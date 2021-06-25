@@ -19,7 +19,8 @@
         "forceConsistentCasingInFileNames": true,
         "pretty": true,
         "composite": true,
-        "importsNotUsedAsValues": "error"
+        "importsNotUsedAsValues": "error",
+        "extendedDiagnostics": true
     },
     "include": [],
     "files": [],

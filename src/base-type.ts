@@ -400,7 +400,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * See {@link UnionType} for more information about unions.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    or<Other>(_other: TypeImpl<BaseTypeImpl<Other>>): TypeImpl<BaseTypeImpl<ResultType | Other>> {
+    or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other>> {
         throw new Error('stub');
     }
 
@@ -453,10 +453,10 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
      * See {@link IntersectionType} for more information about intersections.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    and<Other, OtherType extends TypeImpl<BaseObjectLikeTypeImpl<Other>>>(
-        _other: OtherType,
-    ): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>> &
-        TypedPropertyInformation<this['props'] & OtherType['props']> {
+    and<Other extends BaseObjectLikeTypeImpl<unknown>>(
+        _other: Other,
+    ): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> &
+        TypedPropertyInformation<this['props'] & Other['props']> {
         throw new Error('stub');
     }
 }

@@ -24,7 +24,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
 
 // @public
 export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<ResultType> {
-    and<Other, OtherType extends TypeImpl<BaseObjectLikeTypeImpl<Other>>>(_other: OtherType): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other>>> & TypedPropertyInformation<this['props'] & OtherType['props']>;
+    and<Other extends BaseObjectLikeTypeImpl<unknown>>(_other: Other): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> & TypedPropertyInformation<this['props'] & Other['props']>;
     // (undocumented)
     abstract readonly isDefaultName: boolean;
     // (undocumented)
@@ -58,7 +58,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     is(input: unknown): input is ResultType;
     literal(input: DeepUnbranded<ResultType>): ResultType;
     abstract readonly name: string;
-    or<Other>(_other: TypeImpl<BaseTypeImpl<Other>>): TypeImpl<BaseTypeImpl<ResultType | Other>>;
+    or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other>>;
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
     protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
     validate(input: unknown, options?: ValidationOptions): Result<ResultType>;
@@ -405,7 +405,7 @@ export type TypeOf<T> = T extends {
 
 // @public
 export type TypeOfProperties<T extends Properties> = {
-    [P in keyof T]: TypeOf<T[P]>;
+    [P in keyof T]: MergeIntersection<TypeOf<T[P]>>;
 };
 
 // @public

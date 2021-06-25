@@ -232,7 +232,7 @@ export type PropertiesInfo<Props extends Properties = Properties> = { [Key in ke
 /**
  * Translates the type of a Properties-object into the proper TypeScript type to be used in user-code.
  */
-export type TypeOfProperties<T extends Properties> = { [P in keyof T]: TypeOf<T[P]> };
+export type TypeOfProperties<T extends Properties> = { [P in keyof T]: MergeIntersection<TypeOf<T[P]>> };
 
 /**
  * The opposite of the built-in `Readonly<...>` type.
