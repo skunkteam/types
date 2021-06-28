@@ -1,4 +1,4 @@
-import { BaseObjectLikeTypeImpl, createType } from '../base-type';
+import { BaseObjectLikeTypeImpl, createType, TypedPropertyInformation } from '../base-type';
 import type {
     LiteralValue,
     MergeIntersection,
@@ -7,10 +7,9 @@ import type {
     PropertiesInfo,
     Result,
     TypeImpl,
-    TypeLink,
-    TypeOf,
     ValidationOptions,
 } from '../interfaces';
+import type { designType } from '../symbols';
 import { bracketsIfNeeded, decodeOptionalName, defaultObjectRep, define, extensionName, humanList, isFailure, partition } from '../utils';
 import { UnionType } from './union';
 import { unknownRecord } from './unknown';
@@ -18,9 +17,9 @@ import { unknownRecord } from './unknown';
 /**
  * The implementation behind types created with {@link intersection} and {@link BaseObjectLikeTypeImpl.and}.
  */
-export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<
-    IntersectionOfTypeTuple<Types>
-> {
+export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>
+    extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>>
+    implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>> {
     readonly name: string;
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;
@@ -128,35 +127,17 @@ function combinedName(types: BaseObjectLikeTypeImpl<unknown>[]) {
     return defaultObjectRep(collectedProps);
 }
 
-export type IntersectionOfTypeTuple<Tuple extends TypeLink<unknown>[]> = IntersectionOfTypeUnion<Tuple[number]>;
-export type IntersectionOfTypeUnion<Union extends TypeLink<unknown>> = (
-    // v--- always matches, but will distribute a union over the the first leg of the ternary expression
-    Union extends unknown
-        ? // v--- map the union to functions that accept the elements of the union (we are now a union of functions)
-          (k: TypeOf<Union>) => void
-        : never
-) extends (k: infer Intersection) => void
-    ? //  ^--- Then coerce the union of functions into a single function that implements all of them, that function must accept
-      //       the intersection of all elements of the union
-      // v--- Then (if possible) merge all properties into a single object for clarity
-      MergeIntersection<Intersection>
-    : never;
+export type IntersectionOfTypeTuple<Tuple> = Tuple extends [{ readonly [designType]: infer A }]
+    ? MergeIntersection<A>
+    : Tuple extends [{ readonly [designType]: infer A }, ...infer Rest]
+    ? MergeIntersection<A & IntersectionOfTypeTuple<Rest>>
+    : Record<string, unknown>;
 
-export type PropertiesOfTypeTuple<Tuple extends BaseObjectLikeTypeImpl<unknown>[]> = ObjectUnionToIntersection<Tuple[number]['props']> &
-    Properties;
-
-export type ObjectUnionToIntersection<Union> = (
-    // v--- always matches, but will distribute a union over the the first leg of the ternary expression
-    Union extends unknown
-        ? // v--- map the union to functions that accept the elements of the union (we are now a union of functions)
-          (k: Union) => void
-        : never
-) extends (k: infer Intersection) => void
-    ? //  ^--- Then coerce the union of functions into a single function that implements all of them, that function must accept
-      //       the intersection of all elements of the union
-      // v--- Then (if possible) merge all properties into a single object for clarity
-      MergeIntersection<Intersection>
-    : never;
+export type PropertiesOfTypeTuple<Tuple> = Tuple extends [{ readonly props: infer A }]
+    ? MergeIntersection<A>
+    : Tuple extends [{ readonly props: infer A }, ...infer Rest]
+    ? MergeIntersection<A & PropertiesOfTypeTuple<Rest>>
+    : Properties;
 
 BaseObjectLikeTypeImpl.prototype.and = function <Other extends BaseObjectLikeTypeImpl<unknown>>(other: Other) {
     return intersection([this, other]);

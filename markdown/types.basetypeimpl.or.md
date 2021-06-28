@@ -9,18 +9,18 @@ Union this Type with another Type.
 <b>Signature:</b>
 
 ```typescript
-or<Other extends BaseTypeImpl<unknown>>(_other: Other): TypeImpl<UnionType<[this, Other]>>;
+or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other>>;
 ```
 
 ## Parameters
 
-| Parameter | Type  | Description |
-| --------- | ----- | ----------- |
-| \_other   | Other |             |
+| Parameter | Type                                                         | Description |
+| --------- | ------------------------------------------------------------ | ----------- |
+| \_other   | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Other&gt; |             |
 
 <b>Returns:</b>
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[UnionType](./types.uniontype.md)<!-- -->&lt;\[this, Other\]&gt;&gt;
+[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType \| Other&gt;&gt;
 
 ## Remarks
 

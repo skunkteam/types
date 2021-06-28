@@ -9,10 +9,12 @@ The implementation behind types created with [intersection()](./types.intersecti
 <b>Signature:</b>
 
 ```typescript
-export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>>
+export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
 ```
 
 <b>Extends:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)<!-- -->&lt;Types&gt;&gt;
+
+<b>Implements:</b> [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;[PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;&gt;
 
 ## Constructors
 

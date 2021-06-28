@@ -7,7 +7,20 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type IntersectionOfTypeTuple<Tuple extends TypeLink<unknown>[]> = IntersectionOfTypeUnion<Tuple[number]>;
+export declare type IntersectionOfTypeTuple<Tuple> = Tuple extends [
+    {
+        readonly [designType]: infer A;
+    },
+]
+    ? MergeIntersection<A>
+    : Tuple extends [
+          {
+              readonly [designType]: infer A;
+          },
+          ...infer Rest
+      ]
+    ? MergeIntersection<A & IntersectionOfTypeTuple<Rest>>
+    : Record<string, unknown>;
 ```
 
-<b>References:</b> [TypeLink](./types.typelink.md)<!-- -->, [IntersectionOfTypeUnion](./types.intersectionoftypeunion.md)
+<b>References:</b> [MergeIntersection](./types.mergeintersection.md)<!-- -->, [IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)

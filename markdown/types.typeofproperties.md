@@ -10,8 +10,8 @@ Translates the type of a Properties-object into the proper TypeScript type to be
 
 ```typescript
 export declare type TypeOfProperties<T extends Properties> = {
-    [P in keyof T]: TypeOf<T[P]>;
+    [P in keyof T]: MergeIntersection<TypeOf<T[P]>>;
 };
 ```
 
-<b>References:</b> [Properties](./types.properties.md)<!-- -->, [TypeOf](./types.typeof.md)
+<b>References:</b> [Properties](./types.properties.md)<!-- -->, [MergeIntersection](./types.mergeintersection.md)<!-- -->, [TypeOf](./types.typeof.md)

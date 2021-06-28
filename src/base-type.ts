@@ -3,6 +3,7 @@ import type {
     Branded,
     DeepUnbranded,
     LiteralValue,
+    MergeIntersection,
     Properties,
     PropertiesInfo,
     Result,
@@ -13,8 +14,6 @@ import type {
     Validator,
 } from './interfaces';
 import { autoCastFailure, designType } from './symbols';
-import type { IntersectionType } from './types/intersection';
-import type { UnionType } from './types/union';
 import {
     addParserInputToFailure,
     bracketsIfNeeded,
@@ -401,7 +400,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * See {@link UnionType} for more information about unions.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    or<Other extends BaseTypeImpl<unknown>>(_other: Other): TypeImpl<UnionType<[this, Other]>> {
+    or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other>> {
         throw new Error('stub');
     }
 
@@ -454,9 +453,20 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
      * See {@link IntersectionType} for more information about intersections.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    and<Other extends BaseObjectLikeTypeImpl<unknown>>(_other: Other): TypeImpl<IntersectionType<[this, Other]>> {
+    and<Other extends BaseObjectLikeTypeImpl<unknown>>(
+        _other: Other,
+    ): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> &
+        TypedPropertyInformation<this['props'] & Other['props']> {
         throw new Error('stub');
     }
+}
+
+/**
+ * Interface that provides more detailed type-information about the `props` and `propsInfo` properties of the validator.
+ */
+export interface TypedPropertyInformation<Props extends Properties> {
+    readonly props: Props;
+    readonly propsInfo: PropertiesInfo<Props>;
 }
 
 const FUNCTION_PROTOTYPE_DESCRIPTORS = Object.getOwnPropertyDescriptors(Function.prototype);

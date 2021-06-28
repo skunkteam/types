@@ -85,6 +85,25 @@ describe(intersection, () => {
         assignableTo<ManualIntersection>({} as CalculatedIntersection);
     });
 
+    testTypes('mixed "and" and "or"', () => {
+        type InnerType = The<typeof InnerType>;
+        const InnerType = object('InnerType', { innerProp: boolean });
+
+        type TaggedUnionWithAndAndOr = The<typeof TaggedUnionWithAndAndOr>;
+        const TaggedUnionWithAndAndOr = object({ type: literal('and') })
+            .and(InnerType)
+            .or(object({ type: literal('nested'), nested: InnerType }));
+
+        assignableTo<TaggedUnionWithAndAndOr>({ type: 'and', innerProp: true });
+        assignableTo<TaggedUnionWithAndAndOr>({ type: 'nested', nested: { innerProp: true } });
+        assignableTo<({ type: 'and' } & InnerType) | { type: 'nested'; nested: InnerType }>(TaggedUnionWithAndAndOr(0));
+
+        // @ts-expect-error because one of the `or` branches is missing
+        assignableTo<{ type: 'nested'; nested: InnerType }>(TaggedUnionWithAndAndOr(0));
+        // @ts-expect-error because the `and` branch is incorrect
+        assignableTo<({ type: 'and' } & { otherType: string }) | { type: 'nested'; nested: InnerType }>(TaggedUnionWithAndAndOr(0));
+    });
+
     testTypes('resulting type and props', () => {
         type MyIntersection = The<typeof MyIntersection>;
         const MyIntersection = intersection([intersection([partial({ a: number })]), object({ b: number }), object({ c: boolean })]);
