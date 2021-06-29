@@ -129,7 +129,7 @@ describe(object, () => {
 
         test('construction', () => {
             expect(MyTypeWithOptional).toBeInstanceOf(IntersectionType);
-            const intersection = (MyTypeWithOptional as unknown) as IntersectionType<[typeof MyType, PartialType<typeof partialProps>]>;
+            const intersection = MyTypeWithOptional as unknown as IntersectionType<[typeof MyType, PartialType<typeof partialProps>]>;
             expect(intersection.types).toHaveLength(2);
             expect(intersection.types[0]).toBe(MyType);
             expect(intersection.types[1].options.partial).toBeTrue();

@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-readonly basicType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "array" | "null" | "mixed";
+readonly basicType: BasicType | "mixed";
 ```

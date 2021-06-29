@@ -21,12 +21,10 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
         if (!unknownArray.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'array' });
         }
-        const innerResults = input.map(
-            (element, index): Result<Element> => {
-                const innerResult = this.elementType.validate(element, options);
-                return innerResult.ok ? innerResult : { ...innerResult, details: prependPathToDetails(innerResult, index) };
-            },
-        );
+        const innerResults = input.map((element, index): Result<Element> => {
+            const innerResult = this.elementType.validate(element, options);
+            return innerResult.ok ? innerResult : { ...innerResult, details: prependPathToDetails(innerResult, index) };
+        });
         const [failures, validResults] = partition(innerResults, isFailure);
         return this.createResult(
             input,
