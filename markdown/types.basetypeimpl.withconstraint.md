@@ -9,7 +9,7 @@ Create a new type use the given constraint function to restrict the current type
 <b>Signature:</b>
 
 ```typescript
-withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
+withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>>;
 ```
 
 ## Parameters
@@ -21,7 +21,7 @@ withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<
 
 <b>Returns:</b>
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;ResultType, BrandName&gt;&gt;&gt;
+[Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;ResultType, BrandName&gt;&gt;
 
 ## Remarks
 

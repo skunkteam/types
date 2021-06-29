@@ -4,9 +4,11 @@ import type {
     DeepUnbranded,
     LiteralValue,
     MergeIntersection,
+    ObjectType,
     Properties,
     PropertiesInfo,
     Result,
+    Type,
     TypeImpl,
     TypeLink,
     ValidationOptions,
@@ -273,7 +275,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      *
      * @param name - the new name to use in error messages
      */
-    withBrand<BrandName extends string>(name: BrandName): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>> {
+    withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>> {
         return createType(branded<ResultType, BrandName>(this), { name: { configurable: true, value: name } });
     }
 
@@ -353,12 +355,9 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * @param name - the new name to use in error messages
      * @param constraint - the additional validation to restrict the current type
      */
-    withConstraint<BrandName extends string>(
-        name: BrandName,
-        constraint: Validator<ResultType>,
-    ): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>> {
+    withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>> {
         // Ignoring Brand here, because that is a typings-only feature.
-        const fn: TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>['typeValidator'] = (input, options) => {
+        const fn: BaseTypeImpl<Branded<ResultType, BrandName>>['typeValidator'] = (input, options) => {
             const baseResult = this.typeValidator(input, options);
             if (!baseResult.ok) {
                 return newType.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
@@ -400,7 +399,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * See {@link UnionType} for more information about unions.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other>> {
+    or<Other>(_other: BaseTypeImpl<Other>): Type<ResultType | Other> {
         throw new Error('stub');
     }
 
@@ -455,8 +454,7 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
     and<Other extends BaseObjectLikeTypeImpl<any>>(
         _other: Other,
-    ): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> &
-        TypedPropertyInformation<this['props'] & Other['props']> {
+    ): ObjectType<MergeIntersection<ResultType & Other[typeof designType]>> & TypedPropertyInformation<this['props'] & Other['props']> {
         throw new Error('stub');
     }
 }

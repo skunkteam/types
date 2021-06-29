@@ -223,6 +223,7 @@ testTypeImpl({
 });
 
 /** RestrictedUser is the User type with additional validation logic. */
+type RestrictedUser = The<typeof RestrictedUser>;
 const RestrictedUser = User.withConstraint('RestrictedUser', user => {
     const errors: MessageDetails[] = [];
     if (user.name.first === 'Bobby' && user.name.last === 'Tables') {
@@ -297,6 +298,7 @@ const NumberFromString = number.withParser(
         return +n;
     }),
 );
+type NestedFromString = The<typeof NestedFromString>;
 const NestedFromString = object('NestedFromString', { a: NumberFromString, b: NumberFromString });
 
 testTypeImpl({
@@ -356,6 +358,7 @@ testTypeImpl({
     ],
 });
 
+type ComplexNesting = The<typeof ComplexNesting>;
 const ComplexNesting = object('ComplexNesting', {
     pos: NumberFromString.withValidation(n => n > 0 || 'should be positive'),
     neg: NumberFromString.withValidation(n => n < 0 || 'should be negative'),
@@ -678,4 +681,23 @@ testTypes('usability of assert', () => {
 
     // Does work:
     MyExplicitType.assert(value);
+});
+
+testTypes('type inference', () => {
+    function elementOfType<T>(_type: Type<T>): T {
+        return 0 as any;
+    }
+
+    assignableTo<number>(elementOfType(number));
+    assignableTo<ConfirmedAge>(elementOfType(ConfirmedAge));
+    assignableTo<User>(elementOfType(User));
+    assignableTo<RestrictedUser>(elementOfType(RestrictedUser));
+    assignableTo<NestedFromString>(elementOfType(NestedFromString));
+    assignableTo<ComplexNesting>(elementOfType(ComplexNesting));
+    assignableTo<IntersectionTest>(elementOfType(IntersectionTest));
+    assignableTo<MyGenericWrapper<User>>(elementOfType(MyGenericWrapper(User)));
+    assignableTo<GenericAugmentation<User>>(elementOfType(GenericAugmentation(User)));
+
+    // @ts-expect-error I still don't know how to fix this for `extendWith`:
+    assignableTo<Age>(elementOfType(Age));
 });

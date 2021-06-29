@@ -9,7 +9,7 @@ Union this Type with another Type.
 <b>Signature:</b>
 
 ```typescript
-or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other>>;
+or<Other>(_other: BaseTypeImpl<Other>): Type<ResultType | Other>;
 ```
 
 ## Parameters
@@ -20,7 +20,7 @@ or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other
 
 <b>Returns:</b>
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType \| Other&gt;&gt;
+[Type](./types.type.md)<!-- -->&lt;ResultType \| Other&gt;
 
 ## Remarks
 

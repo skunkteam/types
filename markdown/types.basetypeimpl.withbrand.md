@@ -9,7 +9,7 @@ Create a new instance of this Type with the given name.
 <b>Signature:</b>
 
 ```typescript
-withBrand<BrandName extends string>(name: BrandName): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
+withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>>;
 ```
 
 ## Parameters
@@ -20,7 +20,7 @@ withBrand<BrandName extends string>(name: BrandName): TypeImpl<BaseTypeImpl<Bran
 
 <b>Returns:</b>
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;ResultType, BrandName&gt;&gt;&gt;
+[Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;ResultType, BrandName&gt;&gt;
 
 ## Remarks
 
