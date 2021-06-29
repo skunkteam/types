@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import type { DeepUnbranded, MessageDetails, The, Type, Unbranded } from './interfaces';
+import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
 import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
 import { array, boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
@@ -487,7 +487,7 @@ testTypeImpl({
 });
 
 type MyGenericWrapper<T> = { ok: boolean; inner: T };
-function MyGenericWrapper<T>(inner: Type<T>) {
+function MyGenericWrapper<T>(inner: Type<T>): ObjectType<MyGenericWrapper<T>> {
     return object(`MyGenericWrapper<${inner.name}>`, { ok: boolean, inner });
 }
 
@@ -509,6 +509,22 @@ testTypeImpl({
     ],
     invalidValues: [
         [{ ok: false, inner: 123 }, 'error in [MyGenericWrapper<Partial<User>>] at <inner>: expected an object, got a number (123)'],
+    ],
+});
+
+type GenericAugmentation<T> = T & { id: string };
+function GenericAugmentation<T>(inner: ObjectType<T>): ObjectType<GenericAugmentation<Writable<T>>> {
+    return intersection(`GenericAugmentation<${inner.name}>`, [inner, object({ id: string })]);
+}
+
+testTypeImpl({
+    name: 'GenericAugmentation<Partial<User>>',
+    type: GenericAugmentation(User.toPartial()),
+    basicType: 'object',
+    validValues: [{ id: 'abc' }, { id: 'abc', shoeSize: 4 }],
+    invalidValues: [
+        [{ id: 'abc', name: 123 }, 'error in [GenericAugmentation<Partial<User>>] at <name>: expected an object, got a number (123)'],
+        [{ id: 123 }, 'error in [GenericAugmentation<Partial<User>>] at <id>: expected a string, got a number (123)'],
     ],
 });
 
