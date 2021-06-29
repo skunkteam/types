@@ -390,7 +390,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * ```
      */
     extendWith<E>(factory: (type: this) => E): this & E {
-        return (createType(this, Object.getOwnPropertyDescriptors(factory(this))) as unknown) as this & E;
+        return createType(this, Object.getOwnPropertyDescriptors(factory(this))) as unknown as this & E;
     }
 
     /**
@@ -453,7 +453,7 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
      * See {@link IntersectionType} for more information about intersections.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    and<Other extends BaseObjectLikeTypeImpl<unknown>>(
+    and<Other extends BaseObjectLikeTypeImpl<any>>(
         _other: Other,
     ): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> &
         TypedPropertyInformation<this['props'] & Other['props']> {
@@ -500,7 +500,7 @@ export function createType<Impl extends BaseTypeImpl<any>>(
 }
 
 function branded<ResultType, BrandName extends string>(type: BaseTypeImpl<ResultType>): BaseTypeImpl<Branded<ResultType, BrandName>> {
-    return (type as unknown) as BaseTypeImpl<Branded<ResultType, BrandName>>;
+    return type as unknown as BaseTypeImpl<Branded<ResultType, BrandName>>;
 }
 
 function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType>, options: ValidationOptions): Map<unknown, Result<ResultType>> {

@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-readonly propsInfo: PropertiesInfo<Record<string, TypeImpl<BaseTypeImpl<unknown>>>>;
+readonly propsInfo: PropertiesInfo<Properties>;
 ```

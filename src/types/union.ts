@@ -17,7 +17,7 @@ import { bracketsIfNeeded, decodeOptionalName, define, extensionName, printPath 
  */
 export class UnionType<
     Types extends OneOrMore<BaseTypeImpl<unknown>>,
-    ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>
+    ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>,
 > extends BaseObjectLikeTypeImpl<ResultType> {
     readonly name: string;
     readonly isDefaultName: boolean;

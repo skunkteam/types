@@ -24,7 +24,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
 
 // @public
 export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<ResultType> {
-    and<Other extends BaseObjectLikeTypeImpl<unknown>>(_other: Other): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> & TypedPropertyInformation<this['props'] & Other['props']>;
+    and<Other extends BaseObjectLikeTypeImpl<any>>(_other: Other): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> & TypedPropertyInformation<this['props'] & Other['props']>;
     // (undocumented)
     abstract readonly isDefaultName: boolean;
     // (undocumented)
@@ -421,7 +421,7 @@ export function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(...args: [
 export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>> extends BaseObjectLikeTypeImpl<ResultType> {
     constructor(types: Types, name?: string);
     // (undocumented)
-    readonly basicType: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "array" | "null" | "mixed";
+    readonly basicType: BasicType | "mixed";
     // (undocumented)
     readonly collapsedTypes: Types;
     // (undocumented)
@@ -436,9 +436,9 @@ export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultTyp
         values: LiteralValue[];
     }[];
     // (undocumented)
-    readonly props: Record<string, TypeImpl<BaseTypeImpl<unknown>>>;
+    readonly props: Properties;
     // (undocumented)
-    readonly propsInfo: PropertiesInfo<Record<string, TypeImpl<BaseTypeImpl<unknown>>>>;
+    readonly propsInfo: PropertiesInfo<Properties>;
     // (undocumented)
     readonly types: Types;
     // (undocumented)
