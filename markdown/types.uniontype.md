@@ -22,17 +22,17 @@ export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, R
 
 ## Properties
 
-| Property                                                                | Modifiers | Type                                                                                                                                                                                           | Description |
-| ----------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [basicType](./types.uniontype.basictype.md)                             |           | "string" \| "number" \| "bigint" \| "boolean" \| "symbol" \| "undefined" \| "object" \| "function" \| "array" \| "null" \| "mixed"                                                             |             |
-| [collapsedTypes](./types.uniontype.collapsedtypes.md)                   |           | Types                                                                                                                                                                                          |             |
-| [enumerableLiteralDomain](./types.uniontype.enumerableliteraldomain.md) |           | Set&lt;[LiteralValue](./types.literalvalue.md)<!-- -->&gt; \| undefined                                                                                                                        |             |
-| [isDefaultName](./types.uniontype.isdefaultname.md)                     |           | boolean                                                                                                                                                                                        |             |
-| [name](./types.uniontype.name.md)                                       |           | string                                                                                                                                                                                         |             |
-| [possibleDiscriminators](./types.uniontype.possiblediscriminators.md)   |           | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\]                                                                                                         |             |
-| [props](./types.uniontype.props.md)                                     |           | Record&lt;string, [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;&gt;&gt;                                                            |             |
-| [propsInfo](./types.uniontype.propsinfo.md)                             |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Record&lt;string, [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;&gt;&gt;&gt; |             |
-| [types](./types.uniontype.types.md)                                     |           | Types                                                                                                                                                                                          |             |
+| Property                                                                | Modifiers | Type                                                                                                   | Description |
+| ----------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------ | ----------- |
+| [basicType](./types.uniontype.basictype.md)                             |           | [BasicType](./types.basictype.md) \| "mixed"                                                           |             |
+| [collapsedTypes](./types.uniontype.collapsedtypes.md)                   |           | Types                                                                                                  |             |
+| [enumerableLiteralDomain](./types.uniontype.enumerableliteraldomain.md) |           | Set&lt;[LiteralValue](./types.literalvalue.md)<!-- -->&gt; \| undefined                                |             |
+| [isDefaultName](./types.uniontype.isdefaultname.md)                     |           | boolean                                                                                                |             |
+| [name](./types.uniontype.name.md)                                       |           | string                                                                                                 |             |
+| [possibleDiscriminators](./types.uniontype.possiblediscriminators.md)   |           | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\]                 |             |
+| [props](./types.uniontype.props.md)                                     |           | [Properties](./types.properties.md)                                                                    |             |
+| [propsInfo](./types.uniontype.propsinfo.md)                             |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[Properties](./types.properties.md)<!-- -->&gt; |             |
+| [types](./types.uniontype.types.md)                                     |           | Types                                                                                                  |             |
 
 ## Methods
 

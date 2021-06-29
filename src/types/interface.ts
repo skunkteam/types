@@ -44,7 +44,8 @@ export interface InterfaceTypeOptions {
  */
 export class InterfaceType<Props extends Properties, ResultType>
     extends BaseObjectLikeTypeImpl<ResultType>
-    implements TypedPropertyInformation<Props> {
+    implements TypedPropertyInformation<Props>
+{
     readonly name: string;
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;

@@ -199,18 +199,16 @@ testTypeImpl({
         number
             .or(unknownRecord)
             .or(undefinedType)
-            .andThen(
-                (input): NetworkState => {
-                    switch (typeof input) {
-                        case 'number':
-                            return { state: 'failed', code: input };
-                        case 'object':
-                            return { state: 'success', response: input };
-                        case 'undefined':
-                            return { state: 'loading' };
-                    }
-                },
-            ),
+            .andThen((input): NetworkState => {
+                switch (typeof input) {
+                    case 'number':
+                        return { state: 'failed', code: input };
+                    case 'object':
+                        return { state: 'success', response: input };
+                    case 'undefined':
+                        return { state: 'loading' };
+                }
+            }),
     ),
     validConversions: [
         [500, { state: 'failed', code: 500 }],

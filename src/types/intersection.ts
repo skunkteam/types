@@ -19,7 +19,8 @@ import { unknownRecord } from './unknown';
  */
 export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>
     extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>>
-    implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>> {
+    implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
+{
     readonly name: string;
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;

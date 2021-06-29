@@ -11,7 +11,7 @@ export class RecordType<
     KeyType extends number | string,
     ValueTypeImpl extends BaseTypeImpl<ValueType>,
     ValueType,
-    ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>
+    ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>,
 > extends BaseTypeImpl<ResultType> {
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;
@@ -56,13 +56,15 @@ define(RecordType, 'basicType', 'object');
 
 // Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
 // up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
-define(RecordType, 'createAutoCastAllType', function (
-    this: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<any>, any, Record<number | string, any>>,
-) {
-    const { keyType, valueType, strict } = this;
-    const name = extensionName(this, 'autoCastAll');
-    return createType(new RecordType(keyType.autoCastAll, valueType.autoCastAll, name, strict));
-});
+define(
+    RecordType,
+    'createAutoCastAllType',
+    function (this: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<any>, any, Record<number | string, any>>) {
+        const { keyType, valueType, strict } = this;
+        const name = extensionName(this, 'autoCastAll');
+        return createType(new RecordType(keyType.autoCastAll, valueType.autoCastAll, name, strict));
+    },
+);
 
 /**
  * Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document
@@ -77,7 +79,7 @@ export function record<KeyType extends number | string, ValueType>(
 }
 
 function acceptNumberLikeKey<T extends BaseTypeImpl<number | string>>(type: T): T {
-    return type.basicType === 'number' ? ((new WrapNumericKeyType(type) as unknown) as T) : type;
+    return type.basicType === 'number' ? (new WrapNumericKeyType(type) as unknown as T) : type;
 }
 
 class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
