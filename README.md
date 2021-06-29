@@ -351,6 +351,37 @@ const UserRequest = object('UserRequest', {
 });
 ```
 
+Note that you cannot extract a generic type out of the generic function, i.e. the following does not work:
+
+```typescript
+// This is not possible because it is not possible to reason about generic functions in TypeScript types:
+type GenericWrapper = The<typeof GenericWrapper>;
+function GenericWrapper<T>(inner: Type<T>) {
+    return object({ ok: boolean, inner });
+}
+```
+
+If you want to have both the generic `GenericWrapper` TypeScript-type and validator, you have to define them both separately. It is not possible to have TypeScript infer the TypeScript-type for you, but you _can_ ask TypeScript to validate the compatibility between the type and the validator, like so:
+
+```typescript
+// Do not use `interface` here, because TypeScript will merge an `interface` and `function`
+// of the same name, which would result in a wrong typedef (and TypeScript will complain).
+type GenericWrapper<T> = { ok: boolean; inner: T };
+function GenericWrapper<T>(inner: Type<T>): ObjectType<GenericWrapper<T>> {
+    return object({ ok: boolean, inner });
+}
+```
+
+When intersecting with the provided generic type-parameter, you may have to use the (exported) `Writable` type, as seen in [#25](https://github.com/skunkteam/types/issues/25):
+
+```typescript
+type AugmentedGeneric<T> = T & { id: string };
+//                                            Note the use of Writable here => \vvvvvvvv/
+function AugmentedGeneric<T>(inner: ObjectType<T>): ObjectType<AugmentedGeneric<Writable<T>>> {
+    return intersection([inner, object({ id: string })]);
+}
+```
+
 ### Parsers
 
 Validation is most likely used to validate incoming data / messages. Sometimes this data looks a lot like your internal type, but is slightly off. For example, maybe, the input has strings instead of numbers, or a "yes"/"no" instead of booleans. In those cases you can "prepend" a parsing step to your validator. For builtin types the most common conversions are available using the [`.autoCast`](markdown/types.basetypeimpl.autocast.md) feature.
