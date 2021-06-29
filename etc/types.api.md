@@ -24,7 +24,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
 
 // @public
 export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<ResultType> {
-    and<Other extends BaseObjectLikeTypeImpl<any>>(_other: Other): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Other[typeof designType]>>> & TypedPropertyInformation<this['props'] & Other['props']>;
+    and<Other extends BaseObjectLikeTypeImpl<any>>(_other: Other): ObjectType<MergeIntersection<ResultType & Other[typeof designType]>> & TypedPropertyInformation<this['props'] & Other['props']>;
     // (undocumented)
     abstract readonly isDefaultName: boolean;
     // (undocumented)
@@ -58,12 +58,12 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     is(input: unknown): input is ResultType;
     literal(input: DeepUnbranded<ResultType>): ResultType;
     abstract readonly name: string;
-    or<Other>(_other: BaseTypeImpl<Other>): TypeImpl<BaseTypeImpl<ResultType | Other>>;
+    or<Other>(_other: BaseTypeImpl<Other>): Type<ResultType | Other>;
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
     protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
     validate(input: unknown, options?: ValidationOptions): Result<ResultType>;
-    withBrand<BrandName extends string>(name: BrandName): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
-    withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): TypeImpl<BaseTypeImpl<Branded<ResultType, BrandName>>>;
+    withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>>;
+    withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>>;
     withName(name: string): this;
     withParser(...args: [name: string, newConstructor: (i: unknown) => unknown] | [newConstructor: (i: unknown) => unknown]): this;
     withValidation(validation: Validator<ResultType>): this;
