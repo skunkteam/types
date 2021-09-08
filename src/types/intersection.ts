@@ -24,6 +24,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly name: string;
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;
+    readonly typeConfig: undefined;
 
     constructor(readonly types: Types, name?: string) {
         super();
@@ -140,6 +141,6 @@ export type PropertiesOfTypeTuple<Tuple> = Tuple extends [{ readonly props: infe
     ? MergeIntersection<A & PropertiesOfTypeTuple<Rest>>
     : Properties;
 
-BaseObjectLikeTypeImpl.prototype.and = function <Other extends BaseObjectLikeTypeImpl<unknown>>(other: Other) {
+BaseObjectLikeTypeImpl.prototype.and = function <Other extends BaseObjectLikeTypeImpl<any, any>>(other: Other) {
     return intersection([this, other]);
 };

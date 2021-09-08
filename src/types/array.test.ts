@@ -1,9 +1,9 @@
-import { number } from './number';
+import type { The } from '../interfaces';
 import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { array } from './array';
-import { string } from './string';
 import { object } from './interface';
-import type { The } from '../interfaces';
+import { number } from './number';
+import { string } from './string';
 
 testTypeImpl({
     name: 'string[]',
@@ -94,6 +94,16 @@ testTypeImpl({
 testTypeImpl({
     name: '(custom name).autoCast',
     type: array('custom name', number).autoCastAll,
+});
+
+testTypeImpl({
+    name: 'SmallArray',
+    type: array('SmallArray', string, { minLength: 1, maxLength: 3 }),
+    validValues: [[['a']], [['a', 'b', 'c']]],
+    invalidValues: [
+        [[], 'error in [SmallArray]: expected at least 1 element, got: []'],
+        [['a', 'b', 'c', 'd'], 'error in [SmallArray]: expected at most 3 elements, got: ["a", "b", "c", "d"]'],
+    ],
 });
 
 testTypes(() => {

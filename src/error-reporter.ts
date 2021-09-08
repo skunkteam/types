@@ -78,7 +78,8 @@ function detailMessageWithContext(detail: FailureDetails, level: number) {
     );
 }
 
-function detailMessage(detail: FailureDetails, level: number) {
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+function detailMessage(detail: FailureDetails, level: number): string {
     switch (detail.kind) {
         case undefined:
             return `expected ${an(`[${detail.type.name}]`)}${maybePrintInputValue(detail)}`;
@@ -100,12 +101,68 @@ function detailMessage(detail: FailureDetails, level: number) {
             const got = printBasicTypeAndValue(basicType(detail.input), printedValue);
             return `expected ${expected}, got ${got}${maybePrintParserInput(detail, printedValue)}`;
         }
+        case 'input out of range':
+            switch (detail.violation) {
+                case 'multipleOf':
+                    if (detail.config.multipleOf === 1) {
+                        return `expected a whole number${maybePrintInputValue(detail)}`;
+                    }
+                    return `expected a multiple of ${detail.config.multipleOf!}${maybePrintInputValue(detail)}`;
+                case 'min':
+                    switch (detail.config.minExclusive) {
+                        case undefined:
+                            break;
+                        case 0:
+                            return `expected a positive number${maybePrintInputValue(detail)}`;
+                        default:
+                            return `expected a number greater than ${detail.config.minExclusive}${maybePrintInputValue(detail)}`;
+                    }
+                    switch (detail.config.min!) {
+                        case 0:
+                            return `expected a non-negative number${maybePrintInputValue(detail)}`;
+                        default:
+                            return `expected the number ${detail.config.min!} or greater${maybePrintInputValue(detail)}`;
+                    }
+                case 'max':
+                    switch (detail.config.maxExclusive) {
+                        case undefined:
+                            break;
+                        case 0:
+                            return `expected a negative number${maybePrintInputValue(detail)}`;
+                        default:
+                            return `expected a number less than ${detail.config.maxExclusive}${maybePrintInputValue(detail)}`;
+                    }
+                    switch (detail.config.max!) {
+                        case 0:
+                            return `expected a non-positive number${maybePrintInputValue(detail)}`;
+                        default:
+                            return `expected the number ${detail.config.max!} or less${maybePrintInputValue(detail)}`;
+                    }
+            }
+        case 'length out of range': {
+            let leastMost, amount;
+            switch (detail.violation) {
+                case 'minLength':
+                    leastMost = 'least';
+                    amount = detail.config.minLength!;
+                    break;
+                case 'maxLength':
+                    leastMost = 'most';
+                    amount = detail.config.maxLength!;
+                    break;
+            }
+            const thing = detail.type.basicType === 'string' ? 'character' : 'element';
+            return `expected at ${leastMost} ${amount} ${plural(amount, thing)}${maybePrintInputValue(detail)}`;
+        }
+        case 'pattern mismatch':
+            return `expected a string matching pattern ${detail.config.pattern!.toString()}${maybePrintInputValue(detail)}`;
         case 'union':
             return unionMessage(detail, level);
         case 'custom message':
             return `${detail.message}${maybePrintInputValue(detail)}`;
     }
 }
+/* eslint-enable @typescript-eslint/no-non-null-assertion */
 
 function maybePrintInputValue(details: FailureDetails | Failure, separator = ', ') {
     if ('omitInput' in details && details.omitInput) {

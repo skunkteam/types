@@ -1,16 +1,49 @@
-import type { Branded, The, Type } from '../interfaces';
+import type { Branded, NumberTypeConfig, The, Type } from '../interfaces';
 import { SimpleType } from '../simple-type';
 import { autoCastFailure } from '../symbols';
+import { evalAdditionalChecks } from '../utils';
 
-export const number: Type<number> = SimpleType.create(
+const CONFIG_MUTUALLY_EXCLUSIVE: readonly ReadonlyArray<keyof NumberTypeConfig>[] = [
+    ['maxExclusive', 'max'],
+    ['minExclusive', 'min'],
+];
+
+export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, NumberTypeConfig>(
     'number',
     'number',
-    input => (typeof input !== 'number' ? { kind: 'invalid basic type', expected: 'number' } : !Number.isNaN(input)),
-    { autoCaster: numberAutoCaster },
+    (input, _, type) => {
+        if (typeof input !== 'number') return { kind: 'invalid basic type', expected: 'number' };
+        if (Number.isNaN(input)) return false;
+        const { customMessage, maxExclusive, max, minExclusive, min, multipleOf } = type.typeConfig;
+        return evalAdditionalChecks(
+            {
+                max: (maxExclusive == null || input < maxExclusive) && (max == null || input <= max),
+                min: (minExclusive == null || input > minExclusive) && (min == null || input >= min),
+                multipleOf: multipleOf == null || Number.isInteger(input / multipleOf),
+            },
+            customMessage,
+            input,
+            violation => ({ kind: 'input out of range', violation, config: type.typeConfig }),
+        );
+    },
+    {
+        autoCaster: numberAutoCaster,
+        typeConfig: {},
+        combineConfig: ({ ...clonedConfig }, newConfig) => {
+            for (const exclusives of CONFIG_MUTUALLY_EXCLUSIVE) {
+                if (exclusives.some(key => newConfig[key] != null)) {
+                    for (const key of exclusives) {
+                        if (clonedConfig[key] != null) delete clonedConfig[key];
+                    }
+                }
+            }
+            return Object.assign(clonedConfig, newConfig);
+        },
+    },
 );
 
 export type int = The<typeof int>;
-export const int: Type<Branded<number, 'int'>> = number.withConstraint('int', Number.isInteger);
+export const int: Type<Branded<number, 'int'>, NumberTypeConfig> = number.withConfig('int', { multipleOf: 1 });
 
 export function numberAutoCaster(input: unknown): number | typeof autoCastFailure {
     let nr;

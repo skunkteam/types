@@ -16,6 +16,7 @@ export class RecordType<
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;
     readonly name: string;
+    readonly typeConfig: undefined;
 
     constructor(readonly keyType: KeyTypeImpl, readonly valueType: ValueTypeImpl, name?: string, readonly strict = true) {
         super();
@@ -84,13 +85,15 @@ function acceptNumberLikeKey<T extends BaseTypeImpl<number | string>>(type: T): 
 
 class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
     readonly basicType = 'string';
+    readonly typeConfig: undefined;
 
     constructor(readonly innerType: BaseTypeImpl<ResultType>) {
         super();
     }
 
     readonly name = this.innerType.name;
-    readonly enumerableLiteralDomain = this.innerType.enumerableLiteralDomain && [...this.innerType.enumerableLiteralDomain].map(String);
+    override readonly enumerableLiteralDomain =
+        this.innerType.enumerableLiteralDomain && [...this.innerType.enumerableLiteralDomain].map(String);
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const number = input === '' ? NaN : +String(input);
