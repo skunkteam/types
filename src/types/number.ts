@@ -44,6 +44,7 @@ export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, 
                 ...selectBound('min', current, update),
             } as NumberTypeConfig;
         },
+        acceptVisitor: (type, visitor) => visitor.visitNumberType(type),
     },
 );
 

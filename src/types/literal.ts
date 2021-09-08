@@ -1,5 +1,5 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { BasicType, LiteralValue, Result, TypeImpl } from '../interfaces';
+import type { BasicType, LiteralValue, Result, TypeImpl, Visitor } from '../interfaces';
 import { autoCastFailure } from '../symbols';
 import { basicType, define, printValue } from '../utils';
 import { booleanAutoCaster } from './boolean';
@@ -29,6 +29,10 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
                     ? { kind: 'invalid basic type', expected: this.basicType, expectedValue: this.value }
                     : { kind: 'invalid literal', expected: this.value }),
         );
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitLiteralType(this);
     }
 }
 

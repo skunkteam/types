@@ -1,5 +1,6 @@
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { brands, designType } from './symbols';
+import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types';
 
 /**
  * A type-validator/-parser that validates or parses `ResultType`.
@@ -334,4 +335,23 @@ export type ArrayViolation = LengthViolation;
 /** Configuration of additional checks on array types. */
 export interface ArrayTypeConfig extends LengthChecksConfig {
     customMessage?: CustomMessage<unknown[], ArrayViolation[]>;
+}
+
+/**
+ * Interface for a visitor that is accepted by all types (classic visitor-pattern).
+ */
+export interface Visitor<R> {
+    visitArrayType(type: ArrayType<BaseTypeImpl<unknown>, unknown, unknown[]>): R;
+    visitBooleanType(type: BaseTypeImpl<boolean>): R;
+    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
+    visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
+    visitLiteralType(type: LiteralType<LiteralValue>): R;
+    visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
+    visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<unknown>, unknown>): R;
+    visitStringType(type: BaseTypeImpl<string, StringTypeConfig>): R;
+    visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown>>, unknown>): R;
+    visitUnknownType(type: BaseTypeImpl<unknown>): R;
+    visitUnknownRecordType(type: BaseTypeImpl<Record<string, unknown>>): R;
+    visitUnknownArrayType(type: BaseTypeImpl<unknown[]>): R;
+    visitCustomType(type: BaseTypeImpl<unknown>): R;
 }

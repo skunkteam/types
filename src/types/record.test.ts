@@ -1,5 +1,5 @@
 import type { MessageDetails, The } from '../interfaces';
-import { defaultUsualSuspects, testTypeImpl } from '../testutils';
+import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { printKey, printValue } from '../utils';
 import { object } from './interface';
 import { keyof } from './keyof';
@@ -34,6 +34,15 @@ testTypeImpl({
 
 type NumberRecord = The<typeof NumberRecord>;
 const NumberRecord = record('NumberRecord', number, string.autoCast);
+
+test('NumberRecord examples', () => {
+    expect(createExample(NumberRecord)).toMatchInlineSnapshot(`
+    Object {
+      "0.01": "xx",
+    }
+    `);
+});
+
 testTypeImpl({
     name: 'NumberRecord',
     type: NumberRecord,
@@ -59,6 +68,15 @@ testTypeImpl({
 
 type IntRecord = The<typeof IntRecord>;
 const IntRecord = record('IntRecord', int, string);
+
+test('IntRecord examples', () => {
+    expect(createExample(IntRecord)).toMatchInlineSnapshot(`
+    Object {
+      "1": "xx",
+    }
+    `);
+});
+
 testTypeImpl({
     name: 'IntRecord',
     type: IntRecord,
@@ -133,6 +151,16 @@ testTypeImpl({
 
 type NonStrictKeyofRecord = The<typeof NonStrictKeyofRecord>;
 const NonStrictKeyofRecord = record('NonStrictKeyofRecord', keyof({ one: 1, two: 2 }), literal('mississippi'), false);
+
+test('NonStrictKeyofRecord examples', () => {
+    expect(createExample(NonStrictKeyofRecord)).toMatchInlineSnapshot(`
+    Object {
+      "one": "mississippi",
+      "two": "mississippi",
+    }
+    `);
+});
+
 testTypeImpl({
     name: 'NonStrictKeyofRecord',
     type: NonStrictKeyofRecord,

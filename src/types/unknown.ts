@@ -8,7 +8,9 @@ import { basicTypeChecker, castArray } from '../utils';
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknown: Type<unknown> = SimpleType.create('unknown', 'mixed', () => true);
+export const unknown: Type<unknown> = SimpleType.create('unknown', 'mixed', () => true, {
+    acceptVisitor: (type, visitor) => visitor.visitUnknownType(type),
+});
 
 /**
  * Built-in validator that accepts all objects (`null` is not accepted).
@@ -23,7 +25,9 @@ export type unknownRecord = Record<string, unknown>;
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknownRecord: Type<unknownRecord> = SimpleType.create('Record<string, unknown>', 'object', basicTypeChecker('object'));
+export const unknownRecord: Type<unknownRecord> = SimpleType.create('Record<string, unknown>', 'object', basicTypeChecker('object'), {
+    acceptVisitor: (type, visitor) => visitor.visitUnknownRecordType(type),
+});
 
 /**
  * Built-in validator that accepts all arrays.
@@ -40,4 +44,5 @@ export type unknownArray = unknown[];
  */
 export const unknownArray: Type<unknownArray> = SimpleType.create('unknown[]', 'array', basicTypeChecker('array'), {
     autoCaster: castArray,
+    acceptVisitor: (type, visitor) => visitor.visitUnknownArrayType(type),
 });

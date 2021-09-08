@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
-import type { BasicType, Type } from './interfaces';
+import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
+import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, StringTypeConfig, Type, Visitor } from './interfaces';
+import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types';
 import { an, basicType, printValue } from './utils';
 import { ValidationError } from './validation-error';
 
@@ -38,6 +40,10 @@ export function testTypeImpl({
     function theTests(type: Type<any>) {
         test(`name should be ${JSON.stringify(name)}`, () => {
             expect(type.name).toBe(name);
+        });
+
+        test('visitor test', () => {
+            expect(() => createExample(type)).not.toThrow();
         });
 
         expectedBasicType &&
@@ -91,4 +97,99 @@ export function basicTypeMessage(type: Type<any> | string, value: unknown, baseT
     const bt = basicType(value);
     const v = printValue(value);
     return `error in ${ctx}[${name}]: expected ${expected}, got ${an(bt)}${bt !== v ? ` (${v})` : ''}`;
+}
+
+export function createExample<T>(type: Type<T>, seed?: number): T {
+    const example = type.accept(new CreateExampleVisitor(seed));
+    try {
+        return type.check(example);
+    } catch {
+        return type.construct(example);
+    }
+}
+
+class CreateExampleVisitor implements Visitor<unknown> {
+    constructor(private seed = 1) {}
+
+    visitArrayType(type: ArrayType<BaseTypeImpl<unknown, unknown>, unknown, unknown[]>): unknown {
+        if (hasExample(type)) return type.example;
+        const { maxLength = Infinity, minLength = -Infinity } = type.typeConfig;
+        const length = Math.min(Math.max(this.seed++ % 5 || 1, minLength), maxLength);
+        return Array.from({ length }, () => type.elementType.accept(this));
+    }
+
+    visitBooleanType(): unknown {
+        return [true, false][this.seed++ % 2];
+    }
+
+    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown, unknown>): unknown {
+        if (hasExample(type)) return type.example;
+        return Object.fromEntries(Object.entries(type.props).map(([key, propType]) => [key, propType.accept(this)]));
+    }
+
+    visitKeyofType(type: KeyofType<Record<any, any>, any>): unknown {
+        return type.enumerableLiteralDomain[this.seed++ % type.enumerableLiteralDomain.length];
+    }
+
+    visitLiteralType(type: LiteralType<LiteralValue>): unknown {
+        return type.value;
+    }
+
+    visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): unknown {
+        if (hasExample(type)) return type.example;
+        const { max = Infinity, maxExclusive = Infinity, min = -Infinity, minExclusive = -Infinity, multipleOf = 0.01 } = type.typeConfig;
+        const attempt = Math.min(Math.max(this.seed++ * multipleOf, min, minExclusive + multipleOf), max, maxExclusive - multipleOf);
+        if (type.is(attempt)) return attempt;
+        throw new Error(`Could not find an example for ${type.name}`);
+    }
+
+    visitRecordType(
+        type: RecordType<
+            BaseTypeImpl<string | number, unknown>,
+            string | number,
+            BaseTypeImpl<unknown, unknown>,
+            unknown,
+            Record<string | number, unknown>
+        >,
+    ): unknown {
+        if (hasExample(type)) return type.example;
+        const keys = type.keyType.enumerableLiteralDomain || [type.keyType.accept(this)];
+        return Object.fromEntries([...keys].map(key => [key, type.valueType.accept(this)]));
+    }
+
+    visitStringType(type: BaseTypeImpl<string, StringTypeConfig>): unknown {
+        if (hasExample(type)) return type.example;
+        const { maxLength = Infinity, minLength = -Infinity, pattern } = type.typeConfig;
+        if (pattern) throw new Error('String patterns are not supported.');
+        const length = Math.min(Math.max(this.seed++ % 25, minLength), maxLength);
+        return 'x'.repeat(length);
+    }
+
+    visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown, unknown>>, unknown>): unknown {
+        return type.types[this.seed++ % type.types.length]?.accept(this);
+    }
+
+    visitUnknownType(type: BaseTypeImpl<unknown, unknown>): unknown {
+        if (hasExample(type)) return type.example;
+        return 'UNKNOWN';
+    }
+
+    visitUnknownRecordType(type: BaseTypeImpl<Record<string, unknown>, unknown>): unknown {
+        if (hasExample(type)) return type.example;
+        return { unknown: 'record' };
+    }
+
+    visitUnknownArrayType(type: BaseTypeImpl<unknown[], unknown>): unknown {
+        if (hasExample(type)) return type.example;
+        return ['unknown', 'array'];
+    }
+
+    visitCustomType(type: BaseTypeImpl<unknown, unknown>): unknown {
+        if (hasExample(type)) return type.example;
+        throw new Error(`Please provide a manual example for type: ${type.name}`);
+    }
+}
+
+function hasExample<T>(obj: BaseTypeImpl<T>): obj is BaseTypeImpl<T> & { example: T } {
+    return 'example' in obj;
 }

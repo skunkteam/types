@@ -28,6 +28,7 @@ export const string: Type<string, StringTypeConfig> = SimpleType.create<string, 
     {
         autoCaster: String,
         typeConfig: {},
+        acceptVisitor: (type, visitor) => visitor.visitStringType(type),
     },
 );
 

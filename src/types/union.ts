@@ -9,6 +9,7 @@ import type {
     TypeImpl,
     TypeOf,
     ValidationOptions,
+    Visitor,
 } from '../interfaces';
 import { bracketsIfNeeded, decodeOptionalName, define, extensionName, printPath } from '../utils';
 
@@ -46,6 +47,10 @@ export class UnionType<
             failures.push(result);
         }
         return this.createResult(input, undefined, { kind: 'union', failures });
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitUnionType(this);
     }
 }
 
