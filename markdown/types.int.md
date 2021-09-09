@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-int: Type<Branded<number, 'int'>>
+int: Type<Branded<number, 'int'>, NumberTypeConfig>
 ```

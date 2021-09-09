@@ -9,18 +9,18 @@ Create a Type from the given type-implementation.
 <b>Signature:</b>
 
 ```typescript
-export declare function createType<Impl extends BaseTypeImpl<any>>(
+export declare function createType<Impl extends BaseTypeImpl<any, any>>(
     impl: Impl,
-    override?: Partial<Record<keyof BaseTypeImpl<any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
+    override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
 ): TypeImpl<Impl>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                 | Description                                   |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| impl      | Impl                                                                                                                                                 | the type-implementation                       |
-| override  | Partial&lt;Record&lt;keyof [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;any&gt; \| 'typeValidator' \| 'typeParser', PropertyDescriptor&gt;&gt; | override certain settings of the created type |
+| Parameter | Type                                                                                                                                                      | Description                                   |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| impl      | Impl                                                                                                                                                      | the type-implementation                       |
+| override  | Partial&lt;Record&lt;keyof [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;any, any&gt; \| 'typeValidator' \| 'typeParser', PropertyDescriptor&gt;&gt; | override certain settings of the created type |
 
 <b>Returns:</b>
 

@@ -33,6 +33,7 @@ export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeType
 | [possibleDiscriminators](./types.intersectiontype.possiblediscriminators.md) |           | Array&lt;{ path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }&gt;                                           |             |
 | [props](./types.intersectiontype.props.md)                                   |           | [PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;                                                            |             |
 | [propsInfo](./types.intersectiontype.propsinfo.md)                           |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;&gt; |             |
+| [typeConfig](./types.intersectiontype.typeconfig.md)                         |           | undefined                                                                                                                                 |             |
 | [types](./types.intersectiontype.types.md)                                   |           | Types                                                                                                                                     |             |
 
 ## Methods

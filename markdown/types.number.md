@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-number: Type<number>
+number: Type<number, NumberTypeConfig>
 ```
