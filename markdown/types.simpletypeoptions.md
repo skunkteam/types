@@ -14,6 +14,7 @@ export interface SimpleTypeOptions<ResultType, TypeConfig>
 
 | Property                                                                         | Type                                                                                                       | Description       |
 | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------- |
+| [acceptVisitor?](./types.simpletypeoptions.acceptvisitor.md)                     | SimpleAcceptVisitor&lt;ResultType, TypeConfig&gt;                                                          | <i>(Optional)</i> |
 | [autoCaster?](./types.simpletypeoptions.autocaster.md)                           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['autoCaster'\]              | <i>(Optional)</i> |
 | [combineConfig?](./types.simpletypeoptions.combineconfig.md)                     | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['combineConfig'\]           | <i>(Optional)</i> |
 | [enumerableLiteralDomain?](./types.simpletypeoptions.enumerableliteraldomain.md) | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['enumerableLiteralDomain'\] | <i>(Optional)</i> |

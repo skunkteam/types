@@ -36,4 +36,5 @@ export declare class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyTy
 
 | Method                                                               | Modifiers | Description |
 | -------------------------------------------------------------------- | --------- | ----------- |
+| [accept(visitor)](./types.recordtype.accept.md)                      |           |             |
 | [typeValidator(input, options)](./types.recordtype.typevalidator.md) |           |             |

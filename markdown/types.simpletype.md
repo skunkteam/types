@@ -26,6 +26,7 @@ export declare class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<Res
 
 | Method                                                                              | Modifiers           | Description                                                     |
 | ----------------------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------- |
+| [accept(visitor)](./types.simpletype.accept.md)                                     |                     |                                                                 |
 | [create(name, basicType, simpleValidator, options)](./types.simpletype.create.md)   | <code>static</code> | Create a simple (limited) type implementation with type config. |
 | [create(name, basicType, simpleValidator, options)](./types.simpletype.create_1.md) | <code>static</code> | Create a simple (limited) type implementation.                  |
 | [typeValidator(input, options)](./types.simpletype.typevalidator.md)                |                     |                                                                 |

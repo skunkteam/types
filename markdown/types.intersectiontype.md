@@ -9,10 +9,10 @@ The implementation behind types created with [intersection()](./types.intersecti
 <b>Signature:</b>
 
 ```typescript
-export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
+export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>, undefined> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
 ```
 
-<b>Extends:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)<!-- -->&lt;Types&gt;&gt;
+<b>Extends:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)<!-- -->&lt;Types&gt;, undefined&gt;
 
 <b>Implements:</b> [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;[PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;&gt;
 
@@ -40,4 +40,5 @@ export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeType
 
 | Method                                                                     | Modifiers | Description |
 | -------------------------------------------------------------------------- | --------- | ----------- |
+| [accept(visitor)](./types.intersectiontype.accept.md)                      |           |             |
 | [typeValidator(input, options)](./types.intersectiontype.typevalidator.md) |           |             |
