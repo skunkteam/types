@@ -21,7 +21,7 @@ testTypeImpl({
 testTypeImpl({
     name: 'int',
     type: int,
-    validValues: [0, -0, -10, 10, Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER],
+    validValues: [0, -0, -10, 10, Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER, Number.MAX_VALUE],
     invalidValues: [
         [NaN, defaultMessage(int, NaN)],
         ['a string', basicTypeMessage(int, 'a string')],
@@ -228,17 +228,18 @@ testTypeImpl({
 testTypeImpl({
     name: 'Currency',
     type: number.withConfig('Currency', { multipleOf: 0.01 }),
-    validValues: [-100.01, 0, 100, 1000000.33, 123456789.2],
+    validValues: [-100.01, 0, 100, 1000000.33, 123456789.2, Number.MAX_VALUE / 100],
     invalidValues: [
         [-100.111, 'error in [Currency]: expected a multiple of 0.01, got: -100.111'],
         [123456789.012, 'error in [Currency]: expected a multiple of 0.01, got: 123456789.012'],
+        // [Number.MAX_VALUE / 10, 'xxx'],
     ],
 });
 
 testTypeImpl({
     name: 'Currency',
     type: number.withConfig('Currency', { multipleOf: 0.01, customMessage: { multipleOf: 'use whole cents' } }),
-    validValues: [-100.01, 0, 100, 1000000.33, 123456789.2],
+    validValues: [-100.01, 0, 100, 1000000.33, 123456789.2, Number.MAX_VALUE / 100],
     invalidValues: [
         [-100.111, 'error in [Currency]: use whole cents, got: -100.111'],
         [123456789.012, 'error in [Currency]: use whole cents, got: 123456789.012'],
@@ -246,14 +247,20 @@ testTypeImpl({
 });
 
 test.each`
-    case | oldConfig                                              | newConfig                               | expected
-    ${0} | ${{ minExclusive: 1 }}                                 | ${{ min: 4, max: 5 }}                   | ${{ min: 4, max: 5 }}
-    ${1} | ${{ min: 1, maxExclusive: 2 }}                         | ${{ minExclusive: 4, max: 5 }}          | ${{ minExclusive: 4, max: 5 }}
-    ${2} | ${{ min: 1, max: 2, multipleOf: 3 }}                   | ${{ minExclusive: 4, maxExclusive: 5 }} | ${{ multipleOf: 3, minExclusive: 4, maxExclusive: 5 }}
-    ${3} | ${{ minExclusive: 1, maxExclusive: 2, multipleOf: 3 }} | ${{ min: 4, max: 5 }}                   | ${{ multipleOf: 3, min: 4, max: 5 }}
-`('config sanity case $case', ({ oldConfig, newConfig, expected }) => {
-    const { typeConfig } = number.withConfig('base', oldConfig).withConfig('edge-case', newConfig);
-    expect(typeConfig).toEqual(expected);
+    case | current                                                  | update                                  | expected
+    ${0} | ${{ minExclusive: 1 }}                                   | ${{ min: 2, max: 5 }}                   | ${{ min: 2, max: 5 }}
+    ${1} | ${{ min: 1, maxExclusive: 3 }}                           | ${{ minExclusive: 1, max: 2 }}          | ${{ minExclusive: 1, max: 2 }}
+    ${2} | ${{ min: 1, max: 2, multipleOf: 3 }}                     | ${{ minExclusive: 1, maxExclusive: 2 }} | ${{ multipleOf: 3, minExclusive: 1, maxExclusive: 2 }}
+    ${3} | ${{ minExclusive: 10, maxExclusive: 20, multipleOf: 3 }} | ${{ min: 13, max: 15, multipleOf: 6 }}  | ${{ min: 13, max: 15, multipleOf: 6 }}
+    ${4} | ${{ minExclusive: 1, maxExclusive: 2 }}                  | ${{ min: 1, max: 2 }}                   | ${{ minExclusive: 1, maxExclusive: 2 }}
+    ${5} | ${{ multipleOf: 2 }}                                     | ${{ multipleOf: 3 }}                    | ${'new value of multipleOf (3) not compatible with base multipleOf (2)'}
+    ${6} | ${{ multipleOf: 0 }}                                     | ${{ multipleOf: 1 }}                    | ${'new value of multipleOf (1) not compatible with base multipleOf (0)'}
+`('config sanity case $case', ({ current, update, expected }) => {
+    if (typeof expected === 'string') {
+        expect(() => number.withConfig('base', current).withConfig('sub', update)).toThrow(expected);
+    } else {
+        expect(number.withConfig('base', current).withConfig('sub', update).typeConfig).toEqual(expected);
+    }
 });
 
 test('no autoCastAll', () => {

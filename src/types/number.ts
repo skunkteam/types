@@ -3,11 +3,6 @@ import { SimpleType } from '../simple-type';
 import { autoCastFailure } from '../symbols';
 import { evalAdditionalChecks } from '../utils';
 
-const CONFIG_MUTUALLY_EXCLUSIVE: readonly ReadonlyArray<keyof NumberTypeConfig>[] = [
-    ['maxExclusive', 'max'],
-    ['minExclusive', 'min'],
-];
-
 export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, NumberTypeConfig>(
     'number',
     'number',
@@ -19,7 +14,7 @@ export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, 
             {
                 max: (maxExclusive == null || input < maxExclusive) && (max == null || input <= max),
                 min: (minExclusive == null || input > minExclusive) && (min == null || input >= min),
-                multipleOf: multipleOf == null || Number.isInteger(input / multipleOf),
+                multipleOf: multipleOf == null || isMultiple(input, multipleOf),
             },
             customMessage,
             input,
@@ -29,15 +24,18 @@ export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, 
     {
         autoCaster: numberAutoCaster,
         typeConfig: {},
-        combineConfig: ({ ...clonedConfig }, newConfig) => {
-            for (const exclusives of CONFIG_MUTUALLY_EXCLUSIVE) {
-                if (exclusives.some(key => newConfig[key] != null)) {
-                    for (const key of exclusives) {
-                        if (clonedConfig[key] != null) delete clonedConfig[key];
-                    }
-                }
+        combineConfig: (current, update) => {
+            if (update.multipleOf != null && current.multipleOf != null && !isMultiple(update.multipleOf, current.multipleOf)) {
+                throw new Error(
+                    `new value of multipleOf (${update.multipleOf}) not compatible with base multipleOf (${current.multipleOf})`,
+                );
             }
-            return Object.assign(clonedConfig, newConfig);
+            return {
+                ...current,
+                ...update,
+                ...selectBound('max', current, update),
+                ...selectBound('min', current, update),
+            } as NumberTypeConfig;
         },
     },
 );
@@ -61,4 +59,49 @@ export function numberAutoCaster(input: unknown): number | typeof autoCastFailur
         nr = +str;
     }
     return Number.isNaN(nr) ? autoCastFailure : nr;
+}
+
+function isMultiple(value: number, multiple: number) {
+    // This seems to be the best we can do without introducing big.js. It works for all "sensible cases". Note that this limits the range
+    // of `value` to `Math.min(Number.MAX_VALUE, Number.MAX_VALUE * multiple)`. Using modulus does not work for small values, e.g.
+    // `1 % 0.1 === 0.09999999999999995`, while `1 / 0.1 === 10`
+    return Number.isInteger(value / multiple);
+}
+
+type Bound<T extends 'min' | 'max'> = { [K in T | `${T}Exclusive`]?: number };
+
+/**
+ * Kind of like `Math.min` and `Math.max`, but taking exclusivity into account. Used to calculate the new upper and lower bounds of
+ * restricted number ranges.
+ *
+ * @param key calculate the upper bound ('max') or the lower bound ('min')
+ * @param a one of the input bounds
+ * @param b the other one
+ * @returns a combined bound
+ */
+function selectBound<T extends 'min' | 'max'>(key: T, a: Bound<T>, b: Bound<T>): Bound<T> {
+    const exclKey = `${key}Exclusive` as const;
+    const posA = a[key] ?? a[exclKey];
+    const posB = b[key] ?? b[exclKey];
+    const exclA = a[exclKey] != null;
+    const exclB = b[exclKey] != null;
+    let pos, excl;
+    if (posA == null) {
+        // There is no A.
+        pos = posB;
+        excl = exclB;
+    } else if (posB == null || (key === 'max' ? posA < posB : posA > posB)) {
+        // There is no B or the position of B is wrong regardless of exclusivity.
+        pos = posA;
+        excl = exclA;
+    } else {
+        // B's position is right,...
+        pos = posB;
+        // ... but we still have to figure out the exclusivity.
+        excl = posA === posB ? exclA || exclB : exclB;
+    }
+    const result: Bound<T> = {};
+    result[key] = excl ? undefined : pos;
+    result[exclKey] = excl ? pos : undefined;
+    return result;
 }
