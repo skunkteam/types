@@ -31,8 +31,15 @@ export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, 
                 );
             }
             return {
+                // apply update on top of current
                 ...current,
                 ...update,
+
+                // but rebuild the actual bounds (because minExclusive should override min, etc.)
+                min: undefined,
+                minExclusive: undefined,
+                max: undefined,
+                maxExclusive: undefined,
                 ...selectBound('max', current, update),
                 ...selectBound('min', current, update),
             } as NumberTypeConfig;
@@ -71,37 +78,31 @@ function isMultiple(value: number, multiple: number) {
 type Bound<T extends 'min' | 'max'> = { [K in T | `${T}Exclusive`]?: number };
 
 /**
- * Kind of like `Math.min` and `Math.max`, but taking exclusivity into account. Used to calculate the new upper and lower bounds of
- * restricted number ranges.
+ * Check and return the updated bound, falling back to the current bound, taking exclusivity into account.
  *
- * @param key calculate the upper bound ('max') or the lower bound ('min')
- * @param a one of the input bounds
- * @param b the other one
- * @returns a combined bound
+ * @param key check the upper bound ('max') or the lower bound ('min')
+ * @param current the current bounds
+ * @param update the update
+ * @returns the bound to use
  */
-function selectBound<T extends 'min' | 'max'>(key: T, a: Bound<T>, b: Bound<T>): Bound<T> {
+function selectBound<T extends 'min' | 'max'>(key: T, current: Bound<T>, update: Bound<T>): Bound<T> {
     const exclKey = `${key}Exclusive` as const;
-    const posA = a[key] ?? a[exclKey];
-    const posB = b[key] ?? b[exclKey];
-    const exclA = a[exclKey] != null;
-    const exclB = b[exclKey] != null;
-    let pos, excl;
-    if (posA == null) {
-        // There is no A.
-        pos = posB;
-        excl = exclB;
-    } else if (posB == null || (key === 'max' ? posA < posB : posA > posB)) {
-        // There is no B or the position of B is wrong regardless of exclusivity.
-        pos = posA;
-        excl = exclA;
-    } else {
-        // B's position is right,...
-        pos = posB;
-        // ... but we still have to figure out the exclusivity.
-        excl = posA === posB ? exclA || exclB : exclB;
+    const currentPosition: number | undefined = current[key] ?? current[exclKey];
+    if (currentPosition == null) return update;
+
+    const updatedPosition: number | undefined = update[key] ?? update[exclKey];
+    if (updatedPosition == null) return current;
+
+    if (
+        // if the position of the updated bound is outside the current bound
+        (key === 'max' ? currentPosition < updatedPosition : currentPosition > updatedPosition) ||
+        // or the position is the same, but the exclusivity is incompatible
+        (currentPosition === updatedPosition && current[exclKey] != null && update[exclKey] == null)
+    ) {
+        const printKey = (b: Bound<T>) => (b[exclKey] == null ? key : exclKey);
+        const updateKey = printKey(update);
+        const currentKey = printKey(current);
+        throw `the new bound (${updateKey}: ${updatedPosition}) is outside the existing bound (${currentKey}: ${currentPosition})`;
     }
-    const result: Bound<T> = {};
-    result[key] = excl ? undefined : pos;
-    result[exclKey] = excl ? pos : undefined;
-    return result;
+    return update;
 }
