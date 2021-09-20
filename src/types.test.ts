@@ -16,8 +16,8 @@ testTypeImpl({
     validValues: ['', '123456789'],
     invalidValues: [
         ['1234567890', defaultMessage(SmallString, '1234567890')],
-        [123, basicTypeMessage(SmallString, 123, string)],
-        ...defaultUsualSuspects(SmallString, string),
+        [123, basicTypeMessage(SmallString, 123)],
+        ...defaultUsualSuspects(SmallString),
     ],
 });
 
@@ -34,8 +34,8 @@ testTypeImpl({
     validValues: ['', '123456789'],
     invalidValues: [
         ['abcdefghijklm', 'error in [SmallString]: your string "abcdefghijklm" is too long! :-('],
-        [123, basicTypeMessage(SmallString, 123, string)],
-        ...defaultUsualSuspects(SmallString, string),
+        [123, basicTypeMessage(SmallString, 123)],
+        ...defaultUsualSuspects(SmallString),
     ],
 });
 
@@ -206,10 +206,7 @@ testTypeImpl({
                 '- at <name.first>: your string "very very long" is too long! :-(',
             ],
         ],
-        [
-            { name: { first: undefined, last: 'name' }, shoeSize: 5 },
-            'error in [User] at base type of <name.first>: expected a string, got an undefined',
-        ],
+        [{ name: { first: undefined, last: 'name' }, shoeSize: 5 }, 'error in [User] at <name.first>: expected a string, got an undefined'],
     ],
 });
 
@@ -241,10 +238,7 @@ testTypeImpl({
             ],
         ],
         [{ name: { first: 'name', last: 123 } }, 'error in [Partial<User>] at <name.last>: expected a string, got a number (123)'],
-        [
-            { name: { first: 123, last: 'name' } },
-            'error in [Partial<User>] at base type of <name.first>: expected a string, got a number (123)',
-        ],
+        [{ name: { first: 123, last: 'name' } }, 'error in [Partial<User>] at <name.first>: expected a string, got a number (123)'],
     ],
 });
 
@@ -273,11 +267,11 @@ testTypeImpl({
     basicType: 'object',
     validValues: [{ name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 }],
     invalidValues: [
-        ...defaultUsualSuspects(RestrictedUser, User),
+        ...defaultUsualSuspects(RestrictedUser),
         // constraints are fired after the type is deemed structurally valid:
         [
             { name: { first: 'Bobby', last: 'Tables' } },
-            'error in base type of [RestrictedUser]: missing property <shoeSize> [ShoeSize], got: { name: { first: "Bobby", last: "Tables" } }',
+            'error in [RestrictedUser]: missing property <shoeSize> [ShoeSize], got: { name: { first: "Bobby", last: "Tables" } }',
         ],
         [{ name: { first: 'Bobbx', last: 'Tablex' }, shoeSize: 5 }, 'error in [RestrictedUser]: this User is suspicious'],
         [
@@ -409,7 +403,7 @@ testTypeImpl({
         ],
     ],
     invalidConversions: [
-        [1, 'error in base type of [ComplexNesting]: expected an object, got a number (1)'],
+        [1, 'error in [ComplexNesting]: expected an object, got a number (1)'],
         [
             '-1',
             [
@@ -456,7 +450,7 @@ testTypeImpl({
                 '',
                 '- missing property <nr> [number], got: { first: {} }',
                 '',
-                '- in base type at <first>: expected a string, got an object ({})',
+                '- at <first>: expected a string, got an object ({})',
             ],
         ],
         [

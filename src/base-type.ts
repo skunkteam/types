@@ -369,7 +369,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         const fn: BaseTypeImpl<ResultType, TypeConfig>['typeValidator'] = (input, options) => {
             const baseResult = this.typeValidator(input, options);
             if (!baseResult.ok) {
-                return type.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
+                return type.createResult(input, undefined, baseResult.details);
             }
             const tryResult = ValidationError.try(
                 { type, input },
@@ -399,7 +399,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         const fn: BaseTypeImpl<Branded<ResultType, BrandName>, TypeConfig>['typeValidator'] = (input, options) => {
             const baseResult = this.typeValidator(input, options);
             if (!baseResult.ok) {
-                return newType.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
+                return newType.createResult(input, undefined, baseResult.details);
             }
             const tryResult = ValidationError.try({ type: newType, input }, () => constraint(baseResult.value, options));
             return tryResult.ok ? newType.createResult(baseResult.value, baseResult.value, tryResult.value) : tryResult;
