@@ -34,6 +34,7 @@ export declare class InterfaceType<Props extends Properties, ResultType> extends
 | [possibleDiscriminators](./types.interfacetype.possiblediscriminators.md) |           | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\] |                                                      |
 | [props](./types.interfacetype.props.md)                                   |           | Props                                                                                  |                                                      |
 | [propsInfo](./types.interfacetype.propsinfo.md)                           |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt;                       |                                                      |
+| [typeConfig](./types.interfacetype.typeconfig.md)                         |           | undefined                                                                              |                                                      |
 
 ## Methods
 

@@ -1,7 +1,7 @@
-import { number, string } from './types';
 import { BaseTypeImpl } from './base-type';
+import type { The } from './interfaces';
 import { assignableTo, testTypes } from './testutils';
-import { boolean, unknownRecord } from './types';
+import { boolean, int, number, object, pattern, string, unknownRecord } from './types';
 
 describe(BaseTypeImpl, () => {
     test.each(['a string', 123, false, { key: 'value' }] as const)('guard value: %p', value => {
@@ -49,5 +49,29 @@ describe(BaseTypeImpl, () => {
             assignableTo<{ key: 'value' }>(value);
             assignableTo<typeof value>({ key: 'value' });
         });
+    });
+
+    test('#literal', () => {
+        type NumericString = The<typeof NumericString>;
+        const NumericString = pattern('NumericString', /^\d+$/);
+
+        type Obj = The<typeof Obj>;
+        const Obj = object('Obj', { a: NumericString, b: int });
+
+        assignableTo<Obj>({ a: NumericString('123'), b: int(123) });
+        // @ts-expect-error because values are not checked
+        assignableTo<Obj>({ a: '123', b: 123 });
+
+        expect(Obj.literal({ a: '123', b: 123 })).toEqual({ a: '123', b: 123 });
+
+        assignableTo<Obj>(Obj.literal({ a: '123', b: 123 }));
+
+        expect(() => Obj.literal({ a: 'abc', b: 1.2 })).toThrowErrorMatchingInlineSnapshot(`
+            "errors in [Obj]:
+
+            - at <a>: expected a string matching pattern /^\\\\d+$/, got: \\"abc\\"
+
+            - at <b>: expected a whole number, got: 1.2"
+        `);
     });
 });

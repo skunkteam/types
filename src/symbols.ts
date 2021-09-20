@@ -4,11 +4,11 @@
 export const autoCastFailure = Symbol('autoCastFailure');
 
 /**
- * The symbol that gives access to the (design-time-only) brands of a type.
+ * The symbol that gives access to the (design-time-only) brands of a Type.
  */
 export const brands = Symbol('brands');
 
 /**
- * The symbol that gives access to the (design-time-only) associated type of an object.
+ * The symbol that gives access to the (design-time-only) associated TypeScript type of a Type.
  */
 export const designType = Symbol('designType');

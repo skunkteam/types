@@ -9,7 +9,7 @@ The type for optional custom messages
 <b>Signature:</b>
 
 ```typescript
-export declare type CustomMessage = undefined | string | ((got: string, input: unknown) => string);
+export declare type CustomMessage<T, E = void> = undefined | string | ((got: string, input: T, explanation: E) => string);
 ```
 
 ## Remarks

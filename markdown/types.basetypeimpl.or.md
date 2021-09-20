@@ -9,14 +9,14 @@ Union this Type with another Type.
 <b>Signature:</b>
 
 ```typescript
-or<Other>(_other: BaseTypeImpl<Other>): Type<ResultType | Other>;
+or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                         | Description |
-| --------- | ------------------------------------------------------------ | ----------- |
-| \_other   | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Other&gt; |             |
+| Parameter | Type                                                              | Description |
+| --------- | ----------------------------------------------------------------- | ----------- |
+| \_other   | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Other, any&gt; |             |
 
 <b>Returns:</b>
 

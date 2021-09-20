@@ -144,8 +144,8 @@ export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (
     return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
 }
 
-export function plural(amount: unknown[], thing: string, things = `${thing}s`): string {
-    return amount.length === 1 ? thing : things;
+export function plural(amount: { length: number } | number, thing: string, things = `${thing}s`): string {
+    return (typeof amount === 'number' ? amount : amount.length) === 1 ? thing : things;
 }
 
 export function defaultObjectRep(propsInfo: PropertiesInfo): string {

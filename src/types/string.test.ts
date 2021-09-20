@@ -1,5 +1,6 @@
 import type { The } from '../interfaces';
 import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { plural } from '../utils';
 import { pattern, string } from './string';
 
 testTypeImpl({
@@ -25,6 +26,7 @@ const CustomMessagePattern = pattern('CustomMessagePattern', /a/, got => `you sa
 testTypeImpl({
     name: 'CustomMessagePattern',
     type: CustomMessagePattern,
+    validValues: ['a', 'aa', 'aaa'],
     invalidValues: [
         ['b', 'error in [CustomMessagePattern]: you said: "b", but I expected: "a"'],
         ['\\', 'error in [CustomMessagePattern]: you said: "\\\\", but I expected: "a"'],
@@ -37,8 +39,39 @@ testTypeImpl({
     name: 'NoCustomMessagePattern',
     type: NoCustomMessagePattern,
     invalidValues: [
-        ['b', 'expected a [NoCustomMessagePattern], got: "b"'],
-        ['\\', 'expected a [NoCustomMessagePattern], got: "\\\\"'],
+        ['b', 'error in [NoCustomMessagePattern]: expected a string matching pattern /a/, got: "b"'],
+        ['\\', 'error in [NoCustomMessagePattern]: expected a string matching pattern /a/, got: "\\\\"'],
+    ],
+});
+
+type CombinedValidations = The<typeof CombinedValidations>;
+const CombinedValidations = string.withConfig('CombinedValidations', {
+    pattern: /^[ab]*(?:ab|ba)[ab]*$/,
+    minLength: 4,
+    maxLength: 6,
+    customMessage: {
+        maxLength: (got, value) => `oh no, ${value.length} ${plural(value, 'character')} will not fit, got: ${got}`,
+        minLength: (got, value) => `you're ${4 - value.length} ${plural(4 - value.length, 'character')} short, got: ${got}`,
+        pattern: `you're supposed to use only a's and b's and at least one of both`,
+    },
+});
+testTypeImpl({
+    name: 'CombinedValidations',
+    type: CombinedValidations,
+    basicType: 'string',
+    validValues: ['abab', 'aaabbb', 'bbba'],
+    invalidValues: [
+        [
+            'c',
+            [
+                'errors in [CombinedValidations]:',
+                '',
+                `- you're 3 characters short, got: "c"`,
+                '',
+                `- you're supposed to use only a's and b's and at least one of both, got: "c"`,
+            ],
+        ],
+        ['aaaabbbb', 'error in [CombinedValidations]: oh no, 8 characters will not fit, got: "aaaabbbb"'],
     ],
 });
 

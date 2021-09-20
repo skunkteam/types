@@ -28,6 +28,7 @@ export declare class KeyofType<T extends Record<string, unknown>, ResultType ext
 | [enumerableLiteralDomain](./types.keyoftype.enumerableliteraldomain.md) |           | string\[\] |             |
 | [keys](./types.keyoftype.keys.md)                                       |           | T          |             |
 | [name](./types.keyoftype.name.md)                                       |           | string     |             |
+| [typeConfig](./types.keyoftype.typeconfig.md)                           |           | undefined  |             |
 
 ## Methods
 

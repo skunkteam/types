@@ -27,6 +27,7 @@ export declare class LiteralType<ResultType extends LiteralValue> extends BaseTy
 | [basicType](./types.literaltype.basictype.md)                             |           | [BasicType](./types.basictype.md) |             |
 | [enumerableLiteralDomain](./types.literaltype.enumerableliteraldomain.md) |           | ResultType\[\]                    |             |
 | [name](./types.literaltype.name.md)                                       |           | string                            |             |
+| [typeConfig](./types.literaltype.typeconfig.md)                           |           | undefined                         |             |
 | [value](./types.literaltype.value.md)                                     |           | ResultType                        |             |
 
 ## Methods

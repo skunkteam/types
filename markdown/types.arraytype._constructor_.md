@@ -9,12 +9,13 @@ Constructs a new instance of the `ArrayType` class
 <b>Signature:</b>
 
 ```typescript
-constructor(elementType: ElementType, name?: string);
+constructor(elementType: ElementType, typeConfig: ArrayTypeConfig, name?: string);
 ```
 
 ## Parameters
 
-| Parameter   | Type        | Description |
-| ----------- | ----------- | ----------- |
-| elementType | ElementType |             |
-| name        | string      |             |
+| Parameter   | Type                                          | Description |
+| ----------- | --------------------------------------------- | ----------- |
+| elementType | ElementType                                   |             |
+| typeConfig  | [ArrayTypeConfig](./types.arraytypeconfig.md) |             |
+| name        | string                                        |             |

@@ -37,7 +37,7 @@ export class ValidationError extends Error implements Failure {
         }
     }
 
-    readonly name = 'ValidationError';
+    override readonly name = 'ValidationError';
     readonly ok = false;
 
     private constructor(

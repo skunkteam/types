@@ -9,25 +9,26 @@ The implementation behind types created with [array()](./types.array.md)<!-- -->
 <b>Signature:</b>
 
 ```typescript
-export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType>
+export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType, ArrayTypeConfig>
 ```
 
-<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;
+<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->&gt;
 
 ## Constructors
 
-| Constructor                                                            | Modifiers | Description                                                   |
-| ---------------------------------------------------------------------- | --------- | ------------------------------------------------------------- |
-| [(constructor)(elementType, name)](./types.arraytype._constructor_.md) |           | Constructs a new instance of the <code>ArrayType</code> class |
+| Constructor                                                                        | Modifiers | Description                                                   |
+| ---------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------- |
+| [(constructor)(elementType, typeConfig, name)](./types.arraytype._constructor_.md) |           | Constructs a new instance of the <code>ArrayType</code> class |
 
 ## Properties
 
-| Property                                            | Modifiers | Type        | Description |
-| --------------------------------------------------- | --------- | ----------- | ----------- |
-| [basicType](./types.arraytype.basictype.md)         |           | 'array'     |             |
-| [elementType](./types.arraytype.elementtype.md)     |           | ElementType |             |
-| [isDefaultName](./types.arraytype.isdefaultname.md) |           | boolean     |             |
-| [name](./types.arraytype.name.md)                   |           | string      |             |
+| Property                                            | Modifiers | Type                                          | Description |
+| --------------------------------------------------- | --------- | --------------------------------------------- | ----------- |
+| [basicType](./types.arraytype.basictype.md)         |           | 'array'                                       |             |
+| [elementType](./types.arraytype.elementtype.md)     |           | ElementType                                   |             |
+| [isDefaultName](./types.arraytype.isdefaultname.md) |           | boolean                                       |             |
+| [name](./types.arraytype.name.md)                   |           | string                                        |             |
+| [typeConfig](./types.arraytype.typeconfig.md)       |           | [ArrayTypeConfig](./types.arraytypeconfig.md) |             |
 
 ## Methods
 

@@ -32,6 +32,7 @@ export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, R
 | [possibleDiscriminators](./types.uniontype.possiblediscriminators.md)   |           | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\]                 |             |
 | [props](./types.uniontype.props.md)                                     |           | [Properties](./types.properties.md)                                                                    |             |
 | [propsInfo](./types.uniontype.propsinfo.md)                             |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[Properties](./types.properties.md)<!-- -->&gt; |             |
+| [typeConfig](./types.uniontype.typeconfig.md)                           |           | undefined                                                                                              |             |
 | [types](./types.uniontype.types.md)                                     |           | Types                                                                                                  |             |
 
 ## Methods

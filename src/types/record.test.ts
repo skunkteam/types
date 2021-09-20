@@ -74,7 +74,7 @@ testTypeImpl({
                 '',
                 '- key <c> is invalid: expected key to be numeric (because the key-type is: int), got: "c"',
                 '',
-                '- key <"123.4"> is invalid: expected an [int], got: 123.4',
+                '- key <"123.4"> is invalid: expected a whole number, got: 123.4',
             ],
         ],
     ],

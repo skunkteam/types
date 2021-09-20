@@ -29,6 +29,7 @@ export declare class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyTy
 | [keyType](./types.recordtype.keytype.md)             |           | KeyTypeImpl   |             |
 | [name](./types.recordtype.name.md)                   |           | string        |             |
 | [strict](./types.recordtype.strict.md)               |           | boolean       |             |
+| [typeConfig](./types.recordtype.typeconfig.md)       |           | undefined     |             |
 | [valueType](./types.recordtype.valuetype.md)         |           | ValueTypeImpl |             |
 
 ## Methods

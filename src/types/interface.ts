@@ -49,6 +49,7 @@ export class InterfaceType<Props extends Properties, ResultType>
     readonly name: string;
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;
+    readonly typeConfig: undefined;
 
     constructor(readonly props: Props, readonly options: InterfaceTypeOptions) {
         super();
@@ -62,7 +63,6 @@ export class InterfaceType<Props extends Properties, ResultType>
     readonly possibleDiscriminators = this.options.partial ? [] : getPossibleDiscriminators(this.props);
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        const { strictMissingKeys, partial } = this.options;
         if (this.options.checkOnly) {
             // can copy here, because this is done after adding the 'visitedMap'
             options = { ...options, mode: 'check' };
@@ -70,6 +70,7 @@ export class InterfaceType<Props extends Properties, ResultType>
         if (!unknownRecord.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
+        const { strictMissingKeys, partial } = this.options;
         const constructResult = {} as Record<string, unknown>;
         const details: MessageDetails[] = [];
         for (const [key, innerType] of Object.entries(this.props)) {

@@ -9,7 +9,7 @@ Intersect this Type with another Type.
 <b>Signature:</b>
 
 ```typescript
-and<Other extends BaseObjectLikeTypeImpl<any>>(_other: Other): ObjectType<MergeIntersection<ResultType & Other[typeof designType]>> & TypedPropertyInformation<this['props'] & Other['props']>;
+and<Other extends BaseObjectLikeTypeImpl<any, any>>(_other: Other): ObjectType<MergeIntersection<ResultType & Other[typeof designType]>> & TypedPropertyInformation<this['props'] & Other['props']>;
 ```
 
 ## Parameters

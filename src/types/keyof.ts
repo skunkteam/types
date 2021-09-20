@@ -7,6 +7,7 @@ import { decodeOptionalName, define, hasOwnProperty, transpose } from '../utils'
  */
 export class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType> {
     readonly basicType!: 'string';
+    readonly typeConfig: undefined;
 
     constructor(
         readonly keys: T,
@@ -17,7 +18,7 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
         super();
     }
 
-    readonly enumerableLiteralDomain = Object.keys(this.keys);
+    override readonly enumerableLiteralDomain = Object.keys(this.keys);
 
     protected typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(

@@ -36,6 +36,20 @@ export declare type MessageDetails = Partial<ValidationDetails> & {
               expectedValue?: LiteralValue;
           }
         | {
+              kind: 'length out of range';
+              violation: LengthViolation;
+              config: LengthChecksConfig;
+          }
+        | {
+              kind: 'input out of range';
+              violation: NumberViolation;
+              config: NumberTypeConfig;
+          }
+        | {
+              kind: 'pattern mismatch';
+              config: StringTypeConfig;
+          }
+        | {
               kind: 'union';
               failures: Failure[];
           }
@@ -46,4 +60,4 @@ export declare type MessageDetails = Partial<ValidationDetails> & {
     );
 ```
 
-<b>References:</b> [ValidationDetails](./types.validationdetails.md)<!-- -->, [Failure](./types.failure.md)<!-- -->, [LiteralValue](./types.literalvalue.md)<!-- -->, [BasicType](./types.basictype.md)
+<b>References:</b> [ValidationDetails](./types.validationdetails.md)<!-- -->, [Failure](./types.failure.md)<!-- -->, [LiteralValue](./types.literalvalue.md)<!-- -->, [BasicType](./types.basictype.md)<!-- -->, [LengthViolation](./types.lengthviolation.md)<!-- -->, [LengthChecksConfig](./types.lengthchecksconfig.md)<!-- -->, [NumberViolation](./types.numberviolation.md)<!-- -->, [NumberTypeConfig](./types.numbertypeconfig.md)<!-- -->, [StringTypeConfig](./types.stringtypeconfig.md)
