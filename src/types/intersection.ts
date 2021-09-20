@@ -8,6 +8,7 @@ import type {
     Result,
     TypeImpl,
     ValidationOptions,
+    Visitor,
 } from '../interfaces';
 import type { designType } from '../symbols';
 import { bracketsIfNeeded, decodeOptionalName, defaultObjectRep, define, extensionName, humanList, isFailure, partition } from '../utils';
@@ -18,7 +19,7 @@ import { unknownRecord } from './unknown';
  * The implementation behind types created with {@link intersection} and {@link BaseObjectLikeTypeImpl.and}.
  */
 export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>
-    extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>>
+    extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>, undefined>
     implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
 {
     readonly name: string;
@@ -56,6 +57,10 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
                 : input,
             details,
         );
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitObjectLikeType(this);
     }
 }
 define(IntersectionType, 'basicType', 'object');

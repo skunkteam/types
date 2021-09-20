@@ -1,5 +1,5 @@
-import type { The } from '../interfaces';
-import { defaultUsualSuspects, testTypeImpl } from '../testutils';
+import type { DeepUnbranded, The } from '../interfaces';
+import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 import { object } from './interface';
 import { literal, nullType, undefinedType } from './literal';
@@ -113,6 +113,22 @@ testTypeImpl({
 });
 
 const ObjectUnion = union([object({ tag: literal('a'), a: string }), object({ tag: literal('b'), b: number.autoCast })]);
+
+test('ObjectUnion examples', () => {
+    expect(createExample(ObjectUnion, 1)).toMatchInlineSnapshot(`
+    Object {
+      "b": 0.02,
+      "tag": "b",
+    }
+    `);
+    expect(createExample(ObjectUnion, 2)).toMatchInlineSnapshot(`
+    Object {
+      "a": "xxx",
+      "tag": "a",
+    }
+    `);
+});
+
 testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.autoCast }', type: ObjectUnion });
 testTypeImpl({
     name: 'ObjectUnion',
@@ -153,10 +169,33 @@ const NetworkState = union('NetworkState', [
     object('NetworkLoadingState', { state: literal('loading') }),
     object('NetworkFailedState', {
         state: literal('failed'),
-        code: number.withValidation(n => n >= 300 || 'numbers in 2xx range indicate success'),
+        code: number.withConfig('StatusFailed', { min: 300, customMessage: 'numbers in 2xx range indicate success' }),
     }),
     object('NetworkSuccessState', { state: literal('success'), response: unknownRecord.withName('Response') }),
 ]);
+
+test('NetworkState examples', () => {
+    expect(createExample(NetworkState, 1)).toMatchInlineSnapshot(`
+    Object {
+      "code": 300,
+      "state": "failed",
+    }
+    `);
+    expect(createExample(NetworkState, 2)).toMatchInlineSnapshot(`
+    Object {
+      "response": Object {
+        "unknown": "record",
+      },
+      "state": "success",
+    }
+    `);
+    expect(createExample(NetworkState, 3)).toMatchInlineSnapshot(`
+    Object {
+      "state": "loading",
+    }
+    `);
+});
+
 testTypeImpl({
     name: 'NetworkState',
     type: NetworkState,
@@ -170,7 +209,7 @@ testTypeImpl({
                 '(got: {})',
                 '  • error in [NetworkLoadingState]: missing property <state> ["loading"]',
                 '  • errors in [NetworkFailedState]:',
-                '    ‣ missing properties <state> ["failed"] and <code> [number]',
+                '    ‣ missing properties <state> ["failed"] and <code> [StatusFailed]',
                 '  • errors in [NetworkSuccessState]:',
                 '    ‣ missing properties <state> ["success"] and <response> [Response]',
             ],
@@ -178,7 +217,7 @@ testTypeImpl({
         [
             { state: 'failed' },
             [
-                'error in [NetworkState]: in union element [NetworkFailedState]: missing property <code> [number], got: { state: "failed" }',
+                'error in [NetworkState]: in union element [NetworkFailedState]: missing property <code> [StatusFailed], got: { state: "failed" }',
                 '  • disregarded 2 union-subtypes due to a mismatch in values of discriminator <state>',
             ],
         ],
@@ -199,7 +238,7 @@ testTypeImpl({
         number
             .or(unknownRecord)
             .or(undefinedType)
-            .andThen((input): NetworkState => {
+            .andThen((input): DeepUnbranded<NetworkState> => {
                 switch (typeof input) {
                     case 'number':
                         return { state: 'failed', code: input };

@@ -1,5 +1,5 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { ArrayTypeConfig, Result, TypeImpl, ValidationOptions } from '../interfaces';
+import type { ArrayTypeConfig, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces';
 import {
     castArray,
     decodeOptionalName,
@@ -62,6 +62,10 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
             !failureDetails.length && options.mode === 'construct' ? validResults.map(r => r.value) : input,
             failureDetails,
         );
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitArrayType(this);
     }
 }
 define(ArrayType, 'autoCaster', castArray);

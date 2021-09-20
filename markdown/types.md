@@ -59,6 +59,7 @@ Runtime type-validation with derived TypeScript types.
 | [TypedPropertyInformation](./types.typedpropertyinformation.md) | Interface that provides more detailed type-information about the <code>props</code> and <code>propsInfo</code> properties of the validator. |
 | [TypeLink](./types.typelink.md)                                 | An object that has an associated TypeScript type.                                                                                           |
 | [ValidationOptions](./types.validationoptions.md)               |                                                                                                                                             |
+| [Visitor](./types.visitor.md)                                   | Interface for a visitor that is accepted by all types (classic visitor-pattern).                                                            |
 
 ## Variables
 

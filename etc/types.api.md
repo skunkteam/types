@@ -11,6 +11,8 @@ export function array<Element>(...args: [name: string, elementType: BaseTypeImpl
 export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType, ArrayTypeConfig> {
     constructor(elementType: ElementType, typeConfig: ArrayTypeConfig, name?: string);
     // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
+    // (undocumented)
     readonly basicType: 'array';
     // (undocumented)
     readonly elementType: ElementType;
@@ -53,6 +55,7 @@ export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> e
 export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType> {
     // @internal
     readonly [designType]: ResultType;
+    abstract accept<R>(visitor: Visitor<R>): R;
     andThen<Return, RestArgs extends unknown[]>(fn: (value: ResultType, ...restArgs: RestArgs) => Return): (input: unknown, ...restArgs: RestArgs) => Return;
     assert(input: unknown): asserts input is ResultType;
     get autoCast(): this;
@@ -134,6 +137,8 @@ export const int: Type<Branded<number, 'int'>, NumberTypeConfig>;
 export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props> {
     constructor(props: Props, options: InterfaceTypeOptions);
     // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
+    // (undocumented)
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
@@ -178,8 +183,10 @@ export type IntersectionOfTypeTuple<Tuple> = Tuple extends [{
 }, ...infer Rest] ? MergeIntersection<A & IntersectionOfTypeTuple<Rest>> : Record<string, unknown>;
 
 // @public
-export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>> {
+export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>, undefined> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>> {
     constructor(types: Types, name?: string);
+    // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
     // (undocumented)
     readonly basicType: 'object';
     // (undocumented)
@@ -215,6 +222,8 @@ export function keyof<T extends Record<string, unknown>>(...args: [name: string,
 export class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType> {
     constructor(keys: T, name?: string);
     // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
+    // (undocumented)
     readonly basicType: 'string';
     // (undocumented)
     readonly enumerableLiteralDomain: string[];
@@ -247,6 +256,8 @@ export function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<
 // @public
 export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType> {
     constructor(value: ResultType);
+    // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
     // (undocumented)
     readonly basicType: BasicType;
     // (undocumented)
@@ -391,6 +402,8 @@ export function record<KeyType extends number | string, ValueType>(...args: [nam
 export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType extends number | string, ValueTypeImpl extends BaseTypeImpl<ValueType>, ValueType, ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>> extends BaseTypeImpl<ResultType> {
     constructor(keyType: KeyTypeImpl, valueType: ValueTypeImpl, name?: string, strict?: boolean);
     // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
+    // (undocumented)
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
@@ -417,6 +430,8 @@ export type Result<T> = Success<T> | Failure;
 // @public
 export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType, TypeConfig> {
     // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
+    // (undocumented)
     readonly basicType: BasicType | 'mixed';
     static create<ResultType, TypeConfig>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType, TypeConfig>) => ValidationResult, options: SimpleTypeOptions<ResultType, TypeConfig>): Type<ResultType, TypeConfig>;
     static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType, undefined>) => ValidationResult, options?: Omit<SimpleTypeOptions<ResultType, undefined>, 'typeConfig'>): Type<ResultType, undefined>;
@@ -430,6 +445,10 @@ export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType,
 
 // @public (undocumented)
 export interface SimpleTypeOptions<ResultType, TypeConfig> {
+    // Warning: (ae-forgotten-export) The symbol "SimpleAcceptVisitor" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    acceptVisitor?: SimpleAcceptVisitor<ResultType, TypeConfig>;
     // (undocumented)
     autoCaster?: BaseTypeImpl<ResultType, TypeConfig>['autoCaster'];
     // (undocumented)
@@ -511,6 +530,8 @@ export function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(...args: [
 // @public
 export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>> extends BaseObjectLikeTypeImpl<ResultType> {
     constructor(types: Types, name?: string);
+    // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
     // (undocumented)
     readonly basicType: BasicType | "mixed";
     // (undocumented)
@@ -595,6 +616,36 @@ export type Validator<ResultType> = (input: ResultType, options: ValidationOptio
 
 // @public (undocumented)
 export function valueof<T extends Record<string, string>>(...args: [name: string, obj: T] | [obj: T]): TypeImpl<KeyofType<Transposed<T>>>;
+
+// @public
+export interface Visitor<R> {
+    // (undocumented)
+    visitArrayType(type: ArrayType<BaseTypeImpl<unknown>, unknown, unknown[]>): R;
+    // (undocumented)
+    visitBooleanType(type: BaseTypeImpl<boolean>): R;
+    // (undocumented)
+    visitCustomType(type: BaseTypeImpl<unknown>): R;
+    // (undocumented)
+    visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
+    // (undocumented)
+    visitLiteralType(type: LiteralType<LiteralValue>): R;
+    // (undocumented)
+    visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
+    // (undocumented)
+    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
+    // (undocumented)
+    visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<unknown>, unknown>): R;
+    // (undocumented)
+    visitStringType(type: BaseTypeImpl<string, StringTypeConfig>): R;
+    // (undocumented)
+    visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown>>, unknown>): R;
+    // (undocumented)
+    visitUnknownArrayType(type: BaseTypeImpl<unknown[]>): R;
+    // (undocumented)
+    visitUnknownRecordType(type: BaseTypeImpl<Record<string, unknown>>): R;
+    // (undocumented)
+    visitUnknownType(type: BaseTypeImpl<unknown>): R;
+}
 
 // @public (undocumented)
 export const voidType: TypeImpl<LiteralType<void>>;

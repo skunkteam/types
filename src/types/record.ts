@@ -1,5 +1,5 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { MessageDetails, Result, TypeImpl, ValidationOptions } from '../interfaces';
+import type { MessageDetails, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces';
 import { decodeOptionalName, define, extensionName, prependPathToDetails } from '../utils';
 import { unknownRecord } from './unknown';
 
@@ -52,6 +52,10 @@ export class RecordType<
         }
         return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
     }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitRecordType(this);
+    }
 }
 define(RecordType, 'basicType', 'object');
 
@@ -102,5 +106,9 @@ class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
         }
         const innerResult = this.innerType.validate(number, options);
         return this.createResult(input, String(input), innerResult.ok || innerResult.details);
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return this.innerType.accept(visitor);
     }
 }

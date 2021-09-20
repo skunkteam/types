@@ -10,6 +10,7 @@ import type {
     TypeImpl,
     TypeOfProperties,
     ValidationOptions,
+    Visitor,
     Writable,
 } from '../interfaces';
 import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, prependPathToDetails } from '../utils';
@@ -108,6 +109,10 @@ export class InterfaceType<Props extends Properties, ResultType>
         const [name = this.isDefaultName ? undefined : this.name, props] = decodeOptionalName<[PartialProps]>(args);
         const newType = this.and(partial(props));
         return name ? newType.withName(name) : newType;
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitObjectLikeType(this);
     }
 }
 define(InterfaceType, 'basicType', 'object');

@@ -34,5 +34,6 @@ export declare class KeyofType<T extends Record<string, unknown>, ResultType ext
 
 | Method                                                     | Modifiers | Description |
 | ---------------------------------------------------------- | --------- | ----------- |
+| [accept(visitor)](./types.keyoftype.accept.md)             |           |             |
 | [translate(input)](./types.keyoftype.translate.md)         |           |             |
 | [typeValidator(input)](./types.keyoftype.typevalidator.md) |           |             |

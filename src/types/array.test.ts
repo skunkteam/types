@@ -1,5 +1,5 @@
 import type { The } from '../interfaces';
-import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { array } from './array';
 import { object } from './interface';
 import { number } from './number';
@@ -96,9 +96,28 @@ testTypeImpl({
     type: array('custom name', number).autoCastAll,
 });
 
+type SmallArray = The<typeof SmallArray>;
+const SmallArray = array('SmallArray', string, { minLength: 1, maxLength: 3 });
+
+test('SmallArray examples', () => {
+    expect(createExample(SmallArray, 0)).toMatchInlineSnapshot(`
+    Array [
+      "x",
+    ]
+    `);
+
+    expect(createExample(SmallArray, 4)).toMatchInlineSnapshot(`
+    Array [
+      "xxxxx",
+      "xxxxxx",
+      "xxxxxxx",
+    ]
+    `);
+});
+
 testTypeImpl({
     name: 'SmallArray',
-    type: array('SmallArray', string, { minLength: 1, maxLength: 3 }),
+    type: SmallArray,
     validValues: [[['a']], [['a', 'b', 'c']]],
     invalidValues: [
         [[], 'error in [SmallArray]: expected at least 1 element, got: []'],

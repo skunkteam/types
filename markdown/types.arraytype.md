@@ -34,4 +34,5 @@ export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Elemen
 
 | Method                                                              | Modifiers | Description |
 | ------------------------------------------------------------------- | --------- | ----------- |
+| [accept(visitor)](./types.arraytype.accept.md)                      |           |             |
 | [typeValidator(input, options)](./types.arraytype.typevalidator.md) |           |             |
