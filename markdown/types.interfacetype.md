@@ -40,6 +40,7 @@ export declare class InterfaceType<Props extends Properties, ResultType> extends
 
 | Method                                                                  | Modifiers | Description                                                                                |
 | ----------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------ |
+| [accept(visitor)](./types.interfacetype.accept.md)                      |           |                                                                                            |
 | [toPartial(name)](./types.interfacetype.topartial.md)                   |           | Clone this type with all properties marked optional.                                       |
 | [typeValidator(input, options)](./types.interfacetype.typevalidator.md) |           |                                                                                            |
 | [withOptional(args)](./types.interfacetype.withoptional.md)             |           | Create a type with all properties of the current type, plus the given optional properties. |

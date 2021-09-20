@@ -1,5 +1,5 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { Result, Transposed, TypeImpl } from '../interfaces';
+import type { Result, Transposed, TypeImpl, Visitor } from '../interfaces';
 import { decodeOptionalName, define, hasOwnProperty, transpose } from '../utils';
 
 /**
@@ -31,6 +31,10 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
     translate(input: unknown): T[keyof T] {
         this.assert(input);
         return this.keys[input];
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitKeyofType(this);
     }
 }
 define(KeyofType, 'autoCaster', String);

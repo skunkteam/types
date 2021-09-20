@@ -12,7 +12,9 @@ testTypeImpl({
 });
 
 type ISODate = The<typeof ISODate>;
-const ISODate = pattern('ISODate', /^([12][0-9]{3})-(0[1-9]|1[0-2])-([0-3][0-9])$/, 'expected pattern "YYYY-MM-DD"');
+const ISODate = pattern('ISODate', /^([12][0-9]{3})-(0[1-9]|1[0-2])-([0-3][0-9])$/, 'expected pattern "YYYY-MM-DD"').extendWith(() => ({
+    example: '2020-01-02',
+}));
 testTypeImpl({
     name: 'ISODate',
     type: ISODate,
@@ -22,7 +24,9 @@ testTypeImpl({
 });
 
 type CustomMessagePattern = The<typeof CustomMessagePattern>;
-const CustomMessagePattern = pattern('CustomMessagePattern', /a/, got => `you said: ${got}, but I expected: "a"`);
+const CustomMessagePattern = pattern('CustomMessagePattern', /a/, got => `you said: ${got}, but I expected: "a"`).extendWith(() => ({
+    example: 'aaa',
+}));
 testTypeImpl({
     name: 'CustomMessagePattern',
     type: CustomMessagePattern,
@@ -34,7 +38,7 @@ testTypeImpl({
 });
 
 type NoCustomMessagePattern = The<typeof NoCustomMessagePattern>;
-const NoCustomMessagePattern = pattern('NoCustomMessagePattern', /a/);
+const NoCustomMessagePattern = pattern('NoCustomMessagePattern', /a/).extendWith(() => ({ example: 'aaa' }));
 testTypeImpl({
     name: 'NoCustomMessagePattern',
     type: NoCustomMessagePattern,
@@ -45,16 +49,17 @@ testTypeImpl({
 });
 
 type CombinedValidations = The<typeof CombinedValidations>;
-const CombinedValidations = string.withConfig('CombinedValidations', {
-    pattern: /^[ab]*(?:ab|ba)[ab]*$/,
-    minLength: 4,
-    maxLength: 6,
-    customMessage: {
-        maxLength: (got, value) => `oh no, ${value.length} ${plural(value, 'character')} will not fit, got: ${got}`,
-        minLength: (got, value) => `you're ${4 - value.length} ${plural(4 - value.length, 'character')} short, got: ${got}`,
-        pattern: `you're supposed to use only a's and b's and at least one of both`,
-    },
-});
+const CombinedValidations = string
+    .withConfig('CombinedValidations', {
+        pattern: /^[ab]*(?:ab|ba)[ab]*$/,
+        minLength: 4,
+        maxLength: 6,
+        customMessage: {
+            minLength: (got, value) => `you're ${4 - value.length} ${plural(4 - value.length, 'character')} short, got: ${got}`,
+            pattern: `you're supposed to use only a's and b's and at least one of both`,
+        },
+    })
+    .extendWith(() => ({ example: 'aaabb' }));
 testTypeImpl({
     name: 'CombinedValidations',
     type: CombinedValidations,
@@ -71,7 +76,7 @@ testTypeImpl({
                 `- you're supposed to use only a's and b's and at least one of both, got: "c"`,
             ],
         ],
-        ['aaaabbbb', 'error in [CombinedValidations]: oh no, 8 characters will not fit, got: "aaaabbbb"'],
+        ['aaaabbbb', 'error in [CombinedValidations]: expected at most 6 characters, got: "aaaabbbb"'],
     ],
 });
 

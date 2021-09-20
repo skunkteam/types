@@ -1,11 +1,14 @@
 import { BaseTypeImpl, createType } from './base-type';
-import type { BasicType, Result, Type, ValidationOptions, ValidationResult } from './interfaces';
+import type { BasicType, Result, Type, ValidationOptions, ValidationResult, Visitor } from './interfaces';
+
+type SimpleAcceptVisitor<ResultType, TypeConfig> = <R>(type: SimpleType<ResultType, TypeConfig>, visitor: Visitor<R>) => R;
 
 export interface SimpleTypeOptions<ResultType, TypeConfig> {
     enumerableLiteralDomain?: BaseTypeImpl<ResultType, TypeConfig>['enumerableLiteralDomain'];
     typeConfig: BaseTypeImpl<ResultType, TypeConfig>['typeConfig'];
     autoCaster?: BaseTypeImpl<ResultType, TypeConfig>['autoCaster'];
     combineConfig?: BaseTypeImpl<ResultType, TypeConfig>['combineConfig'];
+    acceptVisitor?: SimpleAcceptVisitor<ResultType, TypeConfig>;
 }
 
 /**
@@ -54,6 +57,7 @@ export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType,
     }
 
     readonly typeConfig!: TypeConfig;
+    private readonly acceptVisitor?: SimpleAcceptVisitor<ResultType, TypeConfig>;
 
     private constructor(
         readonly name: string,
@@ -69,5 +73,9 @@ export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType,
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         return this.createResult(input, input, this.simpleValidator(input, options, this));
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return this.acceptVisitor ? this.acceptVisitor(this, visitor) : visitor.visitCustomType(this);
     }
 }

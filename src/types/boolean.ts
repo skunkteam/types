@@ -9,6 +9,7 @@ import { basicTypeChecker } from '../utils';
 export const boolean: Type<boolean> = SimpleType.create('boolean', 'boolean', basicTypeChecker('boolean'), {
     autoCaster: booleanAutoCaster,
     enumerableLiteralDomain: [true, false],
+    acceptVisitor: (type, visitor) => visitor.visitBooleanType(type),
 });
 
 export function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure {

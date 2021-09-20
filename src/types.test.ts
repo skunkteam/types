@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
-import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
+import { assignableTo, basicTypeMessage, createExample, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
 import { array, boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
 import { intersection } from './types/intersection';
@@ -132,6 +132,18 @@ const User = object('User', {
     }),
     /** For reference, we need your shoe size, must be a whole non-negative number. */
     shoeSize: ShoeSize,
+});
+
+test('User example', () => {
+    expect(createExample(User)).toMatchInlineSnapshot(`
+    Object {
+      "name": Object {
+        "first": "x",
+        "last": "xx",
+      },
+      "shoeSize": 3,
+    }
+    `);
 });
 
 testTypeImpl({
@@ -378,7 +390,8 @@ const ComplexNesting = object('ComplexNesting', {
     neg: NumberFromString.withValidation(n => n < 0 || 'should be negative'),
 })
     .withValidation(obj => obj.pos === -obj.neg || '<pos> and <neg> should be opposites')
-    .withParser(i => (typeof i === 'string' ? { pos: i, neg: `-${i}` } : i));
+    .withParser(i => (typeof i === 'string' ? { pos: i, neg: `-${i}` } : i))
+    .extendWith(() => ({ example: { pos: 42, neg: -42 } }));
 
 testTypeImpl({
     name: 'ComplexNesting',

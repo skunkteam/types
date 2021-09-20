@@ -33,6 +33,7 @@ All type-implementations must extend this base class. Use [createType()](./types
 
 | Method                                                                               | Modifiers | Description                                                                                                                     |
 | ------------------------------------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [accept(visitor)](./types.basetypeimpl.accept.md)                                    |           | Accept a visitor (visitor pattern).                                                                                             |
 | [andThen(fn)](./types.basetypeimpl.andthen.md)                                       |           | Create a function with validated input.                                                                                         |
 | [assert(input)](./types.basetypeimpl.assert.md)                                      |           | Verifies that a value conforms to this Type.                                                                                    |
 | [autoCaster(this, value)?](./types.basetypeimpl.autocaster.md)                       |           | <i>(Optional)</i> The logic that is used in the autocasting version of the current type.                                        |

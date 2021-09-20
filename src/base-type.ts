@@ -14,6 +14,7 @@ import type {
     ValidationOptions,
     ValidationResult,
     Validator,
+    Visitor,
 } from './interfaces';
 import { autoCastFailure, designType } from './symbols';
 import {
@@ -79,6 +80,17 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * @param options - the current validation context
      */
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
+
+    /**
+     * Accept a visitor (visitor pattern).
+     *
+     * @remarks
+     * Note that, while it can be used to traverse a tree, this is not part of this pattern. The visitor that visits a particular type can
+     * decide to visit children of that type (or not). See `./testutils.ts` for an example.
+     *
+     * @param visitor - the visitor to accept
+     */
+    abstract accept<R>(visitor: Visitor<R>): R;
 
     private readonly _instanceCache: {
         autoCast?: BaseTypeImpl<ResultType, TypeConfig>;
