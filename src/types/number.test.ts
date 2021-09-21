@@ -66,10 +66,10 @@ testTypeImpl({
     type: int.autoCast.withConstraint('NonNegativeInt', n => n >= 0),
     validValues: [0, 1, 10_000],
     invalidValues: [
-        ['4', 'error in base type of [NonNegativeInt]: expected a number, got a string ("4")'],
+        ['4', 'error in [NonNegativeInt]: expected a number, got a string ("4")'],
         [-1, 'expected a [NonNegativeInt], got: -1'],
-        [1.5, 'error in base type of [NonNegativeInt]: expected a whole number, got: 1.5'],
-        [-1.5, 'error in base type of [NonNegativeInt]: expected a whole number, got: -1.5'],
+        [1.5, 'error in [NonNegativeInt]: expected a whole number, got: 1.5'],
+        [-1.5, 'error in [NonNegativeInt]: expected a whole number, got: -1.5'],
     ],
     validConversions: [
         ['0', 0],
@@ -77,7 +77,7 @@ testTypeImpl({
     ],
     invalidConversions: [
         ['-1', 'expected a [NonNegativeInt], got: -1, parsed from: "-1"'],
-        ['1.5', 'error in base type of [NonNegativeInt]: expected a whole number, got: 1.5, parsed from: "1.5"'],
+        ['1.5', 'error in [NonNegativeInt]: expected a whole number, got: 1.5, parsed from: "1.5"'],
         ['aa', 'error in parser of [NonNegativeInt]: could not autocast value: "aa"'],
     ],
 });

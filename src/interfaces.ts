@@ -143,7 +143,7 @@ export type MessageDetails = Partial<ValidationDetails> & {
      * A message describing some context to what part of the type generated the failure.
      *
      * @remarks
-     * This library uses the contexts: `parser`, `precondition`, and `base type`, but consuming code is welcome to use any string as context.
+     * This library uses the contexts: `parser` and `precondition`, but consuming code is welcome to use any string as context.
      */
     context?: string;
 
