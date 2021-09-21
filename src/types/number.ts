@@ -1,16 +1,55 @@
-import type { Branded, The, Type } from '../interfaces';
+import type { Branded, NumberTypeConfig, The, Type } from '../interfaces';
 import { SimpleType } from '../simple-type';
 import { autoCastFailure } from '../symbols';
+import { evalAdditionalChecks } from '../utils';
 
-export const number: Type<number> = SimpleType.create(
+export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, NumberTypeConfig>(
     'number',
     'number',
-    input => (typeof input !== 'number' ? { kind: 'invalid basic type', expected: 'number' } : !Number.isNaN(input)),
-    { autoCaster: numberAutoCaster },
+    (input, _, type) => {
+        if (typeof input !== 'number') return { kind: 'invalid basic type', expected: 'number' };
+        if (Number.isNaN(input)) return false;
+        const { customMessage, maxExclusive, max, minExclusive, min, multipleOf } = type.typeConfig;
+        return evalAdditionalChecks(
+            {
+                max: (maxExclusive == null || input < maxExclusive) && (max == null || input <= max),
+                min: (minExclusive == null || input > minExclusive) && (min == null || input >= min),
+                multipleOf: multipleOf == null || isMultiple(input, multipleOf),
+            },
+            customMessage,
+            input,
+            violation => ({ kind: 'input out of range', violation, config: type.typeConfig }),
+        );
+    },
+    {
+        autoCaster: numberAutoCaster,
+        typeConfig: {},
+        combineConfig: (current, update) => {
+            if (update.multipleOf != null && current.multipleOf != null && !isMultiple(update.multipleOf, current.multipleOf)) {
+                throw new Error(
+                    `new value of multipleOf (${update.multipleOf}) not compatible with base multipleOf (${current.multipleOf})`,
+                );
+            }
+            return {
+                // apply update on top of current
+                ...current,
+                ...update,
+
+                // but rebuild the actual bounds (because minExclusive should override min, etc.)
+                min: undefined,
+                minExclusive: undefined,
+                max: undefined,
+                maxExclusive: undefined,
+                ...selectBound('max', current, update),
+                ...selectBound('min', current, update),
+            } as NumberTypeConfig;
+        },
+        acceptVisitor: (type, visitor) => visitor.visitNumberType(type),
+    },
 );
 
 export type int = The<typeof int>;
-export const int: Type<Branded<number, 'int'>> = number.withConstraint('int', Number.isInteger);
+export const int: Type<Branded<number, 'int'>, NumberTypeConfig> = number.withConfig('int', { multipleOf: 1 });
 
 export function numberAutoCaster(input: unknown): number | typeof autoCastFailure {
     let nr;
@@ -28,4 +67,43 @@ export function numberAutoCaster(input: unknown): number | typeof autoCastFailur
         nr = +str;
     }
     return Number.isNaN(nr) ? autoCastFailure : nr;
+}
+
+function isMultiple(value: number, multiple: number) {
+    // This seems to be the best we can do without introducing big.js. It works for all "sensible cases". Note that this limits the range
+    // of `value` to `Math.min(Number.MAX_VALUE, Number.MAX_VALUE * multiple)`. Using modulus does not work for small values, e.g.
+    // `1 % 0.1 === 0.09999999999999995`, while `1 / 0.1 === 10`
+    return Number.isInteger(value / multiple);
+}
+
+type Bound<T extends 'min' | 'max'> = { [K in T | `${T}Exclusive`]?: number };
+
+/**
+ * Check and return the updated bound, falling back to the current bound, taking exclusivity into account.
+ *
+ * @param key check the upper bound ('max') or the lower bound ('min')
+ * @param current the current bounds
+ * @param update the update
+ * @returns the bound to use
+ */
+function selectBound<T extends 'min' | 'max'>(key: T, current: Bound<T>, update: Bound<T>): Bound<T> {
+    const exclKey = `${key}Exclusive` as const;
+    const currentPosition: number | undefined = current[key] ?? current[exclKey];
+    if (currentPosition == null) return update;
+
+    const updatedPosition: number | undefined = update[key] ?? update[exclKey];
+    if (updatedPosition == null) return current;
+
+    if (
+        // if the position of the updated bound is outside the current bound
+        (key === 'max' ? currentPosition < updatedPosition : currentPosition > updatedPosition) ||
+        // or the position is the same, but the exclusivity is incompatible
+        (currentPosition === updatedPosition && current[exclKey] != null && update[exclKey] == null)
+    ) {
+        const printKey = (b: Bound<T>) => (b[exclKey] == null ? key : exclKey);
+        const updateKey = printKey(update);
+        const currentKey = printKey(current);
+        throw `the new bound (${updateKey}: ${updatedPosition}) is outside the existing bound (${currentKey}: ${currentPosition})`;
+    }
+    return update;
 }

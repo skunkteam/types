@@ -1,5 +1,6 @@
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { brands, designType } from './symbols';
+import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types';
 
 /**
  * A type-validator/-parser that validates or parses `ResultType`.
@@ -9,7 +10,7 @@ import type { brands, designType } from './symbols';
  * access to type-specific utilities / properties. Use {@link TypeImpl} for an interface that describes the actual Type implementation.
  * `ResultType` can be any type, both scalar and object-like. Use `ObjectType<ResultType>` to restrict `ResultType` to object-like types.
  */
-export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
+export type Type<ResultType, TypeConfig = unknown> = TypeImpl<BaseTypeImpl<ResultType, TypeConfig>>;
 
 /**
  * A type-validator/-parser that validates or parses object-like type `ResultType`.
@@ -19,7 +20,7 @@ export type Type<ResultType> = TypeImpl<BaseTypeImpl<ResultType>>;
  * access to type-specific utilities / properties. Use {@link TypeImpl} for an interface that describes the actual Type implementation.
  * Use `Type<ResultType>` to also allow scalar values for `ResultType`.
  */
-export type ObjectType<ResultType> = TypeImpl<BaseObjectLikeTypeImpl<ResultType>>;
+export type ObjectType<ResultType, TypeConfig = unknown> = TypeImpl<BaseObjectLikeTypeImpl<ResultType, TypeConfig>>;
 
 /**
  * The possible return values inside validation and constraint functions.
@@ -37,7 +38,7 @@ export type ValidationResult = boolean | string | MessageDetails | Array<string 
  *
  * - When of type `function`, it will receive the `got` part to use inside the message.
  */
-export type CustomMessage = undefined | string | ((got: string, input: unknown) => string);
+export type CustomMessage<T, E = void> = undefined | string | ((got: string, input: T, explanation: E) => string);
 
 /**
  * The validation-logic as needed by {@link BaseTypeImpl.withConstraint} and {@link BaseTypeImpl.withValidation}.
@@ -61,7 +62,7 @@ export interface TypeLink<AssociatedType> {
  * Adds both constructor and regular function to the signature to make sure TypeScript will emit
  * the type as decorator metadata.
  */
-export type TypeImpl<Impl extends BaseTypeImpl<any>> = Impl & {
+export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
     // Constructor is needed to ensure TypeScript will emit this type as decorator-metadata
     new (input: unknown): TypeOf<Impl>;
     (input: unknown): TypeOf<Impl>;
@@ -159,6 +160,9 @@ export type MessageDetails = Partial<ValidationDetails> & {
         | { kind: 'invalid key'; property: string; failure: Failure }
         | { kind: 'invalid literal'; expected: LiteralValue | LiteralValue[] }
         | { kind: 'invalid basic type'; expected: BasicType | BasicType[]; expectedValue?: LiteralValue }
+        | { kind: 'length out of range'; violation: LengthViolation; config: LengthChecksConfig }
+        | { kind: 'input out of range'; violation: NumberViolation; config: NumberTypeConfig }
+        | { kind: 'pattern mismatch'; config: StringTypeConfig }
         | { kind: 'union'; failures: Failure[] }
         | { kind: 'custom message'; message: string }
     );
@@ -283,3 +287,71 @@ export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? { [P
 export type OneOrMore<T> = [T, ...T[]];
 
 export type Transposed<T extends Record<string, string>> = Record<T[keyof T], keyof T>;
+
+/** The supported additional checks on numeric types. */
+export type NumberViolation = 'min' | 'max' | 'multipleOf';
+
+/** Configuration of additional checks on numeric types. */
+export type NumberTypeConfig = {
+    /**
+     * A number is only valid if division by this value results in an integer.
+     *
+     * @remarks
+     * Examples:
+     *
+     * - `multipleOf: 1` equals all integers.
+     * - `multipleOf: 2` equals all even integers and zero.
+     */
+    multipleOf?: number;
+    /**
+     * Either a `CustomMessage` for all validations, or a `CustomMessage` per validation.
+     *
+     * @remarks
+     * If a single function is provided, it receives a list of violated validations to further customize the error message.
+     */
+    customMessage?: CustomMessage<number, NumberViolation[]> | Partial<Record<NumberViolation, CustomMessage<number, NumberViolation>>>;
+} & ({ minExclusive?: number; min?: undefined } | { minExclusive?: undefined; min?: number }) &
+    ({ maxExclusive?: number; max?: undefined } | { maxExclusive?: undefined; max?: number });
+
+export type LengthViolation = 'minLength' | 'maxLength';
+
+export interface LengthChecksConfig {
+    minLength?: number;
+    maxLength?: number;
+}
+
+/** The supported additional checks on string types. */
+export type StringViolation = 'pattern' | LengthViolation;
+
+/** Configuration of additional checks on string types. */
+export interface StringTypeConfig extends LengthChecksConfig {
+    pattern?: RegExp;
+    customMessage?: CustomMessage<string, StringViolation[]> | Partial<Record<StringViolation, CustomMessage<string, StringViolation>>>;
+}
+
+/** The supported additional checks on array types. */
+export type ArrayViolation = LengthViolation;
+
+/** Configuration of additional checks on array types. */
+export interface ArrayTypeConfig extends LengthChecksConfig {
+    customMessage?: CustomMessage<unknown[], ArrayViolation[]>;
+}
+
+/**
+ * Interface for a visitor that is accepted by all types (classic visitor-pattern).
+ */
+export interface Visitor<R> {
+    visitArrayType(type: ArrayType<BaseTypeImpl<unknown>, unknown, unknown[]>): R;
+    visitBooleanType(type: BaseTypeImpl<boolean>): R;
+    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
+    visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
+    visitLiteralType(type: LiteralType<LiteralValue>): R;
+    visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
+    visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<unknown>, unknown>): R;
+    visitStringType(type: BaseTypeImpl<string, StringTypeConfig>): R;
+    visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown>>, unknown>): R;
+    visitUnknownType(type: BaseTypeImpl<unknown>): R;
+    visitUnknownRecordType(type: BaseTypeImpl<Record<string, unknown>>): R;
+    visitUnknownArrayType(type: BaseTypeImpl<unknown[]>): R;
+    visitCustomType(type: BaseTypeImpl<unknown>): R;
+}

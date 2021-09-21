@@ -14,6 +14,7 @@ import type {
     ValidationOptions,
     ValidationResult,
     Validator,
+    Visitor,
 } from './interfaces';
 import { autoCastFailure, designType } from './symbols';
 import {
@@ -33,7 +34,7 @@ import { ValidationError } from './validation-error';
  * @remarks
  * All type-implementations must extend this base class. Use {@link createType} to create a {@link Type} from a type-implementation.
  */
-export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
+export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType> {
     /**
      * The associated TypeScript-type of a Type.
      * @internal
@@ -60,6 +61,11 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
 
     /**
+     * Extra information that is made available by this Type for runtime analysis.
+     */
+    abstract readonly typeConfig: TypeConfig;
+
+    /**
      * The actual validation-logic.
      *
      * @param input - the input value to be validated
@@ -75,7 +81,21 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      */
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
 
-    private _instanceCache: { autoCast?: BaseTypeImpl<ResultType>; autoCastAll?: BaseTypeImpl<ResultType> } = {};
+    /**
+     * Accept a visitor (visitor pattern).
+     *
+     * @remarks
+     * Note that, while it can be used to traverse a tree, this is not part of this pattern. The visitor that visits a particular type can
+     * decide to visit children of that type (or not). See `./testutils.ts` for an example.
+     *
+     * @param visitor - the visitor to accept
+     */
+    abstract accept<R>(visitor: Visitor<R>): R;
+
+    private readonly _instanceCache: {
+        autoCast?: BaseTypeImpl<ResultType, TypeConfig>;
+        autoCastAll?: BaseTypeImpl<ResultType, TypeConfig>;
+    } = {};
 
     /**
      * The same type, but with an auto-casting default parser installed.
@@ -93,7 +113,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
                       name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
                       typeParser: {
                           configurable: true,
-                          value(this: BaseTypeImpl<ResultType>, input: unknown) {
+                          value(this: BaseTypeImpl<ResultType, TypeConfig>, input: unknown) {
                               const autoCastResult = autoCaster.call(this, input);
                               return this.createResult(
                                   input,
@@ -131,7 +151,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      *
      * @param value - the input value to try to autocast to the appropriate form
      */
-    protected autoCaster?(this: BaseTypeImpl<ResultType>, value: unknown): unknown;
+    protected autoCaster?(this: BaseTypeImpl<ResultType, TypeConfig>, value: unknown): unknown;
 
     /**
      * Verifies that a value conforms to this Type.
@@ -275,8 +295,24 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      *
      * @param name - the new name to use in error messages
      */
-    withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>> {
-        return createType(branded<ResultType, BrandName>(this), { name: { configurable: true, value: name } });
+    withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig> {
+        return createType(branded<ResultType, BrandName, TypeConfig>(this), { name: { configurable: true, value: name } });
+    }
+
+    /**
+     * Create a new instance of this Type with the additional type-specific config, such as min/max values.
+     *
+     * @remarks
+     * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a separate type, see {@link Branded} for more information.
+     *
+     * @param name - the name to use in error messages
+     * @param newConfig - the new type-specific config that further restricts the accepted values
+     */
+    withConfig<BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig> {
+        return createType(branded<ResultType, BrandName, TypeConfig>(this), {
+            name: { configurable: true, value: name },
+            typeConfig: { configurable: true, value: this.combineConfig(this.typeConfig, newConfig) },
+        });
     }
 
     /**
@@ -330,7 +366,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      */
     withValidation(validation: Validator<ResultType>): this {
         // Ignoring Brand here, because that is a typings-only feature.
-        const fn: BaseTypeImpl<ResultType>['typeValidator'] = (input, options) => {
+        const fn: BaseTypeImpl<ResultType, TypeConfig>['typeValidator'] = (input, options) => {
             const baseResult = this.typeValidator(input, options);
             if (!baseResult.ok) {
                 return type.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
@@ -355,9 +391,12 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * @param name - the new name to use in error messages
      * @param constraint - the additional validation to restrict the current type
      */
-    withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>> {
+    withConstraint<BrandName extends string>(
+        name: BrandName,
+        constraint: Validator<ResultType>,
+    ): Type<Branded<ResultType, BrandName>, TypeConfig> {
         // Ignoring Brand here, because that is a typings-only feature.
-        const fn: BaseTypeImpl<Branded<ResultType, BrandName>>['typeValidator'] = (input, options) => {
+        const fn: BaseTypeImpl<Branded<ResultType, BrandName>, TypeConfig>['typeValidator'] = (input, options) => {
             const baseResult = this.typeValidator(input, options);
             if (!baseResult.ok) {
                 return newType.createResult(input, undefined, prependContextToDetails(baseResult, 'base type'));
@@ -365,7 +404,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             const tryResult = ValidationError.try({ type: newType, input }, () => constraint(baseResult.value, options));
             return tryResult.ok ? newType.createResult(baseResult.value, baseResult.value, tryResult.value) : tryResult;
         };
-        const newType = createType(branded<ResultType, BrandName>(this), {
+        const newType = createType(branded<ResultType, BrandName, TypeConfig>(this), {
             name: { configurable: true, value: name },
             typeValidator: { configurable: true, value: fn },
         });
@@ -399,7 +438,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
      * See {@link UnionType} for more information about unions.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    or<Other>(_other: BaseTypeImpl<Other>): Type<ResultType | Other> {
+    or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other> {
         throw new Error('stub');
     }
 
@@ -430,6 +469,20 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
             ),
         };
     }
+
+    /**
+     * Combine two config values into a new value.
+     *
+     * @remarks
+     * Can be overridden by subclasses to check/change new configs when `withConfig` is used.
+     *
+     * @param oldConfig - the current config of the base type
+     * @param newConfig - the new provided config
+     * @returns a new config object based on the old and new config
+     */
+    protected combineConfig(oldConfig: TypeConfig, newConfig: TypeConfig): TypeConfig {
+        return { ...oldConfig, ...newConfig };
+    }
 }
 
 /**
@@ -439,7 +492,7 @@ export abstract class BaseTypeImpl<ResultType> implements TypeLink<ResultType> {
  * Object-like types need to provide more information to be able to correctly
  * compose arbitrary object-like types.
  */
-export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<ResultType> {
+export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> extends BaseTypeImpl<ResultType, TypeConfig> {
     abstract readonly props: Properties;
     abstract readonly propsInfo: PropertiesInfo;
     abstract readonly possibleDiscriminators: Array<{ path: string[]; values: LiteralValue[] }>;
@@ -452,7 +505,7 @@ export abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<Re
      * See {@link IntersectionType} for more information about intersections.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    and<Other extends BaseObjectLikeTypeImpl<any>>(
+    and<Other extends BaseObjectLikeTypeImpl<any, any>>(
         _other: Other,
     ): ObjectType<MergeIntersection<ResultType & Other[typeof designType]>> & TypedPropertyInformation<this['props'] & Other['props']> {
         throw new Error('stub');
@@ -480,9 +533,9 @@ const FUNCTION_PROTOTYPE_DESCRIPTORS = Object.getOwnPropertyDescriptors(Function
  * @param impl - the type-implementation
  * @param override - override certain settings of the created type
  */
-export function createType<Impl extends BaseTypeImpl<any>>(
+export function createType<Impl extends BaseTypeImpl<any, any>>(
     impl: Impl,
-    override?: Partial<Record<keyof BaseTypeImpl<any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
+    override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
 ): TypeImpl<Impl> {
     // Replace the complete `impl` onto the `construct` function.
     const type = Object.defineProperties(
@@ -497,11 +550,13 @@ export function createType<Impl extends BaseTypeImpl<any>>(
     return type;
 }
 
-function branded<ResultType, BrandName extends string>(type: BaseTypeImpl<ResultType>): BaseTypeImpl<Branded<ResultType, BrandName>> {
-    return type as unknown as BaseTypeImpl<Branded<ResultType, BrandName>>;
+function branded<ResultType, BrandName extends string, TypeConfig>(
+    type: BaseTypeImpl<ResultType, TypeConfig>,
+): BaseTypeImpl<Branded<ResultType, BrandName>, TypeConfig> {
+    return type as unknown as BaseTypeImpl<Branded<ResultType, BrandName>, TypeConfig>;
 }
 
-function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType>, options: ValidationOptions): Map<unknown, Result<ResultType>> {
+function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType, any>, options: ValidationOptions): Map<unknown, Result<ResultType>> {
     const visited = (options.visited ??= new Map<unknown, Map<unknown, Result<unknown>>>());
     let valueMap = visited.get(me);
     if (!valueMap) {

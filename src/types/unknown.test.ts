@@ -1,4 +1,4 @@
-import { basicTypeMessage, defaultUsualSuspects, testTypeImpl, USUAL_SUSPECTS } from '../testutils';
+import { basicTypeMessage, createExample, defaultUsualSuspects, testTypeImpl, USUAL_SUSPECTS } from '../testutils';
 import { unknown, unknownArray, unknownRecord } from './unknown';
 
 testTypeImpl({
@@ -37,8 +37,24 @@ testTypeImpl({
         ...defaultUsualSuspects(unknownArray),
     ],
 });
+
 test('no autoCastAll', () => {
     expect(unknown.autoCastAll).toBe(unknown.autoCast);
     expect(unknownRecord.autoCastAll).toBe(unknownRecord.autoCast);
     expect(unknownArray.autoCastAll).toBe(unknownArray.autoCast);
+});
+
+test('visitors', () => {
+    expect(createExample(unknown)).toMatchInlineSnapshot(`"UNKNOWN"`);
+    expect(createExample(unknownRecord)).toMatchInlineSnapshot(`
+    Object {
+      "unknown": "record",
+    }
+    `);
+    expect(createExample(unknownArray)).toMatchInlineSnapshot(`
+    Array [
+      "unknown",
+      "array",
+    ]
+    `);
 });

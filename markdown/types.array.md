@@ -10,15 +10,17 @@ Create a type that checks whether the input is an array and all elements conform
 
 ```typescript
 export declare function array<Element>(
-    ...args: [name: string, elementType: BaseTypeImpl<Element>] | [elementType: BaseTypeImpl<Element>]
+    ...args:
+        | [name: string, elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig]
+        | [elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig]
 ): TypeImpl<ArrayType<BaseTypeImpl<Element>, Element, Element[]>>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                             | Description                    |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| args      | \[name: string, elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;\] \| \[elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;\] | optional name and element-type |
+| Parameter | Type                                                                                                                                                                                                                                                                                                                     | Description                    |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
+| args      | \[name: string, elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] \| \[elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] | optional name and element-type |
 
 <b>Returns:</b>
 

@@ -8,6 +8,7 @@ import type {
     Result,
     TypeImpl,
     ValidationOptions,
+    Visitor,
 } from '../interfaces';
 import type { designType } from '../symbols';
 import { bracketsIfNeeded, decodeOptionalName, defaultObjectRep, define, extensionName, humanList, isFailure, partition } from '../utils';
@@ -18,12 +19,13 @@ import { unknownRecord } from './unknown';
  * The implementation behind types created with {@link intersection} and {@link BaseObjectLikeTypeImpl.and}.
  */
 export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>
-    extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>>
+    extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>, undefined>
     implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
 {
     readonly name: string;
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;
+    readonly typeConfig: undefined;
 
     constructor(readonly types: Types, name?: string) {
         super();
@@ -55,6 +57,10 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
                 : input,
             details,
         );
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitObjectLikeType(this);
     }
 }
 define(IntersectionType, 'basicType', 'object');
@@ -140,6 +146,6 @@ export type PropertiesOfTypeTuple<Tuple> = Tuple extends [{ readonly props: infe
     ? MergeIntersection<A & PropertiesOfTypeTuple<Rest>>
     : Properties;
 
-BaseObjectLikeTypeImpl.prototype.and = function <Other extends BaseObjectLikeTypeImpl<unknown>>(other: Other) {
+BaseObjectLikeTypeImpl.prototype.and = function <Other extends BaseObjectLikeTypeImpl<any, any>>(other: Other) {
     return intersection([this, other]);
 };

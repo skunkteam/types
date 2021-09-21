@@ -1,5 +1,5 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { MessageDetails, Result, TypeImpl, ValidationOptions } from '../interfaces';
+import type { MessageDetails, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces';
 import { decodeOptionalName, define, extensionName, prependPathToDetails } from '../utils';
 import { unknownRecord } from './unknown';
 
@@ -16,6 +16,7 @@ export class RecordType<
     readonly basicType!: 'object';
     readonly isDefaultName: boolean;
     readonly name: string;
+    readonly typeConfig: undefined;
 
     constructor(readonly keyType: KeyTypeImpl, readonly valueType: ValueTypeImpl, name?: string, readonly strict = true) {
         super();
@@ -51,6 +52,10 @@ export class RecordType<
         }
         return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
     }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitRecordType(this);
+    }
 }
 define(RecordType, 'basicType', 'object');
 
@@ -84,13 +89,15 @@ function acceptNumberLikeKey<T extends BaseTypeImpl<number | string>>(type: T): 
 
 class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
     readonly basicType = 'string';
+    readonly typeConfig: undefined;
 
     constructor(readonly innerType: BaseTypeImpl<ResultType>) {
         super();
     }
 
     readonly name = this.innerType.name;
-    readonly enumerableLiteralDomain = this.innerType.enumerableLiteralDomain && [...this.innerType.enumerableLiteralDomain].map(String);
+    override readonly enumerableLiteralDomain =
+        this.innerType.enumerableLiteralDomain && [...this.innerType.enumerableLiteralDomain].map(String);
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const number = input === '' ? NaN : +String(input);
@@ -99,5 +106,9 @@ class WrapNumericKeyType<ResultType> extends BaseTypeImpl<ResultType> {
         }
         const innerResult = this.innerType.validate(number, options);
         return this.createResult(input, String(input), innerResult.ok || innerResult.details);
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return this.innerType.accept(visitor);
     }
 }

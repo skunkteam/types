@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
-import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
+import { assignableTo, basicTypeMessage, createExample, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
 import { array, boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
 import { intersection } from './types/intersection';
@@ -41,7 +41,11 @@ testTypeImpl({
 
 /** A Percentage must be between 0 and 100 inclusive, with custom error message. */
 type Percentage = The<typeof Percentage>;
-const Percentage = number.withConstraint('Percentage', n => (n >= 0 && n <= 100) || `should be between 0 and 100 inclusive`);
+const Percentage = number.withConfig('Percentage', {
+    min: 0,
+    max: 100,
+    customMessage: 'should be between 0 and 100 inclusive',
+});
 
 testTypeImpl({
     name: 'Percentage',
@@ -49,10 +53,10 @@ testTypeImpl({
     basicType: 'number',
     validValues: [0, 10, 100],
     invalidValues: [
-        ['a string', basicTypeMessage(Percentage, 'a string', number)],
-        [NaN, defaultMessage(Percentage, NaN, number)],
-        ['', basicTypeMessage(Percentage, '', number)],
-        ...defaultUsualSuspects(Percentage, number),
+        ['a string', basicTypeMessage(Percentage, 'a string')],
+        [NaN, defaultMessage(Percentage, NaN)],
+        ['', basicTypeMessage(Percentage, '')],
+        ...defaultUsualSuspects(Percentage),
         [101, 'error in [Percentage]: should be between 0 and 100 inclusive, got: 101'],
         [-1, 'error in [Percentage]: should be between 0 and 100 inclusive, got: -1'],
     ],
@@ -64,7 +68,14 @@ testTypeImpl({
  */
 type Age = The<typeof Age>;
 const Age = int
-    .withConstraint('Age', n => (n < 0 ? 'the unborn miracle' : n > 199 ? 'wow, that is really old' : true))
+    .withConfig('Age', {
+        min: 0,
+        maxExclusive: 200,
+        customMessage: {
+            min: 'the unborn miracle',
+            max: 'wow, that is really old',
+        },
+    })
     .extendWith(() => ({ MAX: 199 }));
 type ConfirmedAge = The<typeof ConfirmedAge>;
 const ConfirmedAge = Age.withBrand('ConfirmedAge').withParser(Age.andThen(age => age % 16));
@@ -76,9 +87,9 @@ testTypeImpl({
     validValues: [0, 1, Age.MAX],
     invalidValues: [
         [-1, 'error in [Age]: the unborn miracle, got: -1'],
-        [200, 'error in [Age]: wow, that is really old, got: 200'],
-        [-1.5, defaultMessage(Age, -1.5, int)],
-        [1.5, defaultMessage(Age, 1.5, int)],
+        [Age.MAX + 1, 'error in [Age]: wow, that is really old, got: 200'],
+        [-1.5, ['errors in [Age]:', '', '- the unborn miracle, got: -1.5', '', '- expected a whole number, got: -1.5']],
+        [1.5, 'error in [Age]: expected a whole number, got: 1.5'],
     ],
 });
 
@@ -88,11 +99,11 @@ testTypeImpl({
     basicType: 'number',
     validValues: [0, 1, Age.MAX],
     invalidValues: [
-        [-1, 'error in [Age]: the unborn miracle, got: -1'],
-        [200, 'error in [Age]: wow, that is really old, got: 200'],
-        [-1.5, defaultMessage(Age, -1.5, int)],
-        [1.5, defaultMessage(Age, 1.5, int)],
-        ...defaultUsualSuspects(Age, number),
+        [-1, 'error in [Age.autoCast]: the unborn miracle, got: -1'],
+        [Age.MAX + 1, 'error in [Age.autoCast]: wow, that is really old, got: 200'],
+        [-1.5, ['errors in [Age.autoCast]:', '', '- the unborn miracle, got: -1.5', '', '- expected a whole number, got: -1.5']],
+        [1.5, 'error in [Age.autoCast]: expected a whole number, got: 1.5'],
+        ...defaultUsualSuspects(Age.autoCast),
     ],
     validConversions: [
         [`${Age.MAX}`, Age.MAX],
@@ -100,11 +111,14 @@ testTypeImpl({
     ],
     invalidConversions: [
         ['abc', 'error in parser of [Age.autoCast]: could not autocast value: "abc"'],
-        ['-1', 'error in [Age]: the unborn miracle, got: -1, parsed from: "-1"'],
+        ['-1', 'error in [Age.autoCast]: the unborn miracle, got: -1, parsed from: "-1"'],
     ],
 });
 
 testTypeImpl({ name: 'ConfirmedAge', type: ConfirmedAge, validConversions: [[18, 2]] });
+
+type ShoeSize = The<typeof ShoeSize>;
+const ShoeSize = int.withConfig('ShoeSize', { min: 0, customMessage: { min: 'should not be negative' } });
 
 /** User is a basic interface type. */
 type User = The<typeof User>;
@@ -117,7 +131,19 @@ const User = object('User', {
         last: string.withName('LastNameType'),
     }),
     /** For reference, we need your shoe size, must be a whole non-negative number. */
-    shoeSize: int.withValidation(n => n >= 0 || 'should not be negative'),
+    shoeSize: ShoeSize,
+});
+
+test('User example', () => {
+    expect(createExample(User)).toMatchInlineSnapshot(`
+    Object {
+      "name": Object {
+        "first": "x",
+        "last": "xx",
+      },
+      "shoeSize": 3,
+    }
+    `);
 });
 
 testTypeImpl({
@@ -135,7 +161,7 @@ testTypeImpl({
             [
                 'errors in [User]:',
                 '',
-                '- missing properties <name> [{ first: SmallString, last: LastNameType }] and <shoeSize> [int], got: {}',
+                '- missing properties <name> [{ first: SmallString, last: LastNameType }] and <shoeSize> [ShoeSize], got: {}',
             ],
         ],
         [
@@ -143,7 +169,7 @@ testTypeImpl({
             [
                 'errors in [User]:',
                 '',
-                '- missing property <shoeSize> [int], got: { name: {} }',
+                '- missing property <shoeSize> [ShoeSize], got: { name: {} }',
                 '',
                 '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
             ],
@@ -175,7 +201,7 @@ testTypeImpl({
                 '',
                 '- at <name>: missing property <last> [LastNameType], got: { first: "very very long" }',
                 '',
-                '- in base type at <shoeSize>: expected a number, got a symbol ([Symbol: 4])',
+                '- at <shoeSize>: expected a number, got a symbol ([Symbol: 4])',
                 '',
                 '- at <name.first>: your string "very very long" is too long! :-(',
             ],
@@ -251,7 +277,7 @@ testTypeImpl({
         // constraints are fired after the type is deemed structurally valid:
         [
             { name: { first: 'Bobby', last: 'Tables' } },
-            'error in base type of [RestrictedUser]: missing property <shoeSize> [int], got: { name: { first: "Bobby", last: "Tables" } }',
+            'error in base type of [RestrictedUser]: missing property <shoeSize> [ShoeSize], got: { name: { first: "Bobby", last: "Tables" } }',
         ],
         [{ name: { first: 'Bobbx', last: 'Tablex' }, shoeSize: 5 }, 'error in [RestrictedUser]: this User is suspicious'],
         [
@@ -283,7 +309,7 @@ testTypeImpl({
                 'errors in [RestrictedUser]:',
                 '(got: { name: { first: "Pete", last: undefined }, shoeSize: NaN }, parsed from: "Pete")',
                 '',
-                '- in base type at <shoeSize>: expected a [number], got: NaN',
+                '- at <shoeSize>: expected a [ShoeSize], got: NaN',
                 '',
                 '- at <name.last>: expected a string, got an undefined',
             ],
@@ -364,7 +390,8 @@ const ComplexNesting = object('ComplexNesting', {
     neg: NumberFromString.withValidation(n => n < 0 || 'should be negative'),
 })
     .withValidation(obj => obj.pos === -obj.neg || '<pos> and <neg> should be opposites')
-    .withParser(i => (typeof i === 'string' ? { pos: i, neg: `-${i}` } : i));
+    .withParser(i => (typeof i === 'string' ? { pos: i, neg: `-${i}` } : i))
+    .extendWith(() => ({ example: { pos: 42, neg: -42 } }));
 
 testTypeImpl({
     name: 'ComplexNesting',
@@ -604,8 +631,11 @@ testTypes('TypeOf', () => {
     const WithUser = MyGenericWrapper(User);
     assignableTo<MyGenericWrapper<User>>(WithUser({}));
     assignableTo<WithUser>(WithUser({}));
-    assignableTo<WithUser>({ ok: true, inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: int(5) } });
-    assignableTo<MyGenericWrapper<User>>({ ok: true, inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: int(5) } });
+    assignableTo<WithUser>({ ok: true, inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: ShoeSize(5) } });
+    assignableTo<MyGenericWrapper<User>>({
+        ok: true,
+        inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: ShoeSize(5) },
+    });
     assignableTo<{ ok: boolean; inner: User }>({} as MyGenericWrapper<User>);
     assignableTo<{ ok: boolean; inner: User }>({} as WithUser);
 });

@@ -14,6 +14,7 @@ const config = {
         'prettier',
     ],
     rules: {
+        'no-fallthrough': 'off', // checked by TS compiler
         'object-shorthand': ['error', 'always'],
         'sort-imports': ['error', { ignoreCase: true, ignoreDeclarationSort: true }],
         '@typescript-eslint/no-explicit-any': 'off',

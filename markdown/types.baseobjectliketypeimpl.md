@@ -9,10 +9,10 @@ The base implementation for all object-like Types.
 <b>Signature:</b>
 
 ```typescript
-export declare abstract class BaseObjectLikeTypeImpl<ResultType> extends BaseTypeImpl<ResultType>
+export declare abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> extends BaseTypeImpl<ResultType, TypeConfig>
 ```
 
-<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;
+<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;
 
 ## Remarks
 

@@ -28,10 +28,12 @@ export declare class KeyofType<T extends Record<string, unknown>, ResultType ext
 | [enumerableLiteralDomain](./types.keyoftype.enumerableliteraldomain.md) |           | string\[\] |             |
 | [keys](./types.keyoftype.keys.md)                                       |           | T          |             |
 | [name](./types.keyoftype.name.md)                                       |           | string     |             |
+| [typeConfig](./types.keyoftype.typeconfig.md)                           |           | undefined  |             |
 
 ## Methods
 
 | Method                                                     | Modifiers | Description |
 | ---------------------------------------------------------- | --------- | ----------- |
+| [accept(visitor)](./types.keyoftype.accept.md)             |           |             |
 | [translate(input)](./types.keyoftype.translate.md)         |           |             |
 | [typeValidator(input)](./types.keyoftype.typevalidator.md) |           |             |

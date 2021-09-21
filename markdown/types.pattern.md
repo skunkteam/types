@@ -10,18 +10,18 @@
 export declare function pattern<BrandName extends string>(
     name: BrandName,
     regExp: RegExp,
-    customMessage?: CustomMessage,
-): Type<Branded<string, BrandName>>;
+    customMessage?: StringTypeConfig['customMessage'],
+): Type<Branded<string, BrandName>, StringTypeConfig>;
 ```
 
 ## Parameters
 
-| Parameter     | Type                                      | Description |
-| ------------- | ----------------------------------------- | ----------- |
-| name          | BrandName                                 |             |
-| regExp        | RegExp                                    |             |
-| customMessage | [CustomMessage](./types.custommessage.md) |             |
+| Parameter     | Type                                                                       | Description |
+| ------------- | -------------------------------------------------------------------------- | ----------- |
+| name          | BrandName                                                                  |             |
+| regExp        | RegExp                                                                     |             |
+| customMessage | [StringTypeConfig](./types.stringtypeconfig.md)<!-- -->\['customMessage'\] |             |
 
 <b>Returns:</b>
 
-[Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;string, BrandName&gt;&gt;
+[Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;string, BrandName&gt;, [StringTypeConfig](./types.stringtypeconfig.md)<!-- -->&gt;

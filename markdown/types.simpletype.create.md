@@ -4,25 +4,23 @@
 
 ## SimpleType.create() method
 
-Create a simple (limited) type implementation.
+Create a simple (limited) type implementation with type config.
 
 <b>Signature:</b>
 
 ```typescript
-static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType>) => ValidationResult, options?: Pick<BaseTypeImpl<ResultType>, 'enumerableLiteralDomain'> & {
-        autoCaster: BaseTypeImpl<ResultType>['autoCaster'];
-    }): Type<ResultType>;
+static create<ResultType, TypeConfig>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType, TypeConfig>) => ValidationResult, options: SimpleTypeOptions<ResultType, TypeConfig>): Type<ResultType, TypeConfig>;
 ```
 
 ## Parameters
 
-| Parameter       | Type                                                                                                                                                                                                              | Description                            |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| name            | string                                                                                                                                                                                                            | the name for the Type                  |
-| basicType       | [BasicType](./types.basictype.md) \| 'mixed'                                                                                                                                                                      | the fixed basic type of the Type       |
-| simpleValidator | (input: unknown, options: [ValidationOptions](./types.validationoptions.md)<!-- -->, type: [SimpleType](./types.simpletype.md)<!-- -->&lt;ResultType&gt;) =&gt; [ValidationResult](./types.validationresult.md)   | validation logic                       |
-| options         | Pick&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;, 'enumerableLiteralDomain'&gt; &amp; { autoCaster: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;\['autoCaster'\]; } | some optional features of BaseTypeImpl |
+| Parameter       | Type                                                                                                                                                                                                                        | Description                            |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| name            | string                                                                                                                                                                                                                      | the name for the Type                  |
+| basicType       | [BasicType](./types.basictype.md) \| 'mixed'                                                                                                                                                                                | the fixed basic type of the Type       |
+| simpleValidator | (input: unknown, options: [ValidationOptions](./types.validationoptions.md)<!-- -->, type: [SimpleType](./types.simpletype.md)<!-- -->&lt;ResultType, TypeConfig&gt;) =&gt; [ValidationResult](./types.validationresult.md) | validation logic                       |
+| options         | [SimpleTypeOptions](./types.simpletypeoptions.md)<!-- -->&lt;ResultType, TypeConfig&gt;                                                                                                                                     | some optional features of BaseTypeImpl |
 
 <b>Returns:</b>
 
-[Type](./types.type.md)<!-- -->&lt;ResultType&gt;
+[Type](./types.type.md)<!-- -->&lt;ResultType, TypeConfig&gt;

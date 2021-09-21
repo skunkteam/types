@@ -9,5 +9,5 @@ Built-in validator for string-values.
 <b>Signature:</b>
 
 ```typescript
-string: Type<string>
+string: Type<string, StringTypeConfig>
 ```

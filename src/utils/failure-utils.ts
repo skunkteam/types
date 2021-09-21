@@ -26,9 +26,30 @@ export function addParserInputToFailure(failure: Failure, parserInput: unknown):
     return { ...failure, details: checkOneOrMore(failure.details.map(d => (d.path ? d : { ...d, parserInput }))) };
 }
 
-export function evalCustomMessage(message: CustomMessage, input: unknown): MessageDetails | string | false {
-    return (
-        !!message &&
-        (typeof message === 'function' ? { kind: 'custom message', message: message(printValue(input), input), omitInput: true } : message)
-    );
+export function evalCustomMessage<T, E>(message: CustomMessage<T, E>, input: T, explanation: E): MessageDetails | string | false {
+    switch (typeof message) {
+        case 'string':
+            if (message) return message;
+            break;
+        case 'function': {
+            const result = message(printValue(input), input, explanation);
+            if (result) return { kind: 'custom message', message: result, omitInput: true };
+        }
+    }
+    return false;
+}
+
+export function evalAdditionalChecks<K extends string, T>(
+    results: Record<K, boolean>,
+    customMessage: CustomMessage<T, K[]> | Partial<Record<K, CustomMessage<T, K>>>,
+    input: T,
+    defaultMessage: (violation: K) => MessageDetails,
+): (string | MessageDetails)[] {
+    const keys = Object.keys(results) as K[];
+    const violations = keys.filter(key => !results[key]);
+    if (typeof customMessage === 'object') {
+        return violations.map(v => evalCustomMessage(customMessage[v], input, v) || defaultMessage(v));
+    }
+    const combinedMessage = violations.length && evalCustomMessage(customMessage, input, violations);
+    return combinedMessage ? [combinedMessage] : violations.map(defaultMessage);
 }

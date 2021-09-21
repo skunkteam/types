@@ -1,9 +1,9 @@
-import { number } from './number';
-import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
-import { array } from './array';
-import { string } from './string';
-import { object } from './interface';
 import type { The } from '../interfaces';
+import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { array } from './array';
+import { object } from './interface';
+import { number } from './number';
+import { string } from './string';
 
 testTypeImpl({
     name: 'string[]',
@@ -94,6 +94,35 @@ testTypeImpl({
 testTypeImpl({
     name: '(custom name).autoCast',
     type: array('custom name', number).autoCastAll,
+});
+
+type SmallArray = The<typeof SmallArray>;
+const SmallArray = array('SmallArray', string, { minLength: 1, maxLength: 3 });
+
+test('SmallArray examples', () => {
+    expect(createExample(SmallArray, 0)).toMatchInlineSnapshot(`
+    Array [
+      "x",
+    ]
+    `);
+
+    expect(createExample(SmallArray, 4)).toMatchInlineSnapshot(`
+    Array [
+      "xxxxx",
+      "xxxxxx",
+      "xxxxxxx",
+    ]
+    `);
+});
+
+testTypeImpl({
+    name: 'SmallArray',
+    type: SmallArray,
+    validValues: [[['a']], [['a', 'b', 'c']]],
+    invalidValues: [
+        [[], 'error in [SmallArray]: expected at least 1 element, got: []'],
+        [['a', 'b', 'c', 'd'], 'error in [SmallArray]: expected at most 3 elements, got: ["a", "b", "c", "d"]'],
+    ],
 });
 
 testTypes(() => {

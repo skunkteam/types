@@ -9,6 +9,7 @@ import type {
     TypeImpl,
     TypeOf,
     ValidationOptions,
+    Visitor,
 } from '../interfaces';
 import { bracketsIfNeeded, decodeOptionalName, define, extensionName, printPath } from '../utils';
 
@@ -22,6 +23,7 @@ export class UnionType<
     readonly name: string;
     readonly isDefaultName: boolean;
     readonly basicType = analyzeBasicType(this.types);
+    readonly typeConfig: undefined;
 
     constructor(readonly types: Types, name?: string) {
         super();
@@ -33,7 +35,7 @@ export class UnionType<
     readonly props = propsInfoToProps(this.propsInfo);
     readonly possibleDiscriminators = analyzePossibleDiscriminators(this.types);
     readonly collapsedTypes = this.types.flatMap(type => (type instanceof UnionType ? (type.types as Types) : type)) as Types;
-    readonly enumerableLiteralDomain = analyzeEnumerableLiteralDomain(this.types);
+    override readonly enumerableLiteralDomain = analyzeEnumerableLiteralDomain(this.types);
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const failures = [];
@@ -45,6 +47,10 @@ export class UnionType<
             failures.push(result);
         }
         return this.createResult(input, undefined, { kind: 'union', failures });
+    }
+
+    accept<R>(visitor: Visitor<R>): R {
+        return visitor.visitUnionType(this);
     }
 }
 
