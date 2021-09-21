@@ -79,24 +79,21 @@ export function testTypeImpl({
 }
 
 export const USUAL_SUSPECTS = [false, true, null, undefined];
-export function defaultUsualSuspects(type: Type<any> | string, baseType?: Type<any>): [value: unknown, message: string][] {
-    return USUAL_SUSPECTS.map(value => [value, basicTypeMessage(type, value, baseType)]);
+export function defaultUsualSuspects(type: Type<any> | string): [value: unknown, message: string][] {
+    return USUAL_SUSPECTS.map(value => [value, basicTypeMessage(type, value)]);
 }
 
-export function defaultMessage(type: Type<any> | string, value: unknown, baseType?: Type<any>): string {
+export function defaultMessage(type: Type<any> | string, value: unknown): string {
     const name = typeof type === 'string' ? type : type.name;
-    return baseType
-        ? `error in base type of [${name}]: expected ${an(`[${baseType.name}]`)}, got: ${printValue(value)}`
-        : `expected ${an(`[${name}]`)}, got: ${printValue(value)}`;
+    return `expected ${an(`[${name}]`)}, got: ${printValue(value)}`;
 }
 
-export function basicTypeMessage(type: Type<any> | string, value: unknown, baseType?: Type<any>): string {
+export function basicTypeMessage(type: Type<any> | string, value: unknown): string {
     const name = typeof type === 'string' ? type : type.name;
-    const ctx = baseType ? 'base type of ' : '';
     const expected = an(typeof type === 'string' ? type : type.basicType);
     const bt = basicType(value);
     const v = printValue(value);
-    return `error in ${ctx}[${name}]: expected ${expected}, got ${an(bt)}${bt !== v ? ` (${v})` : ''}`;
+    return `error in [${name}]: expected ${expected}, got ${an(bt)}${bt !== v ? ` (${v})` : ''}`;
 }
 
 export function createExample<T>(type: Type<T>, seed?: number): T {
