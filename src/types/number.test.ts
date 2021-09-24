@@ -1,6 +1,6 @@
-import { basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl } from '../testutils';
-import { humanList } from '../utils';
-import { int, number } from './number';
+import { basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
+import { humanList } from '../utils/index.js';
+import { int, number } from './number.js';
 
 testTypeImpl({
     name: 'number',

@@ -1,7 +1,7 @@
-import { BaseTypeImpl, createType } from '../base-type';
-import type { MessageDetails, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces';
-import { decodeOptionalName, define, extensionName, prependPathToDetails } from '../utils';
-import { unknownRecord } from './unknown';
+import { BaseTypeImpl, createType } from '../base-type.js';
+import type { MessageDetails, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces.js';
+import { decodeOptionalName, define, extensionName, prependPathToDetails } from '../utils/index.js';
+import { unknownRecord } from './unknown.js';
 
 /**
  * The implementation behind types created with {@link record}.

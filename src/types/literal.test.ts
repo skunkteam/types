@@ -1,5 +1,5 @@
-import { testTypeImpl } from '../testutils';
-import { literal, nullType, undefinedType } from './literal';
+import { testTypeImpl } from '../testutils.js';
+import { literal, nullType, undefinedType } from './literal.js';
 
 testTypeImpl({
     name: 'false',

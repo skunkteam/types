@@ -1,6 +1,6 @@
-import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
-import type { BasicType, Failure, FailureDetails, OneOrMore, ValidationDetails } from './interfaces';
-import { an, basicType, checkOneOrMore, humanList, isSingle, plural, printKey, printPath, printValue, remove } from './utils';
+import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type.js';
+import type { BasicType, Failure, FailureDetails, OneOrMore, ValidationDetails } from './interfaces.js';
+import { an, basicType, checkOneOrMore, humanList, isSingle, plural, printKey, printPath, printValue, remove } from './utils/index.js';
 
 const BULLETS = ['-', '•', '‣', '◦'];
 const DEFAULT_BULLET = '*';

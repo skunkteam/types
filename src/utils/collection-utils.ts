@@ -1,4 +1,4 @@
-import type { Transposed } from '../interfaces';
+import type { Transposed } from '../interfaces.js';
 
 export function castArray<T>(input: undefined | T | T[]): T[] {
     return input === undefined ? [] : Array.isArray(input) ? input : [input];

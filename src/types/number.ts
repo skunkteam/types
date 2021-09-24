@@ -1,7 +1,7 @@
-import type { Branded, NumberTypeConfig, The, Type } from '../interfaces';
-import { SimpleType } from '../simple-type';
-import { autoCastFailure } from '../symbols';
-import { evalAdditionalChecks } from '../utils';
+import type { Branded, NumberTypeConfig, The, Type } from '../interfaces.js';
+import { SimpleType } from '../simple-type.js';
+import { autoCastFailure } from '../symbols.js';
+import { evalAdditionalChecks } from '../utils/index.js';
 
 export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, NumberTypeConfig>(
     'number',

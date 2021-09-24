@@ -1,4 +1,4 @@
-import type { BasicType, Failure, OneOrMore, Result, ValidationResult } from '../interfaces';
+import type { BasicType, Failure, OneOrMore, Result, ValidationResult } from '../interfaces.js';
 
 export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
     return typeof value === 'object' && !!value;

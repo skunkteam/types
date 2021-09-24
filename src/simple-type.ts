@@ -1,5 +1,5 @@
-import { BaseTypeImpl, createType } from './base-type';
-import type { BasicType, Result, Type, ValidationOptions, ValidationResult, Visitor } from './interfaces';
+import { BaseTypeImpl, createType } from './base-type.js';
+import type { BasicType, Result, Type, ValidationOptions, ValidationResult, Visitor } from './interfaces.js';
 
 type SimpleAcceptVisitor<ResultType, TypeConfig> = <R>(type: SimpleType<ResultType, TypeConfig>, visitor: Visitor<R>) => R;
 

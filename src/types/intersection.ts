@@ -1,4 +1,4 @@
-import { BaseObjectLikeTypeImpl, createType, TypedPropertyInformation } from '../base-type';
+import { BaseObjectLikeTypeImpl, createType, TypedPropertyInformation } from '../base-type.js';
 import type {
     LiteralValue,
     MergeIntersection,
@@ -9,11 +9,20 @@ import type {
     TypeImpl,
     ValidationOptions,
     Visitor,
-} from '../interfaces';
-import type { designType } from '../symbols';
-import { bracketsIfNeeded, decodeOptionalName, defaultObjectRep, define, extensionName, humanList, isFailure, partition } from '../utils';
-import { UnionType } from './union';
-import { unknownRecord } from './unknown';
+} from '../interfaces.js';
+import type { designType } from '../symbols.js';
+import {
+    bracketsIfNeeded,
+    decodeOptionalName,
+    defaultObjectRep,
+    define,
+    extensionName,
+    humanList,
+    isFailure,
+    partition,
+} from '../utils/index.js';
+import { UnionType } from './union.js';
+import { unknownRecord } from './unknown.js';
 
 /**
  * The implementation behind types created with {@link intersection} and {@link BaseObjectLikeTypeImpl.and}.

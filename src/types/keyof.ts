@@ -1,6 +1,6 @@
-import { BaseTypeImpl, createType } from '../base-type';
-import type { Result, Transposed, TypeImpl, Visitor } from '../interfaces';
-import { decodeOptionalName, define, hasOwnProperty, transpose } from '../utils';
+import { BaseTypeImpl, createType } from '../base-type.js';
+import type { Result, Transposed, TypeImpl, Visitor } from '../interfaces.js';
+import { decodeOptionalName, define, hasOwnProperty, transpose } from '../utils/index.js';
 
 /**
  * The implementation behind types created with {@link keyof} and {@link valueof}.

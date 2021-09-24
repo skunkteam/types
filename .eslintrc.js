@@ -6,7 +6,7 @@ const config = {
         tsconfigRootDir: __dirname,
         project: ['./tsconfig.lib.json', './tsconfig.test.json'],
     },
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint', 'import'],
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
@@ -19,6 +19,7 @@ const config = {
         'sort-imports': ['error', { ignoreCase: true, ignoreDeclarationSort: true }],
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
+        'import/extensions': ['error', 'ignorePackages'],
     },
 };
 module.exports = config;

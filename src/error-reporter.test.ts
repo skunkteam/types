@@ -1,5 +1,5 @@
-import { reportError } from './error-reporter';
-import { string, unknown } from './types';
+import { reportError } from './error-reporter.js';
+import { string, unknown } from './types/index.js';
 
 describe(reportError, () => {
     const rootType = unknown.withName('RootType');

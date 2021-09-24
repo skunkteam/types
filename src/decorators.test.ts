@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { int } from './types';
+import { int } from './types/index.js';
 
 describe('compatibility with TypeScript decorator metadata', () => {
     const decorator: MethodDecorator = () => undefined;

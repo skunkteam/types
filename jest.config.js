@@ -16,6 +16,7 @@ const config = {
             lines: 99,
         },
     },
+    moduleNameMapper: { '^(.*)\\.js$': ['$1.js', '$1.ts'] },
 };
 
 module.exports = config;
