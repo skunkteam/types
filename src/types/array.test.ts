@@ -1,9 +1,9 @@
-import type { The } from '../interfaces';
-import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
-import { array } from './array';
-import { object } from './interface';
-import { number } from './number';
-import { string } from './string';
+import type { The } from '../interfaces.js';
+import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
+import { array } from './array.js';
+import { object } from './interface.js';
+import { number } from './number.js';
+import { string } from './string.js';
 
 testTypeImpl({
     name: 'string[]',

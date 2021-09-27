@@ -1,5 +1,5 @@
-import { BaseTypeImpl } from './base-type';
-import type { Type } from './interfaces';
+import { BaseTypeImpl } from './base-type.js';
+import type { Type } from './interfaces.js';
 
 /**
  * Type-guard that asserts that a given value is a Type.

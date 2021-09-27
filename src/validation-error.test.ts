@@ -1,6 +1,6 @@
-import type { Failure } from './interfaces';
-import { unknown } from './types';
-import { ValidationError } from './validation-error';
+import type { Failure } from './interfaces.js';
+import { unknown } from './types/index.js';
+import { ValidationError } from './validation-error.js';
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 

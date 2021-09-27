@@ -1,4 +1,4 @@
-import { SimpleType } from './simple-type';
+import { SimpleType } from './simple-type.js';
 
 describe(SimpleType, () => {
     test('create simple types with ease', () => {

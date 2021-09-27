@@ -4,11 +4,18 @@
     "description": "Runtime type-validation with TypeScript support",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
+    "exports": {
+        ".": {
+            "require": "./dist/cjs/index.js",
+            "default": "./dist/esm/index.js"
+        }
+    },
     "types": "dist/esm/index.d.ts",
     "scripts": {
-        "build": "npm-run-all clean tsc test lint",
+        "build": "npm-run-all clean tsc fix-esm test lint",
         "clean": "rm -rf dist temp coverage && tsc --build --clean",
         "tsc": "tsc --build && tsc --project tsconfig.lib.json --module CommonJs --outDir dist/cjs",
+        "fix-esm": "echo '{ \"type\": \"module\" }' > dist/esm/package.json",
         "test": "jest",
         "lint": "eslint . --ext .ts",
         "pr": "npm-run-all api format",
@@ -43,6 +50,7 @@
         "@typescript-eslint/parser": "^4.31.2",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-import": "^2.24.2",
         "jest": "^27.2.1",
         "jest-extended": "^0.11.5",
         "npm-run-all": "^4.1.5",

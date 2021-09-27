@@ -1,10 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
-import { assignableTo, basicTypeMessage, createExample, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from './testutils';
-import { array, boolean, int, number, object, string } from './types';
-import { partial } from './types/interface';
-import { intersection } from './types/intersection';
-import { printValue } from './utils';
+import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces.js';
+import {
+    assignableTo,
+    basicTypeMessage,
+    createExample,
+    defaultMessage,
+    defaultUsualSuspects,
+    testTypeImpl,
+    testTypes,
+} from './testutils.js';
+import { array, boolean, int, number, object, string } from './types/index.js';
+import { partial } from './types/interface.js';
+import { intersection } from './types/intersection.js';
+import { printValue } from './utils/index.js';
 
 /** An example of a simple constraint without a custom message. */
 const SmallString = string.withConstraint('SmallString', s => s.length < 10);

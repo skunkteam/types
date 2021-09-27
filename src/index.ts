@@ -4,11 +4,11 @@
  * @packageDocumentation
  */
 
-export * from './base-type';
-export * from './error-reporter';
-export * from './interfaces';
-export * from './simple-type';
-export * from './type-guard';
-export * from './types';
-export { printKey, printPath, printValue } from './utils/print-utils';
-export * from './validation-error';
+export * from './base-type.js';
+export * from './error-reporter.js';
+export * from './interfaces.js';
+export * from './simple-type.js';
+export * from './type-guard.js';
+export * from './types/index.js';
+export { printKey, printPath, printValue } from './utils/print-utils.js';
+export * from './validation-error.js';

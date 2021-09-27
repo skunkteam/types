@@ -1,7 +1,7 @@
-import type { The } from '../interfaces';
-import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
-import { plural } from '../utils';
-import { pattern, string } from './string';
+import type { The } from '../interfaces.js';
+import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
+import { plural } from '../utils/index.js';
+import { pattern, string } from './string.js';
 
 testTypeImpl({
     name: 'string',

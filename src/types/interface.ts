@@ -1,4 +1,4 @@
-import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType, TypedPropertyInformation } from '../base-type';
+import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType, TypedPropertyInformation } from '../base-type.js';
 import type {
     LiteralValue,
     MergeIntersection,
@@ -12,10 +12,10 @@ import type {
     ValidationOptions,
     Visitor,
     Writable,
-} from '../interfaces';
-import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, prependPathToDetails } from '../utils';
-import { LiteralType } from './literal';
-import { unknownRecord } from './unknown';
+} from '../interfaces.js';
+import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, prependPathToDetails } from '../utils/index.js';
+import { LiteralType } from './literal.js';
+import { unknownRecord } from './unknown.js';
 
 /**
  * Options for {@link object}.

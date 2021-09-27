@@ -1,7 +1,7 @@
-import { BaseTypeImpl } from './base-type';
-import type { The } from './interfaces';
-import { assignableTo, testTypes } from './testutils';
-import { boolean, int, number, object, pattern, string, unknownRecord } from './types';
+import { BaseTypeImpl } from './base-type.js';
+import type { The } from './interfaces.js';
+import { assignableTo, testTypes } from './testutils.js';
+import { boolean, int, number, object, pattern, string, unknownRecord } from './types/index.js';
 
 describe(BaseTypeImpl, () => {
     test.each(['a string', 123, false, { key: 'value' }] as const)('guard value: %p', value => {
