@@ -92,15 +92,13 @@ function isMultiple(value: number, multiple: number) {
 }
 
 function decomposeFloat(n: number) {
-    const [significand, exponent] = n.toExponential().split('e');
-    /* eslint-disable @typescript-eslint/no-non-null-assertion -- logic matches the output of toExponential */
+    const [significand, exponent] = n.toExponential().split('e') as [string, string];
     // Now denormalize the significand to get rid of the decimal point.
-    const [base, frac] = significand!.split('.');
+    const [base, frac] = significand.split('.') as [string, string | undefined];
     return {
-        significand: BIG(base! + (frac || '')),
-        exponent: +exponent! - (frac ? frac.length : 0),
+        significand: BIG(base + (frac || '')),
+        exponent: +exponent - (frac ? frac.length : 0),
     };
-    /* eslint-enable @typescript-eslint/no-non-null-assertion */
 }
 
 function significandForGivenExponent(input: ReturnType<typeof decomposeFloat>, exponent: number) {
