@@ -84,13 +84,14 @@ function isMultiple(value: number, multiple: number) {
     const valueParts = decomposeFloat(value);
     const multipleParts = decomposeFloat(multiple);
 
-    // Now sync the exponent
+    // Now sync the exponent, so we can only focus on the significands
     const exponent = Math.min(valueParts.exponent, multipleParts.exponent);
     const valueSignificand = significandForGivenExponent(valueParts, exponent);
     const multipleSignificand = significandForGivenExponent(multipleParts, exponent);
     return valueSignificand % multipleSignificand === ZERO;
 }
 
+// rewrite float to an integer and exponent, for example 123456789.222 to 123456789222e-3
 function decomposeFloat(n: number) {
     const [significand, exponent] = n.toExponential().split('e') as [string, string];
     // Now denormalize the significand to get rid of the decimal point.
