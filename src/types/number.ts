@@ -69,11 +69,42 @@ export function numberAutoCaster(input: unknown): number | typeof autoCastFailur
     return Number.isNaN(nr) ? autoCastFailure : nr;
 }
 
+const BIG = typeof BigInt === 'function' ? BigInt : (Number as typeof BigInt);
+const ZERO = BIG(0);
+const TEN = BIG(10);
+
 function isMultiple(value: number, multiple: number) {
-    // This seems to be the best we can do without introducing big.js. It works for all "sensible cases". Note that this limits the range
-    // of `value` to `Math.min(Number.MAX_VALUE, Number.MAX_VALUE * multiple)`. Using modulus does not work for small values, e.g.
-    // `1 % 0.1 === 0.09999999999999995`, while `1 / 0.1 === 10`
-    return Number.isInteger(value / multiple);
+    if (!isFinite(value) || !isFinite(multiple)) return false;
+
+    // Using the remainder operation is only safe in the integer space.
+    if (Math.abs(value) <= Number.MAX_SAFE_INTEGER && Number.isSafeInteger(multiple)) return value % multiple === 0;
+
+    // It gets tricky for non-integer and especially small divisors. Using remainder does not work for small divisors, e.g.
+    // `1 % 0.1 === 0.09999999999999995`. As a workaround, we convert both operands to integers first.
+    const valueParts = decomposeFloat(value);
+    const multipleParts = decomposeFloat(multiple);
+
+    // Now sync the exponent
+    const exponent = Math.min(valueParts.exponent, multipleParts.exponent);
+    const valueSignificand = significandForGivenExponent(valueParts, exponent);
+    const multipleSignificand = significandForGivenExponent(multipleParts, exponent);
+    return valueSignificand % multipleSignificand === ZERO;
+}
+
+function decomposeFloat(n: number) {
+    const [significand, exponent] = n.toExponential().split('e');
+    /* eslint-disable @typescript-eslint/no-non-null-assertion -- logic matches the output of toExponential */
+    // Now denormalize the significand to get rid of the decimal point.
+    const [base, frac] = significand!.split('.');
+    return {
+        significand: BIG(base! + (frac || '')),
+        exponent: +exponent! - (frac ? frac.length : 0),
+    };
+    /* eslint-enable @typescript-eslint/no-non-null-assertion */
+}
+
+function significandForGivenExponent(input: ReturnType<typeof decomposeFloat>, exponent: number) {
+    return BIG(input.significand) * TEN ** BIG(input.exponent - exponent);
 }
 
 type Bound<T extends 'min' | 'max'> = { [K in T | `${T}Exclusive`]?: number };
