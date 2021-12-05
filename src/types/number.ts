@@ -119,10 +119,10 @@ type Bound<T extends 'min' | 'max'> = { [K in T | `${T}Exclusive`]?: number };
 function selectBound<T extends 'min' | 'max'>(key: T, current: Bound<T>, update: Bound<T>): Bound<T> {
     const exclKey = `${key}Exclusive` as const;
     const currentPosition: number | undefined = current[key] ?? current[exclKey];
-    if (currentPosition == null) return update;
+    if (currentPosition == null) return pickBound(update, key);
 
     const updatedPosition: number | undefined = update[key] ?? update[exclKey];
-    if (updatedPosition == null) return current;
+    if (updatedPosition == null) return pickBound(current, key);
 
     if (
         // if the position of the updated bound is outside the current bound
@@ -135,5 +135,13 @@ function selectBound<T extends 'min' | 'max'>(key: T, current: Bound<T>, update:
         const currentKey = printKey(current);
         throw `the new bound (${updateKey}: ${updatedPosition}) is outside the existing bound (${currentKey}: ${currentPosition})`;
     }
-    return update;
+    return pickBound(update, key);
+}
+
+function pickBound<T extends 'min' | 'max'>(config: Bound<T>, key: T) {
+    const exclKey = `${key}Exclusive` as const;
+    return {
+        [key]: config[key],
+        [exclKey]: config[exclKey],
+    } as Bound<T>;
 }
