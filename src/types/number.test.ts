@@ -299,17 +299,18 @@ describe.each(['with', 'without'] as const)('%s BigInt support', bigIntSupport =
     });
 
     test.each`
-        case | current                                                  | update                                  | expected
-        ${0} | ${{ minExclusive: 1 }}                                   | ${{ min: 2, max: 5 }}                   | ${{ min: 2, max: 5 }}
-        ${1} | ${{ min: 1, maxExclusive: 3 }}                           | ${{ minExclusive: 1, max: 2 }}          | ${{ minExclusive: 1, max: 2 }}
-        ${2} | ${{ min: 1, max: 2, multipleOf: 3 }}                     | ${{ minExclusive: 1, maxExclusive: 2 }} | ${{ multipleOf: 3, minExclusive: 1, maxExclusive: 2 }}
-        ${3} | ${{ minExclusive: 10, maxExclusive: 20, multipleOf: 3 }} | ${{ min: 13, max: 15, multipleOf: 6 }}  | ${{ min: 13, max: 15, multipleOf: 6 }}
-        ${4} | ${{ minExclusive: 1, maxExclusive: 2 }}                  | ${{ min: 1 }}                           | ${'the new bound (min: 1) is outside the existing bound (minExclusive: 1)'}
-        ${5} | ${{ minExclusive: 1, maxExclusive: 2 }}                  | ${{ max: 2 }}                           | ${'the new bound (max: 2) is outside the existing bound (maxExclusive: 2)'}
-        ${6} | ${{ min: 1, max: 2 }}                                    | ${{ min: 0 }}                           | ${'the new bound (min: 0) is outside the existing bound (min: 1)'}
-        ${7} | ${{ min: 1, max: 2 }}                                    | ${{ max: 3 }}                           | ${'the new bound (max: 3) is outside the existing bound (max: 2)'}
-        ${8} | ${{ multipleOf: 2 }}                                     | ${{ multipleOf: 3 }}                    | ${'new value of multipleOf (3) not compatible with base multipleOf (2)'}
-        ${9} | ${{ multipleOf: 0 }}                                     | ${{ multipleOf: 1 }}                    | ${'new value of multipleOf (1) not compatible with base multipleOf (0)'}
+        case  | current                                                  | update                                  | expected
+        ${0}  | ${{ minExclusive: 1 }}                                   | ${{ min: 2, max: 5 }}                   | ${{ min: 2, max: 5 }}
+        ${1}  | ${{ min: 1, maxExclusive: 3 }}                           | ${{ minExclusive: 1, max: 2 }}          | ${{ minExclusive: 1, max: 2 }}
+        ${2}  | ${{ min: 1, max: 2, multipleOf: 3 }}                     | ${{ minExclusive: 1, maxExclusive: 2 }} | ${{ multipleOf: 3, minExclusive: 1, maxExclusive: 2 }}
+        ${3}  | ${{ minExclusive: 10, maxExclusive: 20, multipleOf: 3 }} | ${{ min: 13, max: 15, multipleOf: 6 }}  | ${{ min: 13, max: 15, multipleOf: 6 }}
+        ${4}  | ${{ min: 0, multipleOf: 6 }}                             | ${{ max: 12 }}                          | ${{ min: 0, max: 12, multipleOf: 6 }}
+        ${5}  | ${{ minExclusive: 1, maxExclusive: 2 }}                  | ${{ min: 1 }}                           | ${'the new bound (min: 1) is outside the existing bound (minExclusive: 1)'}
+        ${6}  | ${{ minExclusive: 1, maxExclusive: 2 }}                  | ${{ max: 2 }}                           | ${'the new bound (max: 2) is outside the existing bound (maxExclusive: 2)'}
+        ${7}  | ${{ min: 1, max: 2 }}                                    | ${{ min: 0 }}                           | ${'the new bound (min: 0) is outside the existing bound (min: 1)'}
+        ${8}  | ${{ min: 1, max: 2 }}                                    | ${{ max: 3 }}                           | ${'the new bound (max: 3) is outside the existing bound (max: 2)'}
+        ${9}  | ${{ multipleOf: 2 }}                                     | ${{ multipleOf: 3 }}                    | ${'new value of multipleOf (3) not compatible with base multipleOf (2)'}
+        ${10} | ${{ multipleOf: 0 }}                                     | ${{ multipleOf: 1 }}                    | ${'new value of multipleOf (1) not compatible with base multipleOf (0)'}
     `('config sanity case $case', ({ current, update, expected }) => {
         if (typeof expected === 'string') {
             expect(() => number.withConfig('base', current).withConfig('sub', update)).toThrow(expected);

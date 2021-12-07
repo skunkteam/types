@@ -106,7 +106,13 @@ function significandForGivenExponent(input: ReturnType<typeof decomposeFloat>, e
     return BIG(input.significand) * TEN ** BIG(input.exponent - exponent);
 }
 
-type Bound<T extends 'min' | 'max'> = { [K in T | `${T}Exclusive`]?: number };
+type Bound<T extends 'min' | 'max'> = {
+    // The required fields for the given bound (min or max):
+    [K in T | `${T}Exclusive`]?: number;
+} & {
+    // No other fields may be present, because this would override those fields in `combineConfig`
+    [K in Exclude<keyof NumberTypeConfig, T | `${T}Exclusive`>]?: never;
+};
 
 /**
  * Check and return the updated bound, falling back to the current bound, taking exclusivity into account.
@@ -116,13 +122,16 @@ type Bound<T extends 'min' | 'max'> = { [K in T | `${T}Exclusive`]?: number };
  * @param update the update
  * @returns the bound to use
  */
-function selectBound<T extends 'min' | 'max'>(key: T, current: Bound<T>, update: Bound<T>): Bound<T> {
+function selectBound<T extends 'min' | 'max'>(key: T, current: NumberTypeConfig, update: NumberTypeConfig): Bound<T> {
     const exclKey = `${key}Exclusive` as const;
+
+    const onlyTheBound = (c: NumberTypeConfig) => ({ [key]: c[key], [exclKey]: c[exclKey] } as Bound<T>);
+
     const currentPosition: number | undefined = current[key] ?? current[exclKey];
-    if (currentPosition == null) return update;
+    if (currentPosition == null) return onlyTheBound(update);
 
     const updatedPosition: number | undefined = update[key] ?? update[exclKey];
-    if (updatedPosition == null) return current;
+    if (updatedPosition == null) return onlyTheBound(current);
 
     if (
         // if the position of the updated bound is outside the current bound
@@ -130,10 +139,10 @@ function selectBound<T extends 'min' | 'max'>(key: T, current: Bound<T>, update:
         // or the position is the same, but the exclusivity is incompatible
         (currentPosition === updatedPosition && current[exclKey] != null && update[exclKey] == null)
     ) {
-        const printKey = (b: Bound<T>) => (b[exclKey] == null ? key : exclKey);
+        const printKey = (b: NumberTypeConfig) => (b[exclKey] == null ? key : exclKey);
         const updateKey = printKey(update);
         const currentKey = printKey(current);
         throw `the new bound (${updateKey}: ${updatedPosition}) is outside the existing bound (${currentKey}: ${currentPosition})`;
     }
-    return update;
+    return onlyTheBound(update);
 }
