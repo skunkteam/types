@@ -2,6 +2,7 @@ import type { DeepUnbranded, The } from '../interfaces.js';
 import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
 import { boolean } from './boolean.js';
 import { object } from './interface.js';
+import { keyof } from './keyof.js';
 import { literal, nullType, undefinedType } from './literal.js';
 import { number } from './number.js';
 import { string } from './string.js';
@@ -112,12 +113,12 @@ testTypeImpl({
     ],
 });
 
-const ObjectUnion = union([object({ tag: literal('a'), a: string }), object({ tag: literal('b'), b: number.autoCast })]);
+const ObjectUnion = union([object({ tag: literal('a'), a: string }), object({ tag: keyof({ b: null, c: null }), b: number.autoCast })]);
 
 test('ObjectUnion examples', () => {
     expect(createExample(ObjectUnion, 1)).toMatchInlineSnapshot(`
     Object {
-      "b": 0.02,
+      "b": 0.03,
       "tag": "b",
     }
     `);
@@ -129,7 +130,7 @@ test('ObjectUnion examples', () => {
     `);
 });
 
-testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.autoCast }', type: ObjectUnion });
+testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b" | "c", b: number.autoCast }', type: ObjectUnion });
 testTypeImpl({
     name: 'ObjectUnion',
     type: ObjectUnion.withName('ObjectUnion'),
@@ -141,11 +142,11 @@ testTypeImpl({
     invalidValues: [
         [123, 'error in [ObjectUnion]: expected an object, got a number (123)'],
         [
-            { tag: 'c' },
+            { tag: 'd' },
             [
                 'error in [ObjectUnion]: every subtype of union has at least one discriminator mismatch',
-                '  • [{ tag: "a", a: string }] requires <tag> to be "a", got: "c"',
-                '  • [{ tag: "b", b: number.autoCast }] requires <tag> to be "b", got: "c"',
+                '  • [{ tag: "a", a: string }] requires <tag> to be "a", got: "d"',
+                '  • [{ tag: "b" | "c", b: number.autoCast }] requires <tag> to be "b" or "c", got: "d"',
             ],
         ],
         [
@@ -416,5 +417,5 @@ testTypeImpl({
 });
 
 const MixedUnion = union([ObjectUnion, StringLiteralUnion]);
-testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b", b: number.autoCast } | "abc" | "def"', type: MixedUnion });
+testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b" | "c", b: number.autoCast } | "abc" | "def"', type: MixedUnion });
 testTypeImpl({ name: 'MixedUnion', type: MixedUnion.withName('MixedUnion'), basicType: 'mixed' });

@@ -3,6 +3,7 @@ import type {
     LiteralValue,
     MergeIntersection,
     MessageDetails,
+    ObjectType,
     Properties,
     PropertiesInfo,
     Result,
@@ -14,7 +15,6 @@ import type {
     Writable,
 } from '../interfaces.js';
 import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, prependPathToDetails } from '../utils/index.js';
-import { LiteralType } from './literal.js';
 import { unknownRecord } from './unknown.js';
 
 /**
@@ -182,13 +182,15 @@ function toPropsInfo<Props extends Properties>(props: Props, partial = false): P
     return result as PropertiesInfo<Props>;
 }
 
-function getPossibleDiscriminators(props: Record<string, Type<unknown> | BaseObjectLikeTypeImpl<unknown> | LiteralType<LiteralValue>>) {
+function getPossibleDiscriminators(
+    props: Record<string, Type<unknown> | ObjectType<unknown>>,
+): Array<{ path: string[]; values: LiteralValue[] }> {
     const result: BaseObjectLikeTypeImpl<unknown>['possibleDiscriminators'] = [];
     for (const [key, prop] of Object.entries(props)) {
         if ('possibleDiscriminators' in prop) {
             result.push(...prop.possibleDiscriminators.map(({ path, values }) => ({ path: [key, ...path], values })));
-        } else if (prop instanceof LiteralType) {
-            result.push({ path: [key], values: [prop.value] });
+        } else if (prop.enumerableLiteralDomain) {
+            result.push({ path: [key], values: [...prop.enumerableLiteralDomain] });
         }
     }
     return result;
