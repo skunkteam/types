@@ -141,7 +141,10 @@ export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (
     const last = arr[arr.length - 1];
     if (last === undefined) return '';
     if (arr.length === 1) return map(last);
-    return `${arr.slice(0, -1).map(map).join(', ')} ${lastSeparator} ${map(last)}`;
+    return `${arr
+        .slice(0, -1)
+        .map(v => map(v))
+        .join(', ')} ${lastSeparator} ${map(last)}`;
 }
 
 export function plural(amount: { length: number } | number, thing: string, things = `${thing}s`): string {

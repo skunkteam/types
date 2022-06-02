@@ -1,5 +1,5 @@
 import type { The } from '../interfaces.js';
-import { assignableTo, basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
+import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
 import { ValidationError } from '../validation-error.js';
 import { keyof, valueof } from './keyof.js';
 import { literal } from './literal.js';
@@ -11,10 +11,10 @@ testTypeImpl({
     basicType: 'string',
     validValues: ['yes', 'no'],
     invalidValues: [
-        ['really', defaultMessage('"yes" | "no"', 'really')],
+        ['really', 'error in ["yes" | "no"]: expected one of the literals "yes" or "no", got: "really"'],
         [0, basicTypeMessage(keyof({ yes: 0, no: 0 }), 0)],
         [1, basicTypeMessage(keyof({ yes: 0, no: 0 }), 1)],
-        ['', defaultMessage('"yes" | "no"', '')],
+        ['', 'error in ["yes" | "no"]: expected one of the literals "yes" or "no", got: ""'],
         ...defaultUsualSuspects(keyof({ yes: 0, no: 0 })),
     ],
 });
@@ -24,10 +24,10 @@ testTypeImpl({
     type: keyof('YourAnswer', { yes: true, maybe: 'trouble', no: false }),
     validValues: ['yes', 'no', 'maybe'],
     invalidValues: [
-        ['really', defaultMessage('YourAnswer', 'really')],
+        ['really', 'error in [YourAnswer]: expected one of the literals "yes", "maybe" or "no", got: "really"'],
         [0, basicTypeMessage(keyof('YourAnswer', {}), 0)],
         [1, basicTypeMessage(keyof('YourAnswer', {}), 1)],
-        ['', defaultMessage('YourAnswer', '')],
+        ['', 'error in [YourAnswer]: expected one of the literals "yes", "maybe" or "no", got: ""'],
         ...defaultUsualSuspects(keyof('YourAnswer', {})),
     ],
 });
@@ -43,8 +43,8 @@ testTypeImpl({
         [1, '1'],
     ],
     invalidConversions: [
-        ['a', 'expected a [("0" | "1").autoCast], got: "a"'],
-        [2, 'expected a [("0" | "1").autoCast], got: "2", parsed from: 2'],
+        ['a', 'error in [("0" | "1").autoCast]: expected one of the literals "0" or "1", got: "a"'],
+        [2, 'error in [("0" | "1").autoCast]: expected one of the literals "0" or "1", got: "2", parsed from: 2'],
     ],
 });
 
@@ -57,7 +57,7 @@ describe(keyof, () => {
         ${'yes'}   | ${true}
         ${'no'}    | ${false}
         ${'maybe'} | ${'trouble'}
-        ${'huh?'}  | ${Error('expected a [YourAnswer], got: "huh?"')}
+        ${'huh?'}  | ${Error('error in [YourAnswer]: expected one of the literals "yes", "maybe" or "no", got: "huh?"')}
     `('#translate($input) -> $output', ({ input, output }) => {
         if (output instanceof Error) {
             expect(() => YourAnswer.translate(input)).toThrowWithMessage(ValidationError, output.message);
