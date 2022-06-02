@@ -419,3 +419,23 @@ testTypeImpl({
 const MixedUnion = union([ObjectUnion, StringLiteralUnion]);
 testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b" | "c", b: number.autoCast } | "abc" | "def"', type: MixedUnion });
 testTypeImpl({ name: 'MixedUnion', type: MixedUnion.withName('MixedUnion'), basicType: 'mixed' });
+
+const ProperDiscriminators = union('ProperDiscriminators', [
+    object({
+        boolean: literal(true),
+        noOverlap: keyof({ a: null, b: null }),
+        overlap: keyof({ a: null, b: null }),
+    }),
+    object({
+        boolean: literal(false),
+        noOverlap: keyof({ c: null, d: null }),
+        overlap: keyof({ b: null, c: null }),
+        optional: literal(true),
+    }),
+]);
+test('proper discriminators', () => {
+    expect(ProperDiscriminators.possibleDiscriminators).toIncludeSameMembers([
+        { path: ['boolean'], values: [true, false] },
+        { path: ['noOverlap'], values: ['a', 'b', 'c', 'd'] },
+    ]);
+});
