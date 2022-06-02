@@ -24,7 +24,9 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
         return this.createResult(
             input,
             input,
-            typeof input !== 'string' ? { kind: 'invalid basic type', expected: 'string' } : hasOwnProperty(this.keys, input),
+            typeof input !== 'string'
+                ? { kind: 'invalid basic type', expected: 'string' }
+                : hasOwnProperty(this.keys, input) || { kind: 'invalid literal', expected: this.enumerableLiteralDomain },
         );
     }
 

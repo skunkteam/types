@@ -139,11 +139,11 @@ testTypeImpl({
         [{ one: 'mississippi' }, 'error in [StrictKeyofRecord]: missing property <two> ["mississippi"], got: { one: "mississippi" }'],
         [
             { one: 'mississippi', two: 'mississippi', three: 'mississippi' },
-            'error in [StrictKeyofRecord]: key <three> is invalid: expected a ["one" | "two"], got: "three"',
+            'error in [StrictKeyofRecord]: key <three> is invalid: expected one of the literals "one" or "two", got: "three"',
         ],
         [
             { one: 'mississippi', two: 'mississippi', three: 'amazon' },
-            'error in [StrictKeyofRecord]: key <three> is invalid: expected a ["one" | "two"], got: "three"',
+            'error in [StrictKeyofRecord]: key <three> is invalid: expected one of the literals "one" or "two", got: "three"',
         ],
         [{ one: 'mississippi', two: 'amazon' }, 'error in [StrictKeyofRecord] at <two>: expected the literal "mississippi", got: "amazon"'],
     ],
