@@ -107,8 +107,8 @@ function analyzePossibleDiscriminators(types: Array<BaseTypeImpl<unknown> | Base
             } else {
                 for (const [path, thisOne] of Object.entries(found)) {
                     const otherOne = pds[path];
-                    if (otherOne) {
-                        found[path] = { path: thisOne.path, values: [...new Set([...thisOne.values, ...otherOne.values])] };
+                    if (otherOne && !otherOne.values.some(value => thisOne.values.includes(value))) {
+                        found[path] = { path: thisOne.path, values: [...thisOne.values, ...otherOne.values] };
                     } else {
                         delete found[path];
                     }
