@@ -595,6 +595,64 @@ testTypeImpl({
     ],
 });
 
+type ReplacedAutocastParser = The<typeof ReplacedAutocastParser>;
+const ReplacedAutocastParser = number.autoCast.withParser({ name: 'ReplacedAutocastParser', chain: false }, input => input);
+
+testTypeImpl({
+    name: 'ReplacedAutocastParser',
+    type: ReplacedAutocastParser,
+    validValues: [-1, 0, 1, 100],
+    validConversions: [[1, 1]],
+    invalidConversions: [['1', 'error in [ReplacedAutocastParser]: expected a number, got a string ("1")']],
+});
+
+type ChainedAutocastParser = The<typeof ChainedAutocastParser>;
+const ChainedAutocastParser = number.autoCast.withParser({ name: 'ChainedAutocastParser', chain: true }, input => input);
+
+testTypeImpl({
+    name: 'ChainedAutocastParser',
+    type: ChainedAutocastParser,
+    validValues: [-1, 0, 1, 100],
+    validConversions: [
+        [1, 1],
+        ['1', 1],
+    ],
+});
+
+type ChainedParserParser = The<typeof ChainedParserParser>;
+const ChainedParserParser = number
+    .withValidation(n => n < 115 || 'inner validation failed')
+    .withParser(
+        'Inner',
+        number.withValidation(n => n < 110 || 'inner parser failed').andThen(input => input + 10),
+    )
+    .withParser(
+        { name: 'ChainedParserParser', chain: true },
+        number.withValidation(n => n < 100 || 'outer parser failed').andThen(input => input + 100),
+    );
+
+// The valid ranges of ChainedParserParser:
+// outer parser: input < 100
+// inner parser: input < 10 (because outer parser adds 100)
+// validation:   input < 5 (because the parsers add 110 in total)
+
+describe('test now', () => {
+    testTypeImpl({
+        name: 'ChainedParserParser',
+        type: ChainedParserParser,
+        validValues: [-1, 0, 1, 100],
+        validConversions: [
+            [1, 111],
+            [-110, 0],
+        ],
+        invalidConversions: [
+            [100, 'error in parser precondition of [ChainedParserParser]: outer parser failed, got: 100'],
+            [10, 'error in parser precondition of [Inner]: inner parser failed, got: 110, parsed from: 10'],
+            [5, 'error in [number]: inner validation failed, got: 115, parsed from: 5'],
+        ],
+    });
+});
+
 testTypeImpl({
     name: 'EdgeCase1',
     type: number.withParser('EdgeCase1', String),

@@ -1,4 +1,4 @@
-import type { CustomMessage, Failure, FailureDetails, MessageDetails, OneOrMore } from '../interfaces.js';
+import type { CustomMessage, Failure, FailureDetails, MessageDetails, OneOrMore, Result } from '../interfaces.js';
 import { printValue } from './print-utils.js';
 import { checkOneOrMore } from './type-utils.js';
 
@@ -19,11 +19,10 @@ export function prependContextToDetails(failure: Failure, context: string): OneO
     );
 }
 
-export function addParserInputToFailure(failure: Failure, parserInput: unknown): Failure {
-    if (failure.details.every(d => d.path)) {
-        return { ...failure, parserInput };
-    }
-    return { ...failure, details: checkOneOrMore(failure.details.map(d => (d.path ? d : { ...d, parserInput }))) };
+export function addParserInputToResult<T>(result: Result<T>, parserInput: unknown): Result<T> {
+    if (result.ok) return result;
+    if (result.details.every(d => d.path)) return { ...result, parserInput };
+    return { ...result, details: checkOneOrMore(result.details.map(d => (d.path ? d : { ...d, parserInput }))) };
 }
 
 export function evalCustomMessage<T, E>(message: CustomMessage<T, E>, input: T, explanation: E): MessageDetails | string | false {

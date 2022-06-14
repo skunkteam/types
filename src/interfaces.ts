@@ -261,6 +261,20 @@ export interface ValidationOptions {
     mode: ValidationMode;
 }
 
+/**
+ * Options that can be passed to {@link BaseTypeImpl.withParser}.
+ */
+export interface ParserOptions {
+    /**
+     * The new name to use in error messages.
+     */
+    name?: string;
+    /**
+     * Whether to chain this parser on top of any existing parser.
+     */
+    chain?: boolean;
+}
+
 /** The supported types of literals. */
 export type LiteralValue = string | number | boolean | null | undefined | void;
 

@@ -9,14 +9,16 @@ Create a type-validator that validates (or parses) an object structure with only
 <b>Signature:</b>
 
 ```typescript
-export declare function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props]): PartialType<Props>;
+export declare function partial<Props extends Properties>(
+    ...args: [props: Props] | [name: string, props: Props] | [options: Omit<InterfaceTypeOptions, 'partial'>, props: Props]
+): PartialType<Props>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                               | Description                                                 |
-| --------- | -------------------------------------------------- | ----------------------------------------------------------- |
-| args      | \[props: Props\] \| \[name: string, props: Props\] | the optional name and (required) properties of the new type |
+| Parameter | Type                                                                                                                                                                    | Description                                                 |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| args      | \[props: Props\] \| \[name: string, props: Props\] \| \[options: Omit&lt;[InterfaceTypeOptions](./types.interfacetypeoptions.md)<!-- -->, 'partial'&gt;, props: Props\] | the optional name and (required) properties of the new type |
 
 <b>Returns:</b>
 

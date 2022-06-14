@@ -82,7 +82,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     withConfig<BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withName(name: string): this;
-    withParser(...args: [name: string, newConstructor: (i: unknown) => unknown] | [newConstructor: (i: unknown) => unknown]): this;
+    withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, newConstructor: (i: unknown) => unknown] | [options: ParserOptions, newConstructor: (i: unknown) => unknown]): this;
     withValidation(validation: Validator<ResultType>): this;
 }
 
@@ -360,7 +360,13 @@ export type ObjectType<ResultType, TypeConfig = unknown> = TypeImpl<BaseObjectLi
 export type OneOrMore<T> = [T, ...T[]];
 
 // @public
-export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props]): PartialType<Props>;
+export interface ParserOptions {
+    chain?: boolean;
+    name?: string;
+}
+
+// @public
+export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: Omit<InterfaceTypeOptions, 'partial'>, props: Props]): PartialType<Props>;
 
 // @public (undocumented)
 export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;

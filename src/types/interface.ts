@@ -14,7 +14,15 @@ import type {
     Visitor,
     Writable,
 } from '../interfaces.js';
-import { decodeOptionalName, defaultObjectRep, define, extensionName, hasOwnProperty, prependPathToDetails } from '../utils/index.js';
+import {
+    decodeOptionalName,
+    decodeOptionalOptions,
+    defaultObjectRep,
+    define,
+    extensionName,
+    hasOwnProperty,
+    prependPathToDetails,
+} from '../utils/index.js';
 import { unknownRecord } from './unknown.js';
 
 /**
@@ -145,7 +153,7 @@ export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, T
 export function object<Props extends Properties>(
     ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
 ): FullType<Props> {
-    const [options, props] = getOptions(args);
+    const [options, props] = decodeOptionalOptions<InterfaceTypeOptions, Props>(args);
     return createType(new InterfaceType(props, options));
 }
 
@@ -159,19 +167,11 @@ export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props
  *
  * @param args - the optional name and (required) properties of the new type
  */
-export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props]): PartialType<Props> {
-    const [options, props] = getOptions(args);
+export function partial<Props extends Properties>(
+    ...args: [props: Props] | [name: string, props: Props] | [options: Omit<InterfaceTypeOptions, 'partial'>, props: Props]
+): PartialType<Props> {
+    const [options, props] = decodeOptionalOptions<InterfaceTypeOptions, Props>(args);
     return createType(new InterfaceType(props, { ...options, partial: true }));
-}
-
-function getOptions<Props extends Properties>(
-    args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props],
-): [InterfaceTypeOptions, Props] {
-    if (args.length === 1) {
-        return [{}, args[0]];
-    }
-    const [options, props] = args;
-    return typeof options === 'string' ? [{ name: options }, props] : [options, props];
 }
 
 function toPropsInfo<Props extends Properties>(props: Props, partial = false): PropertiesInfo<Props> {
