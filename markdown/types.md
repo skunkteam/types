@@ -53,6 +53,7 @@ Runtime type-validation with derived TypeScript types.
 | [Failure](./types.failure.md)                                   | A failed validation result.                                                                                                                 |
 | [InterfaceTypeOptions](./types.interfacetypeoptions.md)         | Options for [object()](./types.object.md)<!-- -->.                                                                                          |
 | [LengthChecksConfig](./types.lengthchecksconfig.md)             |                                                                                                                                             |
+| [ParserOptions](./types.parseroptions.md)                       | Options that can be passed to [BaseTypeImpl.withParser()](./types.basetypeimpl.withparser.md)<!-- -->.                                      |
 | [SimpleTypeOptions](./types.simpletypeoptions.md)               |                                                                                                                                             |
 | [StringTypeConfig](./types.stringtypeconfig.md)                 | Configuration of additional checks on string types.                                                                                         |
 | [Success](./types.success.md)                                   | A successful validation result.                                                                                                             |

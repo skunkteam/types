@@ -5,6 +5,7 @@ import type {
     LiteralValue,
     MergeIntersection,
     ObjectType,
+    ParserOptions,
     Properties,
     PropertiesInfo,
     Result,
@@ -18,11 +19,11 @@ import type {
 } from './interfaces.js';
 import { autoCastFailure, designType } from './symbols.js';
 import {
-    addParserInputToFailure,
+    addParserInputToResult,
     bracketsIfNeeded,
     castArray,
     checkOneOrMore,
-    decodeOptionalName,
+    decodeOptionalOptions,
     prependContextToDetails,
     printValue,
 } from './utils/index.js';
@@ -261,8 +262,8 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
             value = constructorResult.value;
         }
         let result = this.typeValidator(value, options);
-        if (this.typeParser && options.mode === 'construct' && !result.ok) {
-            result = addParserInputToFailure(result, input);
+        if (this.typeParser && options.mode === 'construct') {
+            result = addParserInputToResult(result, input);
         }
         valueMap?.set(input, result);
         return result;
@@ -344,13 +345,22 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * @remarks
      * This given parser may throw ValidationErrors to indicate validation failures during parsing.
      */
-    withParser(...args: [name: string, newConstructor: (i: unknown) => unknown] | [newConstructor: (i: unknown) => unknown]): this {
-        const [name, constructor] = decodeOptionalName(args);
+    withParser(
+        ...args:
+            | [newConstructor: (i: unknown) => unknown]
+            | [name: string, newConstructor: (i: unknown) => unknown]
+            | [options: ParserOptions, newConstructor: (i: unknown) => unknown]
+    ): this {
+        const [{ name, chain }, constructor] = decodeOptionalOptions<ParserOptions, (i: unknown) => unknown>(args);
         const type = createType(this, {
             ...(name && { name: { configurable: true, value: name } }),
             typeParser: {
                 configurable: true,
-                value: (input: unknown) => ValidationError.try({ type, input }, () => constructor(input)),
+                value: (input: unknown, options: ValidationOptions) => {
+                    const result = ValidationError.try({ type, input }, () => constructor(input));
+                    if (!result.ok || !chain || !this.typeParser) return result;
+                    return addParserInputToResult(this.typeParser(result.value, options), input);
+                },
             },
         });
         return type;

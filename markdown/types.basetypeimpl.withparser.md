@@ -9,14 +9,14 @@ Define a new type with the same specs, but with the given parser and an optional
 <b>Signature:</b>
 
 ```typescript
-withParser(...args: [name: string, newConstructor: (i: unknown) => unknown] | [newConstructor: (i: unknown) => unknown]): this;
+withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, newConstructor: (i: unknown) => unknown] | [options: ParserOptions, newConstructor: (i: unknown) => unknown]): this;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                           | Description |
-| --------- | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| args      | \[name: string, newConstructor: (i: unknown) =&gt; unknown\] \| \[newConstructor: (i: unknown) =&gt; unknown\] |             |
+| Parameter | Type                                                                                                                                                                                                                         | Description |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| args      | \[newConstructor: (i: unknown) =&gt; unknown\] \| \[name: string, newConstructor: (i: unknown) =&gt; unknown\] \| \[options: [ParserOptions](./types.parseroptions.md)<!-- -->, newConstructor: (i: unknown) =&gt; unknown\] |             |
 
 <b>Returns:</b>
 

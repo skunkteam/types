@@ -8,6 +8,17 @@ export function decodeOptionalName<Rest extends unknown[]>(args: [string, ...Res
     return (typeof args[0] === 'string' ? args : [undefined, ...args]) as [string | undefined, ...Rest];
 }
 
+export function decodeOptionalOptions<Options extends { name?: string }, OtherParam>(
+    args: [other: OtherParam] | [name: string, other: OtherParam] | [options: Options, other: OtherParam],
+): [Partial<Options>, OtherParam] {
+    if (args.length === 1) return [{}, args[0]];
+    const [arg1, props] = args;
+    if (typeof arg1 !== 'string') return [arg1, props];
+    const options: Partial<Options> = {};
+    options.name = arg1;
+    return [options, props];
+}
+
 export function partition<Base, Filtered extends Base>(
     array: readonly Base[],
     filter: (value: Base) => value is Filtered,
