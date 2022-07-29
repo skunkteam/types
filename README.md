@@ -6,6 +6,9 @@ Inspired by [io-ts](https://github.com/gcanti/io-ts), but without the functional
 -   [API examples](#api-examples)
     -   ["Simple types"](#"simple-types")
     -   [Object types](#object-types)
+    -   [Validations](#validations)
+        -   [Built-in extra validations](#built-in-extra-validations)
+        -   [Custom validations](#custom-validations)
     -   [Unions and Intersections](#unions-and-intersections)
     -   [Generic Types](#generic-types)
     -   [Parsers](#parsers)
@@ -255,6 +258,143 @@ object({ strictMissingKeys: true }, { prop: StringOrEmpty }).construct({});
 // throws ValidationError: error in [{ prop: string | undefined }]: missing property <prop> [string | undefined], got: {}
 object({ strictMissingKeys: true }, { prop: StringOrEmpty }).construct({ prop: undefined });
 // => { prop: 'DEFAULT' }
+```
+
+### Validations
+
+#### Built-in extra validations
+
+Some built-in types provide a number of common extra validations using the [`withConfig`](markdown/types.basetypeimpl.withconfig.md) method. These declarative extra validations are fully supported by the error-reporter and provide nice error messages on error. These error-messages are customizable in most cases.
+
+Another advantage of using the `withConfig` method is that the declarative config can be retrieved at runtime by type-analysis tools, such as an OpenAPI / JSON schema generator.
+
+| Type         | Config option                                       | Docs                                                     |
+| :----------- | :-------------------------------------------------- | :------------------------------------------------------- |
+| `array(...)` | `minLength` and `maxLength`                         | [`ArrayTypeConfig`](markdown/types.arraytypeconfig.md)   |
+| `number`     | `max[Exclusive]`, `min[Exclusive]` and `multipleOf` | [`NumberTypeConfig`](markdown/types.numbertypeconfig.md) |
+| `string`     | `minLength`, `maxLength` and `pattern`              | [`StringTypeConfig`](markdown/types.stringtypeconfig.md) |
+
+#### Custom validations
+
+Some validations are more complex than the built-in basic validations and need custom logic. To add custom validation to any type, use the methods [`withValidation`](markdown/types.basetypeimpl.withvalidation.md) (unbranded) and [`withConstraint`](markdown/types.basetypeimpl.withconstraint.md) (branded). The accepted return-value of the validation-callback ([`ValidationResult`](markdown/types.validationresult.md)) is very convenient for both simple custom validations and more complex scenario's.
+
+| Return type                  | Interpretation                                              | Example / usage                          |
+| :--------------------------- | :---------------------------------------------------------- | :--------------------------------------- |
+| `false`                      | Validation **not ok**, no custom message                    | `value === 'ok'`                         |
+| `true`                       | Validation **ok**, no error                                 | `value === 'ok'`                         |
+| `'a string'`                 | Validation **not ok**, provided string is custom message    | `value === 'ok' \|\| 'why it is not ok'` |
+| `[]`                         | Validation **ok**, no error                                 | Explained below                          |
+| `['a string', ...]`          | Validation **not ok**, provided strings are custom messages | Explained below                          |
+| `{ kind: '...', ...}`        | Validation **not ok**, provides structured error details    | Explained below                          |
+| `[{ kind: '...', ...}, ...]` | Validation **not ok**, provides structured error details    | Explained below                          |
+
+**Returning multiple violations:**
+
+A common pattern is building up a messages array and returning that, like this:
+
+```ts
+const messages: string[] = [];
+if (...) messages.push('custom message');
+if (...) messages.push('other custom message');
+return messages;
+```
+
+In this case an empty `messages` array means that no errors occurred. That is why an empty array is regarded as a successful validation.
+
+**Returning structured error details:**
+
+Structured error details ([`MessageDetails`](markdown/types.messagedetails.md) as used internally by the library) have the advantage that they can provide hints to the error reporter on how to report the errors. This can result in better understandable error messages. For example, when certain properties are only required in certain conditions, return a `MessageDetails` object with kind `'missing property'`.
+
+Suppose you have an API that updates salaries for employees, and a special approval is needed for salaries over $200,000, these are some of the options:
+
+```typescript
+/** The basic request type, validations will be added later */
+type UpdateSalaryRequest = The<typeof UpdateSalaryRequest>;
+const UpdateSalaryRequest = object('UpdateSalaryRequest', {
+    id: string,
+    salary: number,
+}).withOptional({
+    salaryApproval: string,
+});
+
+//
+// The simplest of solutions, only a condition.
+//
+type SuperBasicValidation = The<typeof SuperBasicValidation>;
+const SuperBasicValidation = UpdateSalaryRequest.withValidation(request => request.salary < 200_000 || !!request.salaryApproval);
+
+SuperBasicValidation({ id: 'emp01', salary: 300_000 });
+// throws ValidationError: error in [UpdateSalaryRequest]: additional validation failed, got: { id: "emp01", salary: 300000 }
+
+//
+// Slightly better, at least provide a name to your type:
+//
+type ValidatedUpdateSalaryRequest = The<typeof ValidatedUpdateSalaryRequest>;
+const ValidatedUpdateSalaryRequest = UpdateSalaryRequest.withConstraint(
+    'ValidatedUpdateSalaryRequest',
+    request => request.salary < 200_000 || !!request.salaryApproval,
+);
+
+ValidatedUpdateSalaryRequest({ id: 'emp01', salary: 300_000 });
+// throws ValidationError: expected a [ValidatedUpdateSalaryRequest], got: { id: "emp01", salary: 300000 }
+
+//
+// A better solutions, only a custom message. This is often enough.
+//
+type WithBasicCustomMessage = The<typeof WithBasicCustomMessage>;
+const WithBasicCustomMessage = UpdateSalaryRequest.withValidation(
+    request => request.salary < 200_000 || !!request.salaryApproval || 'approval is needed',
+);
+
+WithBasicCustomMessage({ id: 'emp01', salary: 300_000 });
+// throws ValidationError: error in [UpdateSalaryRequest]: approval is needed, got: { id: "emp01", salary: 300000 }
+
+//
+// Report the error with the correct property to enable better reporting of multiple errors, maybe you want this:
+//
+type WithReportHint = The<typeof WithReportHint>;
+const WithReportHint = UpdateSalaryRequest.withValidation(
+    request =>
+        request.salary < 200_000 ||
+        !!request.salaryApproval || [
+            {
+                kind: 'custom message',
+                path: ['salary'],
+                message: 'large salaries are only allowed when approved by the boss',
+                input: request.salary,
+            },
+            {
+                kind: 'custom message',
+                path: ['salaryApproval'],
+                message: 'missing approval for large salaries',
+                input: request.salaryApproval,
+            },
+        ],
+);
+
+WithReportHint({ id: 'emp01', salary: 300_000, salaryApproval: '' });
+// throws ValidationError: errors in [UpdateSalaryRequest]:
+//
+// - at <salary>: large salaries are only allowed when approved by the boss, got: 300000
+//
+// - at <salaryApproval>: missing approval for large salaries, got: ""
+
+//
+// Or report a missing properties like this:
+//
+type ReportMissingProperties = The<typeof ReportMissingProperties>;
+const ReportMissingProperties = UpdateSalaryRequest.withValidation(
+    request =>
+        request.salary < 200_000 ||
+        !!request.salaryApproval || {
+            kind: 'missing property',
+            property: 'salaryApproval',
+            type: string,
+        },
+);
+
+WithReportHint({ id: 'emp01', salary: 300_000 });
+// throws error in [UpdateSalaryRequest]: missing property <salaryApproval> [string], got: { id: "emp01", salary: 300000 }
 ```
 
 ### Unions and Intersections
