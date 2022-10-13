@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { BaseTypeImpl } from './base-type.js';
 import type { The } from './interfaces.js';
 import { assignableTo, testTypes } from './testutils.js';
@@ -24,6 +25,27 @@ describe(BaseTypeImpl, () => {
             assignableTo<{ key: 'value' }>(value);
             assignableTo<typeof value>({ key: 'value' });
             expect(value).toEqual({ key: 'value' });
+        }
+
+        const array = [value, value];
+        if (array.every(string.is)) {
+            assignableTo<'a string'[]>(array);
+            assignableTo<typeof array>(['a string']);
+            expect(array).toEqual(['a string', 'a string']);
+        } else if (array.every(number.is)) {
+            assignableTo<123[]>(array);
+            assignableTo<typeof array>([123]);
+            expect(array).toEqual([123, 123]);
+        } else if (array.every(boolean.is)) {
+            assignableTo<false[]>(array);
+            assignableTo<typeof array>([false]);
+            expect(array).toEqual([false, false]);
+        } else if (array.every(unknownRecord.is)) {
+            assignableTo<{ key: 'value' }[]>(array);
+            assignableTo<typeof array>([{ key: 'value' }]);
+            expect(array).toEqual([{ key: 'value' }, { key: 'value' }]);
+        } else {
+            assert.fail('should have matched one of the other predicates');
         }
 
         testTypes(() => {

@@ -96,6 +96,8 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     private readonly _instanceCache: {
         autoCast?: BaseTypeImpl<ResultType, TypeConfig>;
         autoCastAll?: BaseTypeImpl<ResultType, TypeConfig>;
+        boundCheck?: BaseTypeImpl<ResultType, TypeConfig>['check'];
+        boundIs?: BaseTypeImpl<ResultType, TypeConfig>['is'];
     } = {};
 
     /**
@@ -192,9 +194,11 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      *
      * @param input - the value to check
      */
-    check(input: unknown): ResultType {
-        this.assert(input);
-        return input;
+    get check(): (this: void, input: unknown) => ResultType {
+        return (this._instanceCache.boundCheck ??= input => {
+            this.assert(input);
+            return input;
+        });
     }
 
     /**
@@ -272,8 +276,15 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     /**
      * A type guard for this Type.
      */
-    is(input: unknown): input is ResultType {
-        return this.validate(input, { mode: 'check' }).ok;
+    get is(): <Input>(
+        this: void,
+        input: Input,
+    ) => input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never {
+        this._instanceCache.boundIs ??= <Input>(
+            input: Input,
+        ): input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never =>
+            this.validate(input, { mode: 'check' }).ok;
+        return this._instanceCache.boundIs;
     }
 
     /**
@@ -381,7 +392,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
             if (!baseResult.ok) {
                 return type.createResult(input, undefined, baseResult.details);
             }
-            const tryResult = ValidationError.try(
+            const tryResult = ValidationError.try<ValidationResult>(
                 { type, input },
                 // if no name is given, then default to the message "additional validation failed"
                 () => validation(baseResult.value, options) || 'additional validation failed',
