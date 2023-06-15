@@ -6,7 +6,7 @@
 
 Create a type-validator that validates (or parses) an object structure.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function object<Props extends Properties>(
@@ -20,7 +20,7 @@ export declare function object<Props extends Properties>(
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
 | args      | \[props: Props\] \| \[name: string, props: Props\] \| \[options: [InterfaceTypeOptions](./types.interfacetypeoptions.md)<!-- -->, props: Props\] | the options and properties of the new type |
 
-<b>Returns:</b>
+**Returns:**
 
 [FullType](./types.fulltype.md)<!-- -->&lt;Props&gt;
 

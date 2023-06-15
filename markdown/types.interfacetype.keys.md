@@ -6,7 +6,7 @@
 
 The keys (property-names) for this object-like type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly keys: (keyof Props)[];

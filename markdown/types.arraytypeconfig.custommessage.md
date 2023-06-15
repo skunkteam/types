@@ -4,7 +4,7 @@
 
 ## ArrayTypeConfig.customMessage property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 customMessage?: CustomMessage<unknown[], ArrayViolation[]>;

@@ -6,10 +6,10 @@
 
 The supported additional checks on string types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type StringViolation = 'pattern' | LengthViolation;
+export type StringViolation = 'pattern' | LengthViolation;
 ```
 
-<b>References:</b> [LengthViolation](./types.lengthviolation.md)
+**References:** [LengthViolation](./types.lengthviolation.md)

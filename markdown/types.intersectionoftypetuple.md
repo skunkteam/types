@@ -4,10 +4,10 @@
 
 ## IntersectionOfTypeTuple type
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type IntersectionOfTypeTuple<Tuple> = Tuple extends [
+export type IntersectionOfTypeTuple<Tuple> = Tuple extends [
     {
         readonly [designType]: infer A;
     },
@@ -17,10 +17,10 @@ export declare type IntersectionOfTypeTuple<Tuple> = Tuple extends [
           {
               readonly [designType]: infer A;
           },
-          ...infer Rest
+          ...infer Rest,
       ]
     ? MergeIntersection<A & IntersectionOfTypeTuple<Rest>>
     : Record<string, unknown>;
 ```
 
-<b>References:</b> [MergeIntersection](./types.mergeintersection.md)<!-- -->, [IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)
+**References:** [MergeIntersection](./types.mergeintersection.md)<!-- -->, [IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)

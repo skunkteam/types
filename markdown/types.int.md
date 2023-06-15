@@ -4,8 +4,8 @@
 
 ## int variable
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-int: Type<Branded<number, 'int'>, NumberTypeConfig>
+int: Type<Branded<number, 'int'>, NumberTypeConfig>;
 ```

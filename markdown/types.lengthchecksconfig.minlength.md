@@ -4,7 +4,7 @@
 
 ## LengthChecksConfig.minLength property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 minLength?: number;

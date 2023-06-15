@@ -6,7 +6,7 @@
 
 A type guard for this Type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 is(input: unknown): input is ResultType;
@@ -18,6 +18,6 @@ is(input: unknown): input is ResultType;
 | --------- | ------- | ----------- |
 | input     | unknown |             |
 
-<b>Returns:</b>
+**Returns:**
 
 input is ResultType

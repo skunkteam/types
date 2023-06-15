@@ -6,8 +6,8 @@
 
 Built-in validator for boolean-values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-boolean: Type<boolean>
+boolean: Type<boolean>;
 ```

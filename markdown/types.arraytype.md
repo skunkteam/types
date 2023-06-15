@@ -6,13 +6,13 @@
 
 The implementation behind types created with [array()](./types.array.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType, ArrayTypeConfig>
 ```
 
-<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->&gt;
+**Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->&gt;
 
 ## Constructors
 
@@ -22,17 +22,17 @@ export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Elemen
 
 ## Properties
 
-| Property                                            | Modifiers | Type                                          | Description |
-| --------------------------------------------------- | --------- | --------------------------------------------- | ----------- |
-| [basicType](./types.arraytype.basictype.md)         |           | 'array'                                       |             |
-| [elementType](./types.arraytype.elementtype.md)     |           | ElementType                                   |             |
-| [isDefaultName](./types.arraytype.isdefaultname.md) |           | boolean                                       |             |
-| [name](./types.arraytype.name.md)                   |           | string                                        |             |
-| [typeConfig](./types.arraytype.typeconfig.md)       |           | [ArrayTypeConfig](./types.arraytypeconfig.md) |             |
+| Property                                            | Modifiers             | Type                                          | Description |
+| --------------------------------------------------- | --------------------- | --------------------------------------------- | ----------- |
+| [basicType](./types.arraytype.basictype.md)         | <code>readonly</code> | 'array'                                       |             |
+| [elementType](./types.arraytype.elementtype.md)     | <code>readonly</code> | ElementType                                   |             |
+| [isDefaultName](./types.arraytype.isdefaultname.md) | <code>readonly</code> | boolean                                       |             |
+| [name](./types.arraytype.name.md)                   | <code>readonly</code> | string                                        |             |
+| [typeConfig](./types.arraytype.typeconfig.md)       | <code>readonly</code> | [ArrayTypeConfig](./types.arraytypeconfig.md) |             |
 
 ## Methods
 
-| Method                                                              | Modifiers | Description |
-| ------------------------------------------------------------------- | --------- | ----------- |
-| [accept(visitor)](./types.arraytype.accept.md)                      |           |             |
-| [typeValidator(input, options)](./types.arraytype.typevalidator.md) |           |             |
+| Method                                                              | Modifiers              | Description |
+| ------------------------------------------------------------------- | ---------------------- | ----------- |
+| [accept(visitor)](./types.arraytype.accept.md)                      |                        |             |
+| [typeValidator(input, options)](./types.arraytype.typevalidator.md) | <code>protected</code> |             |

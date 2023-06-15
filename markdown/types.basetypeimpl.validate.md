@@ -6,7 +6,7 @@
 
 Validates that a value conforms to this type, and returns a result indicating success or failure (does not throw).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 validate(input: unknown, options?: ValidationOptions): Result<ResultType>;
@@ -14,12 +14,12 @@ validate(input: unknown, options?: ValidationOptions): Result<ResultType>;
 
 ## Parameters
 
-| Parameter | Type                                              | Description                     |
-| --------- | ------------------------------------------------- | ------------------------------- |
-| input     | unknown                                           | the input value to be validated |
-| options   | [ValidationOptions](./types.validationoptions.md) | the current validation context  |
+| Parameter | Type                                              | Description                                 |
+| --------- | ------------------------------------------------- | ------------------------------------------- |
+| input     | unknown                                           | the input value to be validated             |
+| options   | [ValidationOptions](./types.validationoptions.md) | _(Optional)_ the current validation context |
 
-<b>Returns:</b>
+**Returns:**
 
 [Result](./types.result.md)<!-- -->&lt;ResultType&gt;
 

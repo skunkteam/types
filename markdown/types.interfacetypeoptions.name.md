@@ -6,7 +6,7 @@
 
 The optional name for the type, uses a default TypeScript-like name if no name is given.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 name?: string;

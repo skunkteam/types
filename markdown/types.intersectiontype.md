@@ -6,15 +6,15 @@
 
 The implementation behind types created with [intersection()](./types.intersection.md) and [BaseObjectLikeTypeImpl.and()](./types.baseobjectliketypeimpl.and.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>, undefined> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
 ```
 
-<b>Extends:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)<!-- -->&lt;Types&gt;, undefined&gt;
+**Extends:** [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)<!-- -->&lt;Types&gt;, undefined&gt;
 
-<b>Implements:</b> [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;[PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;&gt;
+**Implements:** [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;[PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;&gt;
 
 ## Constructors
 
@@ -24,21 +24,21 @@ export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeType
 
 ## Properties
 
-| Property                                                                     | Modifiers | Type                                                                                                                                      | Description |
-| ---------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| [basicType](./types.intersectiontype.basictype.md)                           |           | 'object'                                                                                                                                  |             |
-| [combinedName](./types.intersectiontype.combinedname.md)                     |           | string                                                                                                                                    |             |
-| [isDefaultName](./types.intersectiontype.isdefaultname.md)                   |           | boolean                                                                                                                                   |             |
-| [name](./types.intersectiontype.name.md)                                     |           | string                                                                                                                                    |             |
-| [possibleDiscriminators](./types.intersectiontype.possiblediscriminators.md) |           | Array&lt;{ path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }&gt;                                           |             |
-| [props](./types.intersectiontype.props.md)                                   |           | [PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;                                                            |             |
-| [propsInfo](./types.intersectiontype.propsinfo.md)                           |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;&gt; |             |
-| [typeConfig](./types.intersectiontype.typeconfig.md)                         |           | undefined                                                                                                                                 |             |
-| [types](./types.intersectiontype.types.md)                                   |           | Types                                                                                                                                     |             |
+| Property                                                                     | Modifiers             | Type                                                                                                                                      | Description |
+| ---------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [basicType](./types.intersectiontype.basictype.md)                           | <code>readonly</code> | 'object'                                                                                                                                  |             |
+| [combinedName](./types.intersectiontype.combinedname.md)                     | <code>readonly</code> | string                                                                                                                                    |             |
+| [isDefaultName](./types.intersectiontype.isdefaultname.md)                   | <code>readonly</code> | boolean                                                                                                                                   |             |
+| [name](./types.intersectiontype.name.md)                                     | <code>readonly</code> | string                                                                                                                                    |             |
+| [possibleDiscriminators](./types.intersectiontype.possiblediscriminators.md) | <code>readonly</code> | Array&lt;{ path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }&gt;                                           |             |
+| [props](./types.intersectiontype.props.md)                                   | <code>readonly</code> | [PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;                                                            |             |
+| [propsInfo](./types.intersectiontype.propsinfo.md)                           | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->&lt;Types&gt;&gt; |             |
+| [typeConfig](./types.intersectiontype.typeconfig.md)                         | <code>readonly</code> | undefined                                                                                                                                 |             |
+| [types](./types.intersectiontype.types.md)                                   | <code>readonly</code> | Types                                                                                                                                     |             |
 
 ## Methods
 
-| Method                                                                     | Modifiers | Description |
-| -------------------------------------------------------------------------- | --------- | ----------- |
-| [accept(visitor)](./types.intersectiontype.accept.md)                      |           |             |
-| [typeValidator(input, options)](./types.intersectiontype.typevalidator.md) |           |             |
+| Method                                                                     | Modifiers              | Description |
+| -------------------------------------------------------------------------- | ---------------------- | ----------- |
+| [accept(visitor)](./types.intersectiontype.accept.md)                      |                        |             |
+| [typeValidator(input, options)](./types.intersectiontype.typevalidator.md) | <code>protected</code> |             |

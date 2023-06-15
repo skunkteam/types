@@ -6,7 +6,7 @@
 
 The details of the failure (at least one),
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 details: OneOrMore<FailureDetails>;

@@ -6,7 +6,7 @@
 
 Print an unknown value with a given character budget (default: 50).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function printValue(input: unknown, budget?: number, visited?: Set<unknown>): string;
@@ -14,13 +14,13 @@ export declare function printValue(input: unknown, budget?: number, visited?: Se
 
 ## Parameters
 
-| Parameter | Type               | Description |
-| --------- | ------------------ | ----------- |
-| input     | unknown            |             |
-| budget    | number             |             |
-| visited   | Set&lt;unknown&gt; |             |
+| Parameter | Type               | Description  |
+| --------- | ------------------ | ------------ |
+| input     | unknown            |              |
+| budget    | number             | _(Optional)_ |
+| visited   | Set&lt;unknown&gt; | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

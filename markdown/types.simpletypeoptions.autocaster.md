@@ -4,7 +4,7 @@
 
 ## SimpleTypeOptions.autoCaster property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 autoCaster?: BaseTypeImpl<ResultType, TypeConfig>['autoCaster'];

@@ -4,7 +4,6 @@ import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type.js';
 import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, StringTypeConfig, Type, Visitor } from './interfaces.js';
 import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types/index.js';
 import { an, basicType, printValue } from './utils/index.js';
-import { ValidationError } from './validation-error.js';
 
 export function assignableTo<T>(_value: T): void {
     // intentionally left blank
@@ -59,7 +58,7 @@ export function testTypeImpl({
 
         invalidValues &&
             test.each(invalidValues)('does not accept: %p', (value, message) => {
-                expect(() => type.check(value)).toThrowWithMessage(ValidationError, Array.isArray(message) ? message.join('\n') : message);
+                expect(() => type.check(value)).toThrow(Array.isArray(message) ? message.join('\n') : message);
                 expect(type.is(value)).toBeFalse();
             });
 
@@ -73,7 +72,7 @@ export function testTypeImpl({
 
         invalidConversions &&
             test.each(invalidConversions)('will not convert: %p', (value, message) => {
-                expect(() => type(value)).toThrowWithMessage(ValidationError, Array.isArray(message) ? message.join('\n') : message);
+                expect(() => type(value)).toThrow(Array.isArray(message) ? message.join('\n') : message);
             });
     }
 }

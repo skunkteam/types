@@ -69,7 +69,7 @@ describe(BaseTypeImpl, () => {
         expect(() => Obj.literal({ a: 'abc', b: 1.2 })).toThrowErrorMatchingInlineSnapshot(`
             "errors in [Obj]:
 
-            - at <a>: expected a string matching pattern /^\\\\d+$/, got: \\"abc\\"
+            - at <a>: expected a string matching pattern /^\\d+$/, got: "abc"
 
             - at <b>: expected a whole number, got: 1.2"
         `);

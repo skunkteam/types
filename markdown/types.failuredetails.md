@@ -6,10 +6,10 @@
 
 Individual message with info about the performed validation for error-reporting.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type FailureDetails = ValidationDetails & MessageDetails;
+export type FailureDetails = ValidationDetails & MessageDetails;
 ```
 
-<b>References:</b> [ValidationDetails](./types.validationdetails.md)<!-- -->, [MessageDetails](./types.messagedetails.md)
+**References:** [ValidationDetails](./types.validationdetails.md)<!-- -->, [MessageDetails](./types.messagedetails.md)

@@ -6,27 +6,27 @@
 
 Implementation for simple types such as primitive types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType, TypeConfig>
 ```
 
-<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;
+**Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;
 
 ## Properties
 
-| Property                                       | Modifiers | Type                                         | Description |
-| ---------------------------------------------- | --------- | -------------------------------------------- | ----------- |
-| [basicType](./types.simpletype.basictype.md)   |           | [BasicType](./types.basictype.md) \| 'mixed' |             |
-| [name](./types.simpletype.name.md)             |           | string                                       |             |
-| [typeConfig](./types.simpletype.typeconfig.md) |           | TypeConfig                                   |             |
+| Property                                       | Modifiers             | Type                                         | Description |
+| ---------------------------------------------- | --------------------- | -------------------------------------------- | ----------- |
+| [basicType](./types.simpletype.basictype.md)   | <code>readonly</code> | [BasicType](./types.basictype.md) \| 'mixed' |             |
+| [name](./types.simpletype.name.md)             | <code>readonly</code> | string                                       |             |
+| [typeConfig](./types.simpletype.typeconfig.md) | <code>readonly</code> | TypeConfig                                   |             |
 
 ## Methods
 
-| Method                                                                              | Modifiers           | Description                                                     |
-| ----------------------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------- |
-| [accept(visitor)](./types.simpletype.accept.md)                                     |                     |                                                                 |
-| [create(name, basicType, simpleValidator, options)](./types.simpletype.create.md)   | <code>static</code> | Create a simple (limited) type implementation with type config. |
-| [create(name, basicType, simpleValidator, options)](./types.simpletype.create_1.md) | <code>static</code> | Create a simple (limited) type implementation.                  |
-| [typeValidator(input, options)](./types.simpletype.typevalidator.md)                |                     |                                                                 |
+| Method                                                                              | Modifiers              | Description                                                     |
+| ----------------------------------------------------------------------------------- | ---------------------- | --------------------------------------------------------------- |
+| [accept(visitor)](./types.simpletype.accept.md)                                     |                        |                                                                 |
+| [create(name, basicType, simpleValidator, options)](./types.simpletype.create.md)   | <code>static</code>    | Create a simple (limited) type implementation with type config. |
+| [create(name, basicType, simpleValidator, options)](./types.simpletype.create_1.md) | <code>static</code>    | Create a simple (limited) type implementation.                  |
+| [typeValidator(input, options)](./types.simpletype.typevalidator.md)                | <code>protected</code> |                                                                 |

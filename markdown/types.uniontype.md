@@ -6,13 +6,13 @@
 
 The implementation behind types created with [union()](./types.union.md) and [BaseTypeImpl.or()](./types.basetypeimpl.or.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>> extends BaseObjectLikeTypeImpl<ResultType>
 ```
 
-<b>Extends:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;ResultType&gt;
+**Extends:** [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;ResultType&gt;
 
 ## Constructors
 
@@ -22,22 +22,22 @@ export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, R
 
 ## Properties
 
-| Property                                                                | Modifiers | Type                                                                                                   | Description |
-| ----------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------ | ----------- |
-| [basicType](./types.uniontype.basictype.md)                             |           | [BasicType](./types.basictype.md) \| "mixed"                                                           |             |
-| [collapsedTypes](./types.uniontype.collapsedtypes.md)                   |           | Types                                                                                                  |             |
-| [enumerableLiteralDomain](./types.uniontype.enumerableliteraldomain.md) |           | Set&lt;[LiteralValue](./types.literalvalue.md)<!-- -->&gt; \| undefined                                |             |
-| [isDefaultName](./types.uniontype.isdefaultname.md)                     |           | boolean                                                                                                |             |
-| [name](./types.uniontype.name.md)                                       |           | string                                                                                                 |             |
-| [possibleDiscriminators](./types.uniontype.possiblediscriminators.md)   |           | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\]                 |             |
-| [props](./types.uniontype.props.md)                                     |           | [Properties](./types.properties.md)                                                                    |             |
-| [propsInfo](./types.uniontype.propsinfo.md)                             |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[Properties](./types.properties.md)<!-- -->&gt; |             |
-| [typeConfig](./types.uniontype.typeconfig.md)                           |           | undefined                                                                                              |             |
-| [types](./types.uniontype.types.md)                                     |           | Types                                                                                                  |             |
+| Property                                                                | Modifiers             | Type                                                                                                   | Description |
+| ----------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------ | ----------- |
+| [basicType](./types.uniontype.basictype.md)                             | <code>readonly</code> | [BasicType](./types.basictype.md) \| "mixed"                                                           |             |
+| [collapsedTypes](./types.uniontype.collapsedtypes.md)                   | <code>readonly</code> | Types                                                                                                  |             |
+| [enumerableLiteralDomain](./types.uniontype.enumerableliteraldomain.md) | <code>readonly</code> | Set&lt;[LiteralValue](./types.literalvalue.md)<!-- -->&gt; \| undefined                                |             |
+| [isDefaultName](./types.uniontype.isdefaultname.md)                     | <code>readonly</code> | boolean                                                                                                |             |
+| [name](./types.uniontype.name.md)                                       | <code>readonly</code> | string                                                                                                 |             |
+| [possibleDiscriminators](./types.uniontype.possiblediscriminators.md)   | <code>readonly</code> | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\]                 |             |
+| [props](./types.uniontype.props.md)                                     | <code>readonly</code> | [Properties](./types.properties.md)                                                                    |             |
+| [propsInfo](./types.uniontype.propsinfo.md)                             | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[Properties](./types.properties.md)<!-- -->&gt; |             |
+| [typeConfig](./types.uniontype.typeconfig.md)                           | <code>readonly</code> | undefined                                                                                              |             |
+| [types](./types.uniontype.types.md)                                     | <code>readonly</code> | Types                                                                                                  |             |
 
 ## Methods
 
-| Method                                                              | Modifiers | Description |
-| ------------------------------------------------------------------- | --------- | ----------- |
-| [accept(visitor)](./types.uniontype.accept.md)                      |           |             |
-| [typeValidator(input, options)](./types.uniontype.typevalidator.md) |           |             |
+| Method                                                              | Modifiers              | Description |
+| ------------------------------------------------------------------- | ---------------------- | ----------- |
+| [accept(visitor)](./types.uniontype.accept.md)                      |                        |             |
+| [typeValidator(input, options)](./types.uniontype.typevalidator.md) | <code>protected</code> |             |

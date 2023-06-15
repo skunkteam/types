@@ -4,7 +4,7 @@
 
 ## LiteralType.value property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly value: ResultType;

@@ -6,17 +6,17 @@
 
 Configuration of additional checks on string types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface StringTypeConfig extends LengthChecksConfig
 ```
 
-<b>Extends:</b> [LengthChecksConfig](./types.lengthchecksconfig.md)
+**Extends:** [LengthChecksConfig](./types.lengthchecksconfig.md)
 
 ## Properties
 
-| Property                                                    | Type                                                                                                                                                                                                                                                                                                                                     | Description       |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| [customMessage?](./types.stringtypeconfig.custommessage.md) | [CustomMessage](./types.custommessage.md)<!-- -->&lt;string, [StringViolation](./types.stringviolation.md)<!-- -->\[\]&gt; \| Partial&lt;Record&lt;[StringViolation](./types.stringviolation.md)<!-- -->, [CustomMessage](./types.custommessage.md)<!-- -->&lt;string, [StringViolation](./types.stringviolation.md)<!-- -->&gt;&gt;&gt; | <i>(Optional)</i> |
-| [pattern?](./types.stringtypeconfig.pattern.md)             | RegExp                                                                                                                                                                                                                                                                                                                                   | <i>(Optional)</i> |
+| Property                                                    | Modifiers | Type                                                                                                                                                                                                                                                                                                                                     | Description  |
+| ----------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| [customMessage?](./types.stringtypeconfig.custommessage.md) |           | [CustomMessage](./types.custommessage.md)<!-- -->&lt;string, [StringViolation](./types.stringviolation.md)<!-- -->\[\]&gt; \| Partial&lt;Record&lt;[StringViolation](./types.stringviolation.md)<!-- -->, [CustomMessage](./types.custommessage.md)<!-- -->&lt;string, [StringViolation](./types.stringviolation.md)<!-- -->&gt;&gt;&gt; | _(Optional)_ |
+| [pattern?](./types.stringtypeconfig.pattern.md)             |           | RegExp                                                                                                                                                                                                                                                                                                                                   | _(Optional)_ |

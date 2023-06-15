@@ -6,7 +6,7 @@
 
 Whether to chain this parser on top of any existing parser.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 chain?: boolean;

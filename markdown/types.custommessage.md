@@ -6,10 +6,10 @@
 
 The type for optional custom messages
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type CustomMessage<T, E = void> = undefined | string | ((got: string, input: T, explanation: E) => string);
+export type CustomMessage<T, E = void> = undefined | string | ((got: string, input: T, explanation: E) => string);
 ```
 
 ## Remarks

@@ -6,7 +6,7 @@
 
 Create a Result based on the given [ValidationResult](./types.validationresult.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
@@ -20,6 +20,6 @@ protected createResult(input: unknown, result: unknown, validatorResult: Validat
 | result          | unknown                                         | the resulting value                           |
 | validatorResult | [ValidationResult](./types.validationresult.md) | the result of the validation or parse step    |
 
-<b>Returns:</b>
+**Returns:**
 
 [Result](./types.result.md)<!-- -->&lt;ResultType&gt;

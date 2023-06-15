@@ -4,7 +4,7 @@
 
 ## Visitor.visitStringType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitStringType(type: BaseTypeImpl<string, StringTypeConfig>): R;
@@ -16,6 +16,6 @@ visitStringType(type: BaseTypeImpl<string, StringTypeConfig>): R;
 | --------- | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
 | type      | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;string, [StringTypeConfig](./types.stringtypeconfig.md)<!-- -->&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

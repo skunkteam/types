@@ -6,7 +6,7 @@
 
 Catch any errors thrown by `fn` and report the result as a [Result](./types.result.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static try<Return>({ type, input }: Pick<Failure, 'type' | 'input'>, fn: () => Return): Result<Return>;
@@ -19,6 +19,6 @@ static try<Return>({ type, input }: Pick<Failure, 'type' | 'input'>, fn: () => R
 | { type, input } | Pick&lt;[Failure](./types.failure.md)<!-- -->, 'type' \| 'input'&gt; |                               |
 | fn              | () =&gt; Return                                                      | the function that could throw |
 
-<b>Returns:</b>
+**Returns:**
 
 [Result](./types.result.md)<!-- -->&lt;Return&gt;

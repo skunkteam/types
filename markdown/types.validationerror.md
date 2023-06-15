@@ -6,15 +6,15 @@
 
 The error that is thrown on any validation- or parse-error within this library.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class ValidationError extends Error implements Failure
 ```
 
-<b>Extends:</b> Error
+**Extends:** Error
 
-<b>Implements:</b> [Failure](./types.failure.md)
+**Implements:** [Failure](./types.failure.md)
 
 ## Remarks
 
@@ -22,13 +22,13 @@ Is itself also a [Failure](./types.failure.md) and can be used as such in APIs.
 
 ## Properties
 
-| Property                                      | Modifiers | Type                                                                                                 | Description |
-| --------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------- | ----------- |
-| [details](./types.validationerror.details.md) |           | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; |             |
-| [input](./types.validationerror.input.md)     |           | unknown                                                                                              |             |
-| [name](./types.validationerror.name.md)       |           | (not declared)                                                                                       |             |
-| [ok](./types.validationerror.ok.md)           |           | (not declared)                                                                                       |             |
-| [type](./types.validationerror.type.md)       |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       |             |
+| Property                                      | Modifiers             | Type                                                                                                 | Description |
+| --------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------- | ----------- |
+| [details](./types.validationerror.details.md) |                       | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; |             |
+| [input](./types.validationerror.input.md)     |                       | unknown                                                                                              |             |
+| [name](./types.validationerror.name.md)       | <code>readonly</code> | (not declared)                                                                                       |             |
+| [ok](./types.validationerror.ok.md)           | <code>readonly</code> | (not declared)                                                                                       |             |
+| [type](./types.validationerror.type.md)       |                       | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       |             |
 
 ## Methods
 

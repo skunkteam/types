@@ -6,15 +6,15 @@
 
 The implementation behind types created with [object()](./types.object.md) and [partial()](./types.partial.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props>
 ```
 
-<b>Extends:</b> [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;ResultType&gt;
+**Extends:** [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;ResultType&gt;
 
-<b>Implements:</b> [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;Props&gt;
+**Implements:** [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;Props&gt;
 
 ## Constructors
 
@@ -24,23 +24,23 @@ export declare class InterfaceType<Props extends Properties, ResultType> extends
 
 ## Properties
 
-| Property                                                                  | Modifiers | Type                                                                                   | Description                                          |
-| ------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| [basicType](./types.interfacetype.basictype.md)                           |           | 'object'                                                                               |                                                      |
-| [isDefaultName](./types.interfacetype.isdefaultname.md)                   |           | boolean                                                                                |                                                      |
-| [keys](./types.interfacetype.keys.md)                                     |           | (keyof Props)\[\]                                                                      | The keys (property-names) for this object-like type. |
-| [name](./types.interfacetype.name.md)                                     |           | string                                                                                 |                                                      |
-| [options](./types.interfacetype.options.md)                               |           | [InterfaceTypeOptions](./types.interfacetypeoptions.md)                                |                                                      |
-| [possibleDiscriminators](./types.interfacetype.possiblediscriminators.md) |           | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\] |                                                      |
-| [props](./types.interfacetype.props.md)                                   |           | Props                                                                                  |                                                      |
-| [propsInfo](./types.interfacetype.propsinfo.md)                           |           | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt;                       |                                                      |
-| [typeConfig](./types.interfacetype.typeconfig.md)                         |           | undefined                                                                              |                                                      |
+| Property                                                                  | Modifiers             | Type                                                                                   | Description                                          |
+| ------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| [basicType](./types.interfacetype.basictype.md)                           | <code>readonly</code> | 'object'                                                                               |                                                      |
+| [isDefaultName](./types.interfacetype.isdefaultname.md)                   | <code>readonly</code> | boolean                                                                                |                                                      |
+| [keys](./types.interfacetype.keys.md)                                     | <code>readonly</code> | (keyof Props)\[\]                                                                      | The keys (property-names) for this object-like type. |
+| [name](./types.interfacetype.name.md)                                     | <code>readonly</code> | string                                                                                 |                                                      |
+| [options](./types.interfacetype.options.md)                               | <code>readonly</code> | [InterfaceTypeOptions](./types.interfacetypeoptions.md)                                |                                                      |
+| [possibleDiscriminators](./types.interfacetype.possiblediscriminators.md) | <code>readonly</code> | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\] |                                                      |
+| [props](./types.interfacetype.props.md)                                   | <code>readonly</code> | Props                                                                                  |                                                      |
+| [propsInfo](./types.interfacetype.propsinfo.md)                           | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt;                       |                                                      |
+| [typeConfig](./types.interfacetype.typeconfig.md)                         | <code>readonly</code> | undefined                                                                              |                                                      |
 
 ## Methods
 
-| Method                                                                  | Modifiers | Description                                                                                |
-| ----------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------ |
-| [accept(visitor)](./types.interfacetype.accept.md)                      |           |                                                                                            |
-| [toPartial(name)](./types.interfacetype.topartial.md)                   |           | Clone this type with all properties marked optional.                                       |
-| [typeValidator(input, options)](./types.interfacetype.typevalidator.md) |           |                                                                                            |
-| [withOptional(args)](./types.interfacetype.withoptional.md)             |           | Create a type with all properties of the current type, plus the given optional properties. |
+| Method                                                                  | Modifiers              | Description                                                                                |
+| ----------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------ |
+| [accept(visitor)](./types.interfacetype.accept.md)                      |                        |                                                                                            |
+| [toPartial(name)](./types.interfacetype.topartial.md)                   |                        | Clone this type with all properties marked optional.                                       |
+| [typeValidator(input, options)](./types.interfacetype.typevalidator.md) | <code>protected</code> |                                                                                            |
+| [withOptional(args)](./types.interfacetype.withoptional.md)             |                        | Create a type with all properties of the current type, plus the given optional properties. |

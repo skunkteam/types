@@ -21,7 +21,8 @@
         "pretty": true,
         "composite": true,
         "importsNotUsedAsValues": "error",
-        "extendedDiagnostics": true
+        "extendedDiagnostics": true,
+        "ignoreDeprecations": "5.0"
     },
     "include": [],
     "files": [],

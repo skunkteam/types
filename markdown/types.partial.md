@@ -6,7 +6,7 @@
 
 Create a type-validator that validates (or parses) an object structure with only optional properties.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function partial<Props extends Properties>(
@@ -20,7 +20,7 @@ export declare function partial<Props extends Properties>(
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | args      | \[props: Props\] \| \[name: string, props: Props\] \| \[options: Omit&lt;[InterfaceTypeOptions](./types.interfacetypeoptions.md)<!-- -->, 'partial'&gt;, props: Props\] | the optional name and (required) properties of the new type |
 
-<b>Returns:</b>
+**Returns:**
 
 [PartialType](./types.partialtype.md)<!-- -->&lt;Props&gt;
 

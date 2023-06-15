@@ -6,10 +6,10 @@
 
 The opposite of the built-in `Readonly<...>` type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Writable<T> = {
+export type Writable<T> = {
     -readonly [P in keyof T]: T[P];
 };
 ```

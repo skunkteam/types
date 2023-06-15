@@ -6,16 +6,16 @@
 
 Configuration of additional checks on array types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface ArrayTypeConfig extends LengthChecksConfig
 ```
 
-<b>Extends:</b> [LengthChecksConfig](./types.lengthchecksconfig.md)
+**Extends:** [LengthChecksConfig](./types.lengthchecksconfig.md)
 
 ## Properties
 
-| Property                                                   | Type                                                                                                                          | Description       |
-| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| [customMessage?](./types.arraytypeconfig.custommessage.md) | [CustomMessage](./types.custommessage.md)<!-- -->&lt;unknown\[\], [ArrayViolation](./types.arrayviolation.md)<!-- -->\[\]&gt; | <i>(Optional)</i> |
+| Property                                                   | Modifiers | Type                                                                                                                          | Description  |
+| ---------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| [customMessage?](./types.arraytypeconfig.custommessage.md) |           | [CustomMessage](./types.custommessage.md)<!-- -->&lt;unknown\[\], [ArrayViolation](./types.arrayviolation.md)<!-- -->\[\]&gt; | _(Optional)_ |

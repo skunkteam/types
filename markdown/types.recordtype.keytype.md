@@ -4,7 +4,7 @@
 
 ## RecordType.keyType property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly keyType: KeyTypeImpl;

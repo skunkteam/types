@@ -4,7 +4,7 @@
 
 ## valueof() function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function valueof<T extends Record<string, string>>(
@@ -18,6 +18,6 @@ export declare function valueof<T extends Record<string, string>>(
 | --------- | -------------------------------------- | ----------- |
 | args      | \[name: string, obj: T\] \| \[obj: T\] |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[KeyofType](./types.keyoftype.md)<!-- -->&lt;[Transposed](./types.transposed.md)<!-- -->&lt;T&gt;&gt;&gt;

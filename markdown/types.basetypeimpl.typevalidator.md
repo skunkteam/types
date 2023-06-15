@@ -6,7 +6,7 @@
 
 The actual validation-logic.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
@@ -19,6 +19,6 @@ protected abstract typeValidator(input: unknown, options: ValidationOptions): Re
 | input     | unknown                                           | the input value to be validated |
 | options   | [ValidationOptions](./types.validationoptions.md) | the current validation context  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Result](./types.result.md)<!-- -->&lt;ResultType&gt;

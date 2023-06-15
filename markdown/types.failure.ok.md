@@ -4,7 +4,7 @@
 
 ## Failure.ok property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 ok: false;

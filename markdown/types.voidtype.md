@@ -4,8 +4,8 @@
 
 ## voidType variable
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-voidType: TypeImpl<LiteralType<void>>
+voidType: TypeImpl<LiteralType<void>>;
 ```

@@ -6,7 +6,7 @@
 
 The set of valid literals if enumerable.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly enumerableLiteralDomain?: Iterable<LiteralValue>;

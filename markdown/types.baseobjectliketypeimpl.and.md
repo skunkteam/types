@@ -6,7 +6,7 @@
 
 Intersect this Type with another Type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 and<Other extends BaseObjectLikeTypeImpl<any, any>>(_other: Other): ObjectType<MergeIntersection<ResultType & Other[typeof designType]>> & TypedPropertyInformation<this['props'] & Other['props']>;
@@ -18,7 +18,7 @@ and<Other extends BaseObjectLikeTypeImpl<any, any>>(_other: Other): ObjectType<M
 | --------- | ----- | ----------- |
 | \_other   | Other |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [ObjectType](./types.objecttype.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Other\[typeof designType\]&gt;&gt; &amp; [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;this\['props'\] &amp; Other\['props'\]&gt;
 

@@ -4,7 +4,7 @@
 
 ## IntersectionType.accept() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 accept<R>(visitor: Visitor<R>): R;
@@ -16,6 +16,6 @@ accept<R>(visitor: Visitor<R>): R;
 | --------- | ---------------------------------------------- | ----------- |
 | visitor   | [Visitor](./types.visitor.md)<!-- -->&lt;R&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

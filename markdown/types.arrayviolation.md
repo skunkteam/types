@@ -6,10 +6,10 @@
 
 The supported additional checks on array types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type ArrayViolation = LengthViolation;
+export type ArrayViolation = LengthViolation;
 ```
 
-<b>References:</b> [LengthViolation](./types.lengthviolation.md)
+**References:** [LengthViolation](./types.lengthviolation.md)

@@ -6,13 +6,13 @@
 
 The base implementation for all object-like Types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> extends BaseTypeImpl<ResultType, TypeConfig>
 ```
 
-<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;
+**Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;
 
 ## Remarks
 
@@ -20,12 +20,12 @@ Object-like types need to provide more information to be able to correctly compo
 
 ## Properties
 
-| Property                                                                           | Modifiers | Type                                                                                            | Description |
-| ---------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- | ----------- |
-| [isDefaultName](./types.baseobjectliketypeimpl.isdefaultname.md)                   |           | boolean                                                                                         |             |
-| [possibleDiscriminators](./types.baseobjectliketypeimpl.possiblediscriminators.md) |           | Array&lt;{ path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }&gt; |             |
-| [props](./types.baseobjectliketypeimpl.props.md)                                   |           | [Properties](./types.properties.md)                                                             |             |
-| [propsInfo](./types.baseobjectliketypeimpl.propsinfo.md)                           |           | [PropertiesInfo](./types.propertiesinfo.md)                                                     |             |
+| Property                                                                           | Modifiers                                                | Type                                                                                            | Description |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------- |
+| [isDefaultName](./types.baseobjectliketypeimpl.isdefaultname.md)                   | <p><code>abstract</code></p><p><code>readonly</code></p> | boolean                                                                                         |             |
+| [possibleDiscriminators](./types.baseobjectliketypeimpl.possiblediscriminators.md) | <p><code>abstract</code></p><p><code>readonly</code></p> | Array&lt;{ path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }&gt; |             |
+| [props](./types.baseobjectliketypeimpl.props.md)                                   | <p><code>abstract</code></p><p><code>readonly</code></p> | [Properties](./types.properties.md)                                                             |             |
+| [propsInfo](./types.baseobjectliketypeimpl.propsinfo.md)                           | <p><code>abstract</code></p><p><code>readonly</code></p> | [PropertiesInfo](./types.propertiesinfo.md)                                                     |             |
 
 ## Methods
 

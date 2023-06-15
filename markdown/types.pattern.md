@@ -4,7 +4,7 @@
 
 ## pattern() function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function pattern<BrandName extends string>(
@@ -16,12 +16,12 @@ export declare function pattern<BrandName extends string>(
 
 ## Parameters
 
-| Parameter     | Type                                                                       | Description |
-| ------------- | -------------------------------------------------------------------------- | ----------- |
-| name          | BrandName                                                                  |             |
-| regExp        | RegExp                                                                     |             |
-| customMessage | [StringTypeConfig](./types.stringtypeconfig.md)<!-- -->\['customMessage'\] |             |
+| Parameter     | Type                                                                       | Description  |
+| ------------- | -------------------------------------------------------------------------- | ------------ |
+| name          | BrandName                                                                  |              |
+| regExp        | RegExp                                                                     |              |
+| customMessage | [StringTypeConfig](./types.stringtypeconfig.md)<!-- -->\['customMessage'\] | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 [Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;string, BrandName&gt;, [StringTypeConfig](./types.stringtypeconfig.md)<!-- -->&gt;

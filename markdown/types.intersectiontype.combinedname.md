@@ -4,7 +4,7 @@
 
 ## IntersectionType.combinedName property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly combinedName: string;

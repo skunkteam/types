@@ -6,10 +6,10 @@
 
 Properties of an object type, including per-property optionality.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type PropertiesInfo<Props extends Properties = Properties> = {
+export type PropertiesInfo<Props extends Properties = Properties> = {
     [Key in keyof Props]: {
         partial: boolean;
         type: Props[Key];
@@ -17,4 +17,4 @@ export declare type PropertiesInfo<Props extends Properties = Properties> = {
 };
 ```
 
-<b>References:</b> [Properties](./types.properties.md)
+**References:** [Properties](./types.properties.md)

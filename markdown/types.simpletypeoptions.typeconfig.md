@@ -4,7 +4,7 @@
 
 ## SimpleTypeOptions.typeConfig property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 typeConfig: BaseTypeImpl < ResultType, TypeConfig > ['typeConfig'];

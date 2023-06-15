@@ -37,9 +37,9 @@ const NumberRecord = record('NumberRecord', number, string.autoCast);
 
 test('NumberRecord examples', () => {
     expect(createExample(NumberRecord)).toMatchInlineSnapshot(`
-    Object {
-      "0.01": "xx",
-    }
+        {
+          "0.01": "xx",
+        }
     `);
 });
 
@@ -71,9 +71,9 @@ const IntRecord = record('IntRecord', int, string);
 
 test('IntRecord examples', () => {
     expect(createExample(IntRecord)).toMatchInlineSnapshot(`
-    Object {
-      "1": "xx",
-    }
+        {
+          "1": "xx",
+        }
     `);
 });
 
@@ -154,10 +154,10 @@ const NonStrictKeyofRecord = record('NonStrictKeyofRecord', keyof({ one: 1, two:
 
 test('NonStrictKeyofRecord examples', () => {
     expect(createExample(NonStrictKeyofRecord)).toMatchInlineSnapshot(`
-    Object {
-      "one": "mississippi",
-      "two": "mississippi",
-    }
+        {
+          "one": "mississippi",
+          "two": "mississippi",
+        }
     `);
 });
 

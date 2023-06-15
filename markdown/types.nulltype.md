@@ -4,8 +4,8 @@
 
 ## nullType variable
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-nullType: TypeImpl<LiteralType<null>>
+nullType: TypeImpl<LiteralType<null>>;
 ```

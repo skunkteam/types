@@ -6,7 +6,7 @@
 
 Optional pre-processing parser.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
@@ -19,6 +19,6 @@ protected typeParser?(input: unknown, options: ValidationOptions): Result<unknow
 | input     | unknown                                           | the input value to be validated |
 | options   | [ValidationOptions](./types.validationoptions.md) | the current validation context  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Result](./types.result.md)<!-- -->&lt;unknown&gt;

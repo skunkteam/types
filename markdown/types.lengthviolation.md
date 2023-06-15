@@ -4,8 +4,8 @@
 
 ## LengthViolation type
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type LengthViolation = 'minLength' | 'maxLength';
+export type LengthViolation = 'minLength' | 'maxLength';
 ```

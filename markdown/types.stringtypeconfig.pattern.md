@@ -4,7 +4,7 @@
 
 ## StringTypeConfig.pattern property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 pattern?: RegExp;

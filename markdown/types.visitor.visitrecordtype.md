@@ -4,7 +4,7 @@
 
 ## Visitor.visitRecordType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<unknown>, unknown>): R;
@@ -16,6 +16,6 @@ visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string,
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | type      | [RecordType](./types.recordtype.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;number \| string&gt;, number \| string, [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;, unknown&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

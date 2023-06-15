@@ -3,8 +3,10 @@
 const config = {
     preset: 'ts-jest',
     testEnvironment: 'node',
-    setupFilesAfterEnv: ['jest-extended'],
-    globals: { 'ts-jest': { tsconfig: '<rootDir>/tsconfig.test.json' } },
+    setupFilesAfterEnv: ['jest-extended/all'],
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.test.json' }],
+    },
     collectCoverage: true,
     collectCoverageFrom: ['src/**/*.ts', '!src/index.ts', '!src/testutils.ts'],
     restoreMocks: true,

@@ -6,8 +6,8 @@
 
 The supported types of literals.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type LiteralValue = string | number | boolean | null | undefined | void;
+export type LiteralValue = string | number | boolean | null | undefined | void;
 ```

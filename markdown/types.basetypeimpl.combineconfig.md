@@ -6,7 +6,7 @@
 
 Combine two config values into a new value.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected combineConfig(oldConfig: TypeConfig, newConfig: TypeConfig): TypeConfig;
@@ -19,7 +19,7 @@ protected combineConfig(oldConfig: TypeConfig, newConfig: TypeConfig): TypeConfi
 | oldConfig | TypeConfig | the current config of the base type |
 | newConfig | TypeConfig | the new provided config             |
 
-<b>Returns:</b>
+**Returns:**
 
 TypeConfig
 

@@ -4,7 +4,7 @@
 
 ## ValidationError.ok property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly ok = false;

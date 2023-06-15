@@ -6,10 +6,10 @@
 
 The result of a type validation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Result<T> = Success<T> | Failure;
+export type Result<T> = Success<T> | Failure;
 ```
 
-<b>References:</b> [Success](./types.success.md)<!-- -->, [Failure](./types.failure.md)
+**References:** [Success](./types.success.md)<!-- -->, [Failure](./types.failure.md)

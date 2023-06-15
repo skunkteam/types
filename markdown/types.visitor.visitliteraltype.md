@@ -4,7 +4,7 @@
 
 ## Visitor.visitLiteralType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitLiteralType(type: LiteralType<LiteralValue>): R;
@@ -16,6 +16,6 @@ visitLiteralType(type: LiteralType<LiteralValue>): R;
 | --------- | ---------------------------------------------------------------------------------------------------- | ----------- |
 | type      | [LiteralType](./types.literaltype.md)<!-- -->&lt;[LiteralValue](./types.literalvalue.md)<!-- -->&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

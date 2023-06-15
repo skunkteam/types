@@ -6,15 +6,15 @@
 
 Create a Branded type with a given `BrandName`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Branded<T, BrandName extends string> = T extends WithBrands<infer Base, infer ExistingBrands>
+export type Branded<T, BrandName extends string> = T extends WithBrands<infer Base, infer ExistingBrands>
     ? WithBrands<Base, BrandName | ExistingBrands>
     : WithBrands<T, BrandName>;
 ```
 
-<b>References:</b> [WithBrands](./types.withbrands.md)
+**References:** [WithBrands](./types.withbrands.md)
 
 ## Remarks
 

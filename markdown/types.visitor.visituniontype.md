@@ -4,7 +4,7 @@
 
 ## Visitor.visitUnionType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown>>, unknown>): R;
@@ -16,6 +16,6 @@ visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown>>, unknown>): R;
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | type      | [UnionType](./types.uniontype.md)<!-- -->&lt;[OneOrMore](./types.oneormore.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;&gt;, unknown&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

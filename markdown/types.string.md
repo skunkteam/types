@@ -6,8 +6,8 @@
 
 Built-in validator for string-values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-string: Type<string, StringTypeConfig>
+string: Type<string, StringTypeConfig>;
 ```

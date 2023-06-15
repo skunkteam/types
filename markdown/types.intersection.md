@@ -6,7 +6,7 @@
 
 Intersect the given types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function intersection<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>(
@@ -20,6 +20,6 @@ export declare function intersection<Types extends OneOrMore<BaseObjectLikeTypeI
 | --------- | -------------------------------------------------- | -------------------------------------------- |
 | args      | \[name: string, types: Types\] \| \[types: Types\] | the optional name and all types to intersect |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[IntersectionType](./types.intersectiontype.md)<!-- -->&lt;Types&gt;&gt;

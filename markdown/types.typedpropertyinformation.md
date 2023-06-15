@@ -6,7 +6,7 @@
 
 Interface that provides more detailed type-information about the `props` and `propsInfo` properties of the validator.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface TypedPropertyInformation<Props extends Properties>
@@ -14,7 +14,7 @@ export interface TypedPropertyInformation<Props extends Properties>
 
 ## Properties
 
-| Property                                                   | Type                                                             | Description |
-| ---------------------------------------------------------- | ---------------------------------------------------------------- | ----------- |
-| [props](./types.typedpropertyinformation.props.md)         | Props                                                            |             |
-| [propsInfo](./types.typedpropertyinformation.propsinfo.md) | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt; |             |
+| Property                                                   | Modifiers             | Type                                                             | Description |
+| ---------------------------------------------------------- | --------------------- | ---------------------------------------------------------------- | ----------- |
+| [props](./types.typedpropertyinformation.props.md)         | <code>readonly</code> | Props                                                            |             |
+| [propsInfo](./types.typedpropertyinformation.propsinfo.md) | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt; |             |

@@ -4,7 +4,7 @@
 
 ## IntersectionType.props property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly props: PropertiesOfTypeTuple<Types>;

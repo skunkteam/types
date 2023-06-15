@@ -4,12 +4,12 @@
 
 ## BaseTypeImpl.createAutoCastAllType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected createAutoCastAllType(): this;
 ```
 
-<b>Returns:</b>
+**Returns:**
 
 this

@@ -21,5 +21,13 @@ const config = {
         '@typescript-eslint/no-unused-vars': 'off',
         'import/extensions': ['error', 'ignorePackages'],
     },
+    overrides: [
+        {
+            files: ['*.test.ts'],
+            rules: {
+                '@typescript-eslint/no-unsafe-argument': 'off',
+            },
+        },
+    ],
 };
 module.exports = config;

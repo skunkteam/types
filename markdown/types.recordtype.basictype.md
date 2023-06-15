@@ -4,7 +4,7 @@
 
 ## RecordType.basicType property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly basicType: 'object';

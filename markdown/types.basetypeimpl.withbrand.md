@@ -6,7 +6,7 @@
 
 Create a new instance of this Type with the given name.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
@@ -18,7 +18,7 @@ withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, B
 | --------- | --------- | ------------------------------------- |
 | name      | BrandName | the new name to use in error messages |
 
-<b>Returns:</b>
+**Returns:**
 
 [Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;ResultType, BrandName&gt;, TypeConfig&gt;
 

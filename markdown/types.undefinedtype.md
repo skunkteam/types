@@ -4,8 +4,8 @@
 
 ## undefinedType variable
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-undefinedType: TypeImpl<LiteralType<undefined>>
+undefinedType: TypeImpl<LiteralType<undefined>>;
 ```

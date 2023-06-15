@@ -6,10 +6,10 @@
 
 The validation-logic as needed by [BaseTypeImpl.withConstraint()](./types.basetypeimpl.withconstraint.md) and [BaseTypeImpl.withValidation()](./types.basetypeimpl.withvalidation.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;
+export type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;
 ```
 
-<b>References:</b> [ValidationOptions](./types.validationoptions.md)<!-- -->, [ValidationResult](./types.validationresult.md)
+**References:** [ValidationOptions](./types.validationoptions.md)<!-- -->, [ValidationResult](./types.validationresult.md)

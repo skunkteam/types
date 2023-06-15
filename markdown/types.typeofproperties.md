@@ -6,12 +6,12 @@
 
 Translates the type of a Properties-object into the proper TypeScript type to be used in user-code.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type TypeOfProperties<T extends Properties> = {
+export type TypeOfProperties<T extends Properties> = {
     [P in keyof T]: MergeIntersection<TypeOf<T[P]>>;
 };
 ```
 
-<b>References:</b> [Properties](./types.properties.md)<!-- -->, [MergeIntersection](./types.mergeintersection.md)<!-- -->, [TypeOf](./types.typeof.md)
+**References:** [Properties](./types.properties.md)<!-- -->, [MergeIntersection](./types.mergeintersection.md)<!-- -->, [TypeOf](./types.typeof.md)

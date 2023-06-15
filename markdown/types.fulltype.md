@@ -4,10 +4,10 @@
 
 ## FullType type
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
+export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
 ```
 
-<b>References:</b> [Properties](./types.properties.md)<!-- -->, [TypeImpl](./types.typeimpl.md)<!-- -->, [InterfaceType](./types.interfacetype.md)<!-- -->, [TypeOfProperties](./types.typeofproperties.md)<!-- -->, [Writable](./types.writable.md)
+**References:** [Properties](./types.properties.md)<!-- -->, [TypeImpl](./types.typeimpl.md)<!-- -->, [InterfaceType](./types.interfacetype.md)<!-- -->, [TypeOfProperties](./types.typeofproperties.md)<!-- -->, [Writable](./types.writable.md)

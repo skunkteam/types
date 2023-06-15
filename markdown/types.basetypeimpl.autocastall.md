@@ -6,7 +6,7 @@
 
 Create a recursive autocasting version of the current type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get autoCastAll(): this;

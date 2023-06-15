@@ -6,8 +6,8 @@
 
 The supported additional checks on numeric types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type NumberViolation = 'min' | 'max' | 'multipleOf';
+export type NumberViolation = 'min' | 'max' | 'multipleOf';
 ```

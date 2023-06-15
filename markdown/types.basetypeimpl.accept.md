@@ -6,7 +6,7 @@
 
 Accept a visitor (visitor pattern).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 abstract accept<R>(visitor: Visitor<R>): R;
@@ -18,7 +18,7 @@ abstract accept<R>(visitor: Visitor<R>): R;
 | --------- | ---------------------------------------------- | --------------------- |
 | visitor   | [Visitor](./types.visitor.md)<!-- -->&lt;R&gt; | the visitor to accept |
 
-<b>Returns:</b>
+**Returns:**
 
 R
 

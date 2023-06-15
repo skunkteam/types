@@ -6,16 +6,16 @@
 
 The Type with the given type implementation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
+export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
     new (input: unknown): TypeOf<Impl>;
     (input: unknown): TypeOf<Impl>;
 };
 ```
 
-<b>References:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->, [TypeOf](./types.typeof.md)
+**References:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->, [TypeOf](./types.typeof.md)
 
 ## Remarks
 

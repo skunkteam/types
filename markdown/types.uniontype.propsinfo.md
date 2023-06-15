@@ -4,7 +4,7 @@
 
 ## UnionType.propsInfo property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly propsInfo: PropertiesInfo<Properties>;

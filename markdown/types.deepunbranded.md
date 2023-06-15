@@ -6,10 +6,10 @@
 
 Unbrand a given type (recursive).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
+export type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
     ? {
           [P in keyof T & number]: DeepUnbranded<T[P]>;
       }
@@ -23,4 +23,4 @@ export declare type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
     : Unbranded<T>;
 ```
 
-<b>References:</b> [DeepUnbranded](./types.deepunbranded.md)<!-- -->, [Unbranded](./types.unbranded.md)
+**References:** [DeepUnbranded](./types.deepunbranded.md)<!-- -->, [Unbranded](./types.unbranded.md)

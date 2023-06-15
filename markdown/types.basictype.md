@@ -6,20 +6,10 @@
 
 Basic categories of types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type BasicType =
-    | 'string'
-    | 'number'
-    | 'bigint'
-    | 'boolean'
-    | 'function'
-    | 'object'
-    | 'array'
-    | 'symbol'
-    | 'undefined'
-    | 'null';
+export type BasicType = 'string' | 'number' | 'bigint' | 'boolean' | 'function' | 'object' | 'array' | 'symbol' | 'undefined' | 'null';
 ```
 
 ## Remarks

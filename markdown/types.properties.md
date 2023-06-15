@@ -6,13 +6,13 @@
 
 The properties of an object type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Properties = Record<string, Type<unknown>>;
+export type Properties = Record<string, Type<unknown>>;
 ```
 
-<b>References:</b> [Type](./types.type.md)
+**References:** [Type](./types.type.md)
 
 ## Remarks
 

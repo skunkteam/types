@@ -4,7 +4,7 @@
 
 ## ValidationError.details property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 details: OneOrMore<FailureDetails>;

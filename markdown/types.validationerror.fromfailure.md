@@ -6,7 +6,7 @@
 
 Creates a ValidationError with a human-readable error-report based on the given [Failure](./types.failure.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static fromFailure(failure: Failure): ValidationError;
@@ -18,6 +18,6 @@ static fromFailure(failure: Failure): ValidationError;
 | --------- | ----------------------------- | -------------------- |
 | failure   | [Failure](./types.failure.md) | the failure to throw |
 
-<b>Returns:</b>
+**Returns:**
 
 [ValidationError](./types.validationerror.md)

@@ -117,16 +117,16 @@ const ObjectUnion = union([object({ tag: literal('a'), a: string }), object({ ta
 
 test('ObjectUnion examples', () => {
     expect(createExample(ObjectUnion, 1)).toMatchInlineSnapshot(`
-    Object {
-      "b": 0.03,
-      "tag": "b",
-    }
+        {
+          "b": 0.03,
+          "tag": "b",
+        }
     `);
     expect(createExample(ObjectUnion, 2)).toMatchInlineSnapshot(`
-    Object {
-      "a": "xxx",
-      "tag": "a",
-    }
+        {
+          "a": "xxx",
+          "tag": "a",
+        }
     `);
 });
 
@@ -177,23 +177,23 @@ const NetworkState = union('NetworkState', [
 
 test('NetworkState examples', () => {
     expect(createExample(NetworkState, 1)).toMatchInlineSnapshot(`
-    Object {
-      "code": 300,
-      "state": "failed",
-    }
+        {
+          "code": 300,
+          "state": "failed",
+        }
     `);
     expect(createExample(NetworkState, 2)).toMatchInlineSnapshot(`
-    Object {
-      "response": Object {
-        "unknown": "record",
-      },
-      "state": "success",
-    }
+        {
+          "response": {
+            "unknown": "record",
+          },
+          "state": "success",
+        }
     `);
     expect(createExample(NetworkState, 3)).toMatchInlineSnapshot(`
-    Object {
-      "state": "loading",
-    }
+        {
+          "state": "loading",
+        }
     `);
 });
 

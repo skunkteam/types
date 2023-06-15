@@ -6,7 +6,7 @@
 
 Extra information that is made available by this Type for runtime analysis.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 abstract readonly typeConfig: TypeConfig;

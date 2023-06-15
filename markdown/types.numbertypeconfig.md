@@ -6,10 +6,10 @@
 
 Configuration of additional checks on numeric types.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type NumberTypeConfig = {
+export type NumberTypeConfig = {
     multipleOf?: number;
     customMessage?: CustomMessage<number, NumberViolation[]> | Partial<Record<NumberViolation, CustomMessage<number, NumberViolation>>>;
 } & (
@@ -34,4 +34,4 @@ export declare type NumberTypeConfig = {
     );
 ```
 
-<b>References:</b> [CustomMessage](./types.custommessage.md)<!-- -->, [NumberViolation](./types.numberviolation.md)
+**References:** [CustomMessage](./types.custommessage.md)<!-- -->, [NumberViolation](./types.numberviolation.md)

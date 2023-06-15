@@ -6,7 +6,7 @@
 
 Create a new instance of this Type with the given name.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withName(name: string): this;
@@ -18,7 +18,7 @@ withName(name: string): this;
 | --------- | ------ | ------------------------------------- |
 | name      | string | the new name to use in error messages |
 
-<b>Returns:</b>
+**Returns:**
 
 this
 
