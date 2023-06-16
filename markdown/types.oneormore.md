@@ -6,8 +6,8 @@
 
 An Array with at least one element.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type OneOrMore<T> = [T, ...T[]];
+export type OneOrMore<T> = [T, ...T[]];
 ```

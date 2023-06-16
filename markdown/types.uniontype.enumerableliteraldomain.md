@@ -4,7 +4,7 @@
 
 ## UnionType.enumerableLiteralDomain property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly enumerableLiteralDomain: Set<LiteralValue> | undefined;

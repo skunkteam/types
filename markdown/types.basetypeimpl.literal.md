@@ -6,7 +6,7 @@
 
 Calls any registered parsers or auto-caster, verifies that the resulting value conforms to this Type and returns it if it does.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 literal(input: DeepUnbranded<ResultType>): ResultType;
@@ -18,7 +18,7 @@ literal(input: DeepUnbranded<ResultType>): ResultType;
 | --------- | ------------------------------------------------------------------- | ------------------------------------- |
 | input     | [DeepUnbranded](./types.deepunbranded.md)<!-- -->&lt;ResultType&gt; | the input value to parse and validate |
 
-<b>Returns:</b>
+**Returns:**
 
 ResultType
 

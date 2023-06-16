@@ -4,7 +4,7 @@
 
 ## Visitor.visitBooleanType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitBooleanType(type: BaseTypeImpl<boolean>): R;
@@ -16,6 +16,6 @@ visitBooleanType(type: BaseTypeImpl<boolean>): R;
 | --------- | -------------------------------------------------------------- | ----------- |
 | type      | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;boolean&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

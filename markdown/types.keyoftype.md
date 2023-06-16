@@ -6,13 +6,13 @@
 
 The implementation behind types created with [keyof()](./types.keyof.md) and [valueof()](./types.valueof.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType>
 ```
 
-<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;
+**Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;
 
 ## Constructors
 
@@ -22,18 +22,18 @@ export declare class KeyofType<T extends Record<string, unknown>, ResultType ext
 
 ## Properties
 
-| Property                                                                | Modifiers | Type       | Description |
-| ----------------------------------------------------------------------- | --------- | ---------- | ----------- |
-| [basicType](./types.keyoftype.basictype.md)                             |           | 'string'   |             |
-| [enumerableLiteralDomain](./types.keyoftype.enumerableliteraldomain.md) |           | string\[\] |             |
-| [keys](./types.keyoftype.keys.md)                                       |           | T          |             |
-| [name](./types.keyoftype.name.md)                                       |           | string     |             |
-| [typeConfig](./types.keyoftype.typeconfig.md)                           |           | undefined  |             |
+| Property                                                                | Modifiers             | Type       | Description |
+| ----------------------------------------------------------------------- | --------------------- | ---------- | ----------- |
+| [basicType](./types.keyoftype.basictype.md)                             | <code>readonly</code> | 'string'   |             |
+| [enumerableLiteralDomain](./types.keyoftype.enumerableliteraldomain.md) | <code>readonly</code> | string\[\] |             |
+| [keys](./types.keyoftype.keys.md)                                       | <code>readonly</code> | T          |             |
+| [name](./types.keyoftype.name.md)                                       | <code>readonly</code> | string     |             |
+| [typeConfig](./types.keyoftype.typeconfig.md)                           | <code>readonly</code> | undefined  |             |
 
 ## Methods
 
-| Method                                                     | Modifiers | Description |
-| ---------------------------------------------------------- | --------- | ----------- |
-| [accept(visitor)](./types.keyoftype.accept.md)             |           |             |
-| [translate(input)](./types.keyoftype.translate.md)         |           |             |
-| [typeValidator(input)](./types.keyoftype.typevalidator.md) |           |             |
+| Method                                                     | Modifiers              | Description |
+| ---------------------------------------------------------- | ---------------------- | ----------- |
+| [accept(visitor)](./types.keyoftype.accept.md)             |                        |             |
+| [translate(input)](./types.keyoftype.translate.md)         |                        |             |
+| [typeValidator(input)](./types.keyoftype.typevalidator.md) | <code>protected</code> |             |

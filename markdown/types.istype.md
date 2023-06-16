@@ -6,7 +6,7 @@
 
 Type-guard that asserts that a given value is a Type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function isType(value: unknown): value is Type<unknown>;
@@ -18,6 +18,6 @@ export declare function isType(value: unknown): value is Type<unknown>;
 | --------- | ------- | ----------- |
 | value     | unknown |             |
 
-<b>Returns:</b>
+**Returns:**
 
 value is [Type](./types.type.md)<!-- -->&lt;unknown&gt;

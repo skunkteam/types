@@ -6,7 +6,7 @@
 
 Create a Type from the given type-implementation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function createType<Impl extends BaseTypeImpl<any, any>>(
@@ -17,12 +17,12 @@ export declare function createType<Impl extends BaseTypeImpl<any, any>>(
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                      | Description                                   |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| impl      | Impl                                                                                                                                                      | the type-implementation                       |
-| override  | Partial&lt;Record&lt;keyof [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;any, any&gt; \| 'typeValidator' \| 'typeParser', PropertyDescriptor&gt;&gt; | override certain settings of the created type |
+| Parameter | Type                                                                                                                                                      | Description                                                |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| impl      | Impl                                                                                                                                                      | the type-implementation                                    |
+| override  | Partial&lt;Record&lt;keyof [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;any, any&gt; \| 'typeValidator' \| 'typeParser', PropertyDescriptor&gt;&gt; | _(Optional)_ override certain settings of the created type |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;Impl&gt;
 

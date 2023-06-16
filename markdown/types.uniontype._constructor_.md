@@ -6,7 +6,7 @@
 
 Constructs a new instance of the `UnionType` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(types: Types, name?: string);
@@ -14,7 +14,7 @@ constructor(types: Types, name?: string);
 
 ## Parameters
 
-| Parameter | Type   | Description |
-| --------- | ------ | ----------- |
-| types     | Types  |             |
-| name      | string |             |
+| Parameter | Type   | Description  |
+| --------- | ------ | ------------ |
+| types     | Types  |              |
+| name      | string | _(Optional)_ |

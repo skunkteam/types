@@ -4,7 +4,7 @@
 
 ## InterfaceType.props property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly props: Props;

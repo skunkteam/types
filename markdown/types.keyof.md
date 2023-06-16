@@ -4,7 +4,7 @@
 
 ## keyof() function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function keyof<T extends Record<string, unknown>>(...args: [name: string, keys: T] | [keys: T]): TypeImpl<KeyofType<T>>;
@@ -16,6 +16,6 @@ export declare function keyof<T extends Record<string, unknown>>(...args: [name:
 | --------- | ---------------------------------------- | ----------- |
 | args      | \[name: string, keys: T\] \| \[keys: T\] |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[KeyofType](./types.keyoftype.md)<!-- -->&lt;T&gt;&gt;

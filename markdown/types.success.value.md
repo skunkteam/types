@@ -6,7 +6,7 @@
 
 The original value, cast or parsed to its validated type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 value: T;

@@ -6,7 +6,7 @@
 
 Extend the Type with additional static methods and properties.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 extendWith<E>(factory: (type: this) => E): this & E;
@@ -18,7 +18,7 @@ extendWith<E>(factory: (type: this) => E): this & E;
 | --------- | -------------------- | ----------- |
 | factory   | (type: this) =&gt; E |             |
 
-<b>Returns:</b>
+**Returns:**
 
 this &amp; E
 

@@ -6,7 +6,7 @@
 
 The same type, but with an auto-casting default parser installed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get autoCast(): this;

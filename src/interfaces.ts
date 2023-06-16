@@ -293,7 +293,8 @@ export type BasicType = 'string' | 'number' | 'bigint' | 'boolean' | 'function' 
 /**
  * Merge an intersection of types into one type, mostly for tooltip-readability in IDEs.
  */
-export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? { [P in keyof T]: MergeIntersection<T[P]> } : T;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? { [P in keyof T]: T[P] } & {} : T;
 
 /**
  * An Array with at least one element.

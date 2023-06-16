@@ -6,7 +6,7 @@
 
 Create a simple (limited) type implementation with type config.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static create<ResultType, TypeConfig>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType, TypeConfig>) => ValidationResult, options: SimpleTypeOptions<ResultType, TypeConfig>): Type<ResultType, TypeConfig>;
@@ -21,6 +21,6 @@ static create<ResultType, TypeConfig>(name: string, basicType: BasicType | 'mixe
 | simpleValidator | (input: unknown, options: [ValidationOptions](./types.validationoptions.md)<!-- -->, type: [SimpleType](./types.simpletype.md)<!-- -->&lt;ResultType, TypeConfig&gt;) =&gt; [ValidationResult](./types.validationresult.md) | validation logic                       |
 | options         | [SimpleTypeOptions](./types.simpletypeoptions.md)<!-- -->&lt;ResultType, TypeConfig&gt;                                                                                                                                     | some optional features of BaseTypeImpl |
 
-<b>Returns:</b>
+**Returns:**
 
 [Type](./types.type.md)<!-- -->&lt;ResultType, TypeConfig&gt;

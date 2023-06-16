@@ -6,7 +6,7 @@
 
 The name of the Type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 abstract readonly name: string;

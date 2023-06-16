@@ -4,8 +4,8 @@
 
 ## Transposed type
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Transposed<T extends Record<string, string>> = Record<T[keyof T], keyof T>;
+export type Transposed<T extends Record<string, string>> = Record<T[keyof T], keyof T>;
 ```

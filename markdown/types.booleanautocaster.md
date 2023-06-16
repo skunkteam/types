@@ -4,7 +4,7 @@
 
 ## booleanAutoCaster() function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure;
@@ -16,6 +16,6 @@ export declare function booleanAutoCaster(input: unknown): boolean | typeof auto
 | --------- | ------- | ----------- |
 | input     | unknown |             |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean \| typeof autoCastFailure

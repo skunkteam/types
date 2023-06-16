@@ -6,7 +6,7 @@
 
 Constructs a new instance of the `ArrayType` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(elementType: ElementType, typeConfig: ArrayTypeConfig, name?: string);
@@ -14,8 +14,8 @@ constructor(elementType: ElementType, typeConfig: ArrayTypeConfig, name?: string
 
 ## Parameters
 
-| Parameter   | Type                                          | Description |
-| ----------- | --------------------------------------------- | ----------- |
-| elementType | ElementType                                   |             |
-| typeConfig  | [ArrayTypeConfig](./types.arraytypeconfig.md) |             |
-| name        | string                                        |             |
+| Parameter   | Type                                          | Description  |
+| ----------- | --------------------------------------------- | ------------ |
+| elementType | ElementType                                   |              |
+| typeConfig  | [ArrayTypeConfig](./types.arraytypeconfig.md) |              |
+| name        | string                                        | _(Optional)_ |

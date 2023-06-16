@@ -6,10 +6,10 @@
 
 Individual message details with optional info about the performed validation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type MessageDetails = Partial<ValidationDetails> & {
+export type MessageDetails = Partial<ValidationDetails> & {
     path?: PropertyKey[];
     context?: string;
     omitInput?: boolean;
@@ -60,4 +60,4 @@ export declare type MessageDetails = Partial<ValidationDetails> & {
     );
 ```
 
-<b>References:</b> [ValidationDetails](./types.validationdetails.md)<!-- -->, [Failure](./types.failure.md)<!-- -->, [LiteralValue](./types.literalvalue.md)<!-- -->, [BasicType](./types.basictype.md)<!-- -->, [LengthViolation](./types.lengthviolation.md)<!-- -->, [LengthChecksConfig](./types.lengthchecksconfig.md)<!-- -->, [NumberViolation](./types.numberviolation.md)<!-- -->, [NumberTypeConfig](./types.numbertypeconfig.md)<!-- -->, [StringTypeConfig](./types.stringtypeconfig.md)
+**References:** [ValidationDetails](./types.validationdetails.md)<!-- -->, [Failure](./types.failure.md)<!-- -->, [LiteralValue](./types.literalvalue.md)<!-- -->, [BasicType](./types.basictype.md)<!-- -->, [LengthViolation](./types.lengthviolation.md)<!-- -->, [LengthChecksConfig](./types.lengthchecksconfig.md)<!-- -->, [NumberViolation](./types.numberviolation.md)<!-- -->, [NumberTypeConfig](./types.numbertypeconfig.md)<!-- -->, [StringTypeConfig](./types.stringtypeconfig.md)

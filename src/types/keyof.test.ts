@@ -1,6 +1,5 @@
 import type { The } from '../interfaces.js';
-import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
-import { ValidationError } from '../validation-error.js';
+import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes, ValidationErrorForTest } from '../testutils.js';
 import { keyof, valueof } from './keyof.js';
 import { literal } from './literal.js';
 import { union } from './union.js';
@@ -60,7 +59,7 @@ describe(keyof, () => {
         ${'huh?'}  | ${Error('error in [YourAnswer]: expected one of the literals "yes", "maybe" or "no", got: "huh?"')}
     `('#translate($input) -> $output', ({ input, output }) => {
         if (output instanceof Error) {
-            expect(() => YourAnswer.translate(input)).toThrowWithMessage(ValidationError, output.message);
+            expect(() => YourAnswer.translate(input)).toThrowWithMessage(ValidationErrorForTest, output.message);
         } else {
             expect(YourAnswer.translate(input)).toBe(output);
         }

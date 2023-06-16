@@ -6,10 +6,10 @@
 
 Obtains the TypeScript type of the given runtime Type-checker. Aka [The](./types.the.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type TypeOf<T> = T extends {
+export type TypeOf<T> = T extends {
     readonly [designType]: infer Q;
 }
     ? Q

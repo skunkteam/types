@@ -4,7 +4,7 @@
 
 ## SimpleTypeOptions.combineConfig property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 combineConfig?: BaseTypeImpl<ResultType, TypeConfig>['combineConfig'];

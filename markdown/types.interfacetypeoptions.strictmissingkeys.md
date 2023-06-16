@@ -6,7 +6,7 @@
 
 Discriminate between missing keys and undefined values. Is off by default because that is what TypeScript does.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 strictMissingKeys?: boolean;

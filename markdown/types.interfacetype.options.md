@@ -4,7 +4,7 @@
 
 ## InterfaceType.options property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly options: InterfaceTypeOptions;

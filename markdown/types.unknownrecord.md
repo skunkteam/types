@@ -6,10 +6,10 @@
 
 Built-in validator that accepts all objects (`null` is not accepted).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-unknownRecord: Type<unknownRecord>
+unknownRecord: Type<unknownRecord>;
 ```
 
 ## Remarks

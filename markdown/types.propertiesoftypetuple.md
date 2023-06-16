@@ -4,10 +4,10 @@
 
 ## PropertiesOfTypeTuple type
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type PropertiesOfTypeTuple<Tuple> = Tuple extends [
+export type PropertiesOfTypeTuple<Tuple> = Tuple extends [
     {
         readonly props: infer A;
     },
@@ -17,10 +17,10 @@ export declare type PropertiesOfTypeTuple<Tuple> = Tuple extends [
           {
               readonly props: infer A;
           },
-          ...infer Rest
+          ...infer Rest,
       ]
     ? MergeIntersection<A & PropertiesOfTypeTuple<Rest>>
     : Properties;
 ```
 
-<b>References:</b> [MergeIntersection](./types.mergeintersection.md)<!-- -->, [PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->, [Properties](./types.properties.md)
+**References:** [MergeIntersection](./types.mergeintersection.md)<!-- -->, [PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)<!-- -->, [Properties](./types.properties.md)

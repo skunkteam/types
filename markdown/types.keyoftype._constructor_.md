@@ -6,7 +6,7 @@
 
 Constructs a new instance of the `KeyofType` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(keys: T, name?: string);
@@ -14,7 +14,7 @@ constructor(keys: T, name?: string);
 
 ## Parameters
 
-| Parameter | Type   | Description |
-| --------- | ------ | ----------- |
-| keys      | T      |             |
-| name      | string |             |
+| Parameter | Type   | Description  |
+| --------- | ------ | ------------ |
+| keys      | T      |              |
+| name      | string | _(Optional)_ |

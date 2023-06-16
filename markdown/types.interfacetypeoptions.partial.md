@@ -6,7 +6,7 @@
 
 Mark all properties as optional in this type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 partial?: boolean;

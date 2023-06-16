@@ -4,7 +4,7 @@
 
 ## RecordType.strict property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly strict: boolean;

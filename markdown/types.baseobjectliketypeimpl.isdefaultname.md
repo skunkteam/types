@@ -4,7 +4,7 @@
 
 ## BaseObjectLikeTypeImpl.isDefaultName property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 abstract readonly isDefaultName: boolean;

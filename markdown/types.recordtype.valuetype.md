@@ -4,7 +4,7 @@
 
 ## RecordType.valueType property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly valueType: ValueTypeImpl;

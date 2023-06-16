@@ -4,7 +4,7 @@
 
 ## SimpleTypeOptions.enumerableLiteralDomain property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 enumerableLiteralDomain?: BaseTypeImpl<ResultType, TypeConfig>['enumerableLiteralDomain'];

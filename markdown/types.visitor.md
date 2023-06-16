@@ -6,7 +6,7 @@
 
 Interface for a visitor that is accepted by all types (classic visitor-pattern).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Visitor<R>

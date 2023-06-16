@@ -4,8 +4,8 @@
 
 ## number variable
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-number: Type<number, NumberTypeConfig>
+number: Type<number, NumberTypeConfig>;
 ```

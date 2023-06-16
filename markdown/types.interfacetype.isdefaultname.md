@@ -4,7 +4,7 @@
 
 ## InterfaceType.isDefaultName property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly isDefaultName: boolean;

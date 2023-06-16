@@ -4,7 +4,7 @@
 
 ## Visitor.visitKeyofType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
@@ -16,6 +16,6 @@ visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
 | --------- | ---------------------------------------------------------------------------- | ----------- |
 | type      | [KeyofType](./types.keyoftype.md)<!-- -->&lt;Record&lt;any, any&gt;, any&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

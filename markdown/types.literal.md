@@ -4,7 +4,7 @@
 
 ## literal() function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>>;
@@ -16,6 +16,6 @@ export declare function literal<T extends LiteralValue>(value: T): TypeImpl<Lite
 | --------- | ---- | ----------- |
 | value     | T    |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[LiteralType](./types.literaltype.md)<!-- -->&lt;T&gt;&gt;

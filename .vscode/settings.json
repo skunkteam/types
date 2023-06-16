@@ -9,5 +9,10 @@
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "files.associations": { "*.json": "jsonc" },
     "javascript.preferences.importModuleSpecifierEnding": "js",
-    "typescript.preferences.importModuleSpecifierEnding": "js"
+    "typescript.preferences.importModuleSpecifierEnding": "js",
+    "files.readonlyInclude": {
+        "etc/**/*": true,
+        "markdown/**/*": true,
+        "node_modules/**/*": true
+    }
 }

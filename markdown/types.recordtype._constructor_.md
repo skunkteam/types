@@ -6,7 +6,7 @@
 
 Constructs a new instance of the `RecordType` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(keyType: KeyTypeImpl, valueType: ValueTypeImpl, name?: string, strict?: boolean);
@@ -14,9 +14,9 @@ constructor(keyType: KeyTypeImpl, valueType: ValueTypeImpl, name?: string, stric
 
 ## Parameters
 
-| Parameter | Type          | Description |
-| --------- | ------------- | ----------- |
-| keyType   | KeyTypeImpl   |             |
-| valueType | ValueTypeImpl |             |
-| name      | string        |             |
-| strict    | boolean       |             |
+| Parameter | Type          | Description  |
+| --------- | ------------- | ------------ |
+| keyType   | KeyTypeImpl   |              |
+| valueType | ValueTypeImpl |              |
+| name      | string        | _(Optional)_ |
+| strict    | boolean       | _(Optional)_ |

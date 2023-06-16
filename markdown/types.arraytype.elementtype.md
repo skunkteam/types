@@ -4,7 +4,7 @@
 
 ## ArrayType.elementType property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly elementType: ElementType;

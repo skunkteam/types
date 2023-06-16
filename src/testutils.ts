@@ -59,7 +59,10 @@ export function testTypeImpl({
 
         invalidValues &&
             test.each(invalidValues)('does not accept: %p', (value, message) => {
-                expect(() => type.check(value)).toThrowWithMessage(ValidationError, Array.isArray(message) ? message.join('\n') : message);
+                expect(() => type.check(value)).toThrowWithMessage(
+                    ValidationErrorForTest,
+                    Array.isArray(message) ? message.join('\n') : message,
+                );
                 expect(type.is(value)).toBeFalse();
             });
 
@@ -73,10 +76,13 @@ export function testTypeImpl({
 
         invalidConversions &&
             test.each(invalidConversions)('will not convert: %p', (value, message) => {
-                expect(() => type(value)).toThrowWithMessage(ValidationError, Array.isArray(message) ? message.join('\n') : message);
+                expect(() => type(value)).toThrowWithMessage(ValidationErrorForTest, Array.isArray(message) ? message.join('\n') : message);
             });
     }
 }
+
+/** Just `ValidationError`, but with public constructor, so it can be passed to `toThrowWithMessage`. */
+export const ValidationErrorForTest = ValidationError as typeof ValidationError & { new (): ValidationError };
 
 export const USUAL_SUSPECTS = [false, true, null, undefined];
 export function defaultUsualSuspects(type: Type<any> | string): [value: unknown, message: string][] {

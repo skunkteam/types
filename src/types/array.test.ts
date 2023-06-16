@@ -101,17 +101,17 @@ const SmallArray = array('SmallArray', string, { minLength: 1, maxLength: 3 });
 
 test('SmallArray examples', () => {
     expect(createExample(SmallArray, 0)).toMatchInlineSnapshot(`
-    Array [
-      "x",
-    ]
+        [
+          "x",
+        ]
     `);
 
     expect(createExample(SmallArray, 4)).toMatchInlineSnapshot(`
-    Array [
-      "xxxxx",
-      "xxxxxx",
-      "xxxxxxx",
-    ]
+        [
+          "xxxxx",
+          "xxxxxx",
+          "xxxxxxx",
+        ]
     `);
 });
 

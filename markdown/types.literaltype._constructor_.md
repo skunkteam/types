@@ -6,7 +6,7 @@
 
 Constructs a new instance of the `LiteralType` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(value: ResultType);

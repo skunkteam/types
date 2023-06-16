@@ -6,7 +6,7 @@
 
 Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function record<KeyType extends number | string, ValueType>(
@@ -22,6 +22,6 @@ export declare function record<KeyType extends number | string, ValueType>(
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | args      | \[name: string, keyType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;KeyType&gt;, valueType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ValueType&gt;, strict?: boolean\] \| \[keyType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;KeyType&gt;, valueType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ValueType&gt;, strict?: boolean\] |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[RecordType](./types.recordtype.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;KeyType&gt;, KeyType, [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ValueType&gt;, ValueType&gt;&gt;

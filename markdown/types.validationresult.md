@@ -6,13 +6,13 @@
 
 The possible return values inside validation and constraint functions.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
+export type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
 ```
 
-<b>References:</b> [MessageDetails](./types.messagedetails.md)
+**References:** [MessageDetails](./types.messagedetails.md)
 
 ## Remarks
 

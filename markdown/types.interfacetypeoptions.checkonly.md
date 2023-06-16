@@ -6,7 +6,7 @@
 
 Force this type (including all nested property-types recursively) to be validated in 'check' mode.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 checkOnly?: boolean;

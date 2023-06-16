@@ -6,7 +6,7 @@
 
 Clone the type with the added validation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withValidation(validation: Validator<ResultType>): this;
@@ -18,7 +18,7 @@ withValidation(validation: Validator<ResultType>): this;
 | ---------- | ----------------------------------------------------------- | ------------------------------------------------------ |
 | validation | [Validator](./types.validator.md)<!-- -->&lt;ResultType&gt; | the additional validation to restrict the current type |
 
-<b>Returns:</b>
+**Returns:**
 
 this
 

@@ -6,10 +6,10 @@
 
 Built-in validator that accepts all arrays.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-unknownArray: Type<unknownArray>
+unknownArray: Type<unknownArray>;
 ```
 
 ## Remarks

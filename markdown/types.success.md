@@ -6,7 +6,7 @@
 
 A successful validation result.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Success<T>
@@ -14,7 +14,7 @@ export interface Success<T>
 
 ## Properties
 
-| Property                          | Type | Description                                               |
-| --------------------------------- | ---- | --------------------------------------------------------- |
-| [ok](./types.success.ok.md)       | true |                                                           |
-| [value](./types.success.value.md) | T    | The original value, cast or parsed to its validated type. |
+| Property                          | Modifiers | Type | Description                                               |
+| --------------------------------- | --------- | ---- | --------------------------------------------------------- |
+| [ok](./types.success.ok.md)       |           | true |                                                           |
+| [value](./types.success.value.md) |           | T    | The original value, cast or parsed to its validated type. |

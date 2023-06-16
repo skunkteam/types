@@ -6,7 +6,7 @@
 
 Print a property-path in a "JavaScripty way".
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function printPath(path: Array<PropertyKey>): string;
@@ -18,6 +18,6 @@ export declare function printPath(path: Array<PropertyKey>): string;
 | --------- | ------------------------ | ----------- |
 | path      | Array&lt;PropertyKey&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 string

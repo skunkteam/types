@@ -6,13 +6,13 @@
 
 A type-validator/-parser that validates or parses `ResultType`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Type<ResultType, TypeConfig = unknown> = TypeImpl<BaseTypeImpl<ResultType, TypeConfig>>;
+export type Type<ResultType, TypeConfig = unknown> = TypeImpl<BaseTypeImpl<ResultType, TypeConfig>>;
 ```
 
-<b>References:</b> [TypeImpl](./types.typeimpl.md)<!-- -->, [BaseTypeImpl](./types.basetypeimpl.md)
+**References:** [TypeImpl](./types.typeimpl.md)<!-- -->, [BaseTypeImpl](./types.basetypeimpl.md)
 
 ## Remarks
 

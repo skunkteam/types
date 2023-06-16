@@ -4,7 +4,7 @@
 
 ## Success.ok property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 ok: true;

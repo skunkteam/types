@@ -47,14 +47,14 @@ test('no autoCastAll', () => {
 test('visitors', () => {
     expect(createExample(unknown)).toMatchInlineSnapshot(`"UNKNOWN"`);
     expect(createExample(unknownRecord)).toMatchInlineSnapshot(`
-    Object {
-      "unknown": "record",
-    }
+        {
+          "unknown": "record",
+        }
     `);
     expect(createExample(unknownArray)).toMatchInlineSnapshot(`
-    Array [
-      "unknown",
-      "array",
-    ]
+        [
+          "unknown",
+          "array",
+        ]
     `);
 });

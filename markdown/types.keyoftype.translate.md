@@ -4,7 +4,7 @@
 
 ## KeyofType.translate() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 translate(input: unknown): T[keyof T];
@@ -16,6 +16,6 @@ translate(input: unknown): T[keyof T];
 | --------- | ------- | ----------- |
 | input     | unknown |             |
 
-<b>Returns:</b>
+**Returns:**
 
 T\[keyof T\]

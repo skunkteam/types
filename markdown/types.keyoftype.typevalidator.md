@@ -4,7 +4,7 @@
 
 ## KeyofType.typeValidator() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected typeValidator(input: unknown): Result<ResultType>;
@@ -16,6 +16,6 @@ protected typeValidator(input: unknown): Result<ResultType>;
 | --------- | ------- | ----------- |
 | input     | unknown |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [Result](./types.result.md)<!-- -->&lt;ResultType&gt;

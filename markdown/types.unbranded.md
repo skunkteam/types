@@ -6,10 +6,10 @@
 
 Unbrand a given type (not recursive).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
+export type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
 ```
 
-<b>References:</b> [WithBrands](./types.withbrands.md)
+**References:** [WithBrands](./types.withbrands.md)

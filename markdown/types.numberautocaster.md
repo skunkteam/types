@@ -4,7 +4,7 @@
 
 ## numberAutoCaster() function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function numberAutoCaster(input: unknown): number | typeof autoCastFailure;
@@ -16,6 +16,6 @@ export declare function numberAutoCaster(input: unknown): number | typeof autoCa
 | --------- | ------- | ----------- |
 | input     | unknown |             |
 
-<b>Returns:</b>
+**Returns:**
 
 number \| typeof autoCastFailure

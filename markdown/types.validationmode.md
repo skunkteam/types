@@ -6,10 +6,10 @@
 
 The validation mode to use.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type ValidationMode = 'check' | 'construct';
+export type ValidationMode = 'check' | 'construct';
 ```
 
 ## Remarks

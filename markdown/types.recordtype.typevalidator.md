@@ -4,7 +4,7 @@
 
 ## RecordType.typeValidator() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
@@ -17,6 +17,6 @@ protected typeValidator(input: unknown, options: ValidationOptions): Result<Resu
 | input     | unknown                                           |             |
 | options   | [ValidationOptions](./types.validationoptions.md) |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [Result](./types.result.md)<!-- -->&lt;ResultType&gt;

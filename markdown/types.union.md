@@ -4,7 +4,7 @@
 
 ## union() function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(
@@ -18,6 +18,6 @@ export declare function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(
 | --------- | -------------------------------------------------- | ----------- |
 | args      | \[name: string, types: Types\] \| \[types: Types\] |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[UnionType](./types.uniontype.md)<!-- -->&lt;Types&gt;&gt;

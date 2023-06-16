@@ -6,7 +6,7 @@
 
 Verifies that a value conforms to this Type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 assert(input: unknown): asserts input is ResultType;
@@ -18,7 +18,7 @@ assert(input: unknown): asserts input is ResultType;
 | --------- | ------- | ------------------- |
 | input     | unknown | the value to assert |
 
-<b>Returns:</b>
+**Returns:**
 
 asserts input is ResultType
 

@@ -6,13 +6,13 @@
 
 The implementation behind types created with [literal()](./types.literal.md) and [nullType](./types.nulltype.md)<!-- -->, [undefinedType](./types.undefinedtype.md) and [voidType](./types.voidtype.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType>
 ```
 
-<b>Extends:</b> [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;
+**Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;
 
 ## Constructors
 
@@ -22,17 +22,17 @@ export declare class LiteralType<ResultType extends LiteralValue> extends BaseTy
 
 ## Properties
 
-| Property                                                                  | Modifiers | Type                              | Description |
-| ------------------------------------------------------------------------- | --------- | --------------------------------- | ----------- |
-| [basicType](./types.literaltype.basictype.md)                             |           | [BasicType](./types.basictype.md) |             |
-| [enumerableLiteralDomain](./types.literaltype.enumerableliteraldomain.md) |           | ResultType\[\]                    |             |
-| [name](./types.literaltype.name.md)                                       |           | string                            |             |
-| [typeConfig](./types.literaltype.typeconfig.md)                           |           | undefined                         |             |
-| [value](./types.literaltype.value.md)                                     |           | ResultType                        |             |
+| Property                                                                  | Modifiers             | Type                              | Description |
+| ------------------------------------------------------------------------- | --------------------- | --------------------------------- | ----------- |
+| [basicType](./types.literaltype.basictype.md)                             | <code>readonly</code> | [BasicType](./types.basictype.md) |             |
+| [enumerableLiteralDomain](./types.literaltype.enumerableliteraldomain.md) | <code>readonly</code> | ResultType\[\]                    |             |
+| [name](./types.literaltype.name.md)                                       | <code>readonly</code> | string                            |             |
+| [typeConfig](./types.literaltype.typeconfig.md)                           | <code>readonly</code> | undefined                         |             |
+| [value](./types.literaltype.value.md)                                     | <code>readonly</code> | ResultType                        |             |
 
 ## Methods
 
-| Method                                                       | Modifiers | Description |
-| ------------------------------------------------------------ | --------- | ----------- |
-| [accept(visitor)](./types.literaltype.accept.md)             |           |             |
-| [typeValidator(input)](./types.literaltype.typevalidator.md) |           |             |
+| Method                                                       | Modifiers              | Description |
+| ------------------------------------------------------------ | ---------------------- | ----------- |
+| [accept(visitor)](./types.literaltype.accept.md)             |                        |             |
+| [typeValidator(input)](./types.literaltype.typevalidator.md) | <code>protected</code> |             |

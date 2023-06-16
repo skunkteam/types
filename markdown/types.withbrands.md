@@ -4,10 +4,10 @@
 
 ## WithBrands type
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type WithBrands<T, BrandNames extends string> = T & {
+export type WithBrands<T, BrandNames extends string> = T & {
     [brands]: {
         [P in BrandNames]: true;
     };

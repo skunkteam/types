@@ -6,7 +6,7 @@
 
 Print a property-key in a JavaScript compatible way.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function printKey(key: string): string;
@@ -18,7 +18,7 @@ export declare function printKey(key: string): string;
 | --------- | ------ | ----------- |
 | key       | string |             |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

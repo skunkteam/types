@@ -4,7 +4,7 @@
 
 ## Visitor.visitNumberType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
@@ -16,6 +16,6 @@ visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
 | --------- | ---------------------------------------------------------------------------------------------------------------------- | ----------- |
 | type      | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;number, [NumberTypeConfig](./types.numbertypeconfig.md)<!-- -->&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

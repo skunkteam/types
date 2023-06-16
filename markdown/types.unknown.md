@@ -6,10 +6,10 @@
 
 Built-in validator that accepts all values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-unknown: Type<unknown>
+unknown: Type<unknown>;
 ```
 
 ## Remarks

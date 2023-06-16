@@ -4,7 +4,7 @@
 
 ## Visitor.visitUnknownType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitUnknownType(type: BaseTypeImpl<unknown>): R;
@@ -16,6 +16,6 @@ visitUnknownType(type: BaseTypeImpl<unknown>): R;
 | --------- | -------------------------------------------------------------- | ----------- |
 | type      | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

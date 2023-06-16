@@ -6,7 +6,7 @@
 
 Create a function with validated input.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 andThen<Return, RestArgs extends unknown[]>(fn: (value: ResultType, ...restArgs: RestArgs) => Return): (input: unknown, ...restArgs: RestArgs) => Return;
@@ -18,7 +18,7 @@ andThen<Return, RestArgs extends unknown[]>(fn: (value: ResultType, ...restArgs:
 | --------- | ------------------------------------------------------- | ------------------------------------- |
 | fn        | (value: ResultType, ...restArgs: RestArgs) =&gt; Return | the function with input to be checked |
 
-<b>Returns:</b>
+**Returns:**
 
 (input: unknown, ...restArgs: RestArgs) =&gt; Return
 

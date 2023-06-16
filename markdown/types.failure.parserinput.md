@@ -6,7 +6,7 @@
 
 The value input value to the parser, if applicable.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 parserInput?: unknown;

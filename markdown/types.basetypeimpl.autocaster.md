@@ -6,7 +6,7 @@
 
 The logic that is used in the autocasting version of the current type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 protected autoCaster?(this: BaseTypeImpl<ResultType, TypeConfig>, value: unknown): unknown;
@@ -19,7 +19,7 @@ protected autoCaster?(this: BaseTypeImpl<ResultType, TypeConfig>, value: unknown
 | this      | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt; |                                                            |
 | value     | unknown                                                                       | the input value to try to autocast to the appropriate form |
 
-<b>Returns:</b>
+**Returns:**
 
 unknown
 

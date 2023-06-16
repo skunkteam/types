@@ -6,7 +6,7 @@
 
 The input value.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 input: unknown;

@@ -6,7 +6,7 @@
 
 Create a simple (limited) type implementation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType, undefined>) => ValidationResult, options?: Omit<SimpleTypeOptions<ResultType, undefined>, 'typeConfig'>): Type<ResultType, undefined>;
@@ -14,13 +14,13 @@ static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleVa
 
 ## Parameters
 
-| Parameter       | Type                                                                                                                                                                                                                       | Description                            |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| name            | string                                                                                                                                                                                                                     | the name for the Type                  |
-| basicType       | [BasicType](./types.basictype.md) \| 'mixed'                                                                                                                                                                               | the fixed basic type of the Type       |
-| simpleValidator | (input: unknown, options: [ValidationOptions](./types.validationoptions.md)<!-- -->, type: [SimpleType](./types.simpletype.md)<!-- -->&lt;ResultType, undefined&gt;) =&gt; [ValidationResult](./types.validationresult.md) | validation logic                       |
-| options         | Omit&lt;[SimpleTypeOptions](./types.simpletypeoptions.md)<!-- -->&lt;ResultType, undefined&gt;, 'typeConfig'&gt;                                                                                                           | some optional features of BaseTypeImpl |
+| Parameter       | Type                                                                                                                                                                                                                       | Description                                         |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| name            | string                                                                                                                                                                                                                     | the name for the Type                               |
+| basicType       | [BasicType](./types.basictype.md) \| 'mixed'                                                                                                                                                                               | the fixed basic type of the Type                    |
+| simpleValidator | (input: unknown, options: [ValidationOptions](./types.validationoptions.md)<!-- -->, type: [SimpleType](./types.simpletype.md)<!-- -->&lt;ResultType, undefined&gt;) =&gt; [ValidationResult](./types.validationresult.md) | validation logic                                    |
+| options         | Omit&lt;[SimpleTypeOptions](./types.simpletypeoptions.md)<!-- -->&lt;ResultType, undefined&gt;, 'typeConfig'&gt;                                                                                                           | _(Optional)_ some optional features of BaseTypeImpl |
 
-<b>Returns:</b>
+**Returns:**
 
 [Type](./types.type.md)<!-- -->&lt;ResultType, undefined&gt;

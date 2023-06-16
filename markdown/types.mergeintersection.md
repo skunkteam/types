@@ -6,14 +6,12 @@
 
 Merge an intersection of types into one type, mostly for tooltip-readability in IDEs.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type MergeIntersection<T> = T extends Record<PropertyKey, unknown>
+export type MergeIntersection<T> = T extends Record<PropertyKey, unknown>
     ? {
-          [P in keyof T]: MergeIntersection<T[P]>;
-      }
+          [P in keyof T]: T[P];
+      } & {}
     : T;
 ```
-
-<b>References:</b> [MergeIntersection](./types.mergeintersection.md)

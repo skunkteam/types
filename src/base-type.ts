@@ -40,7 +40,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * The associated TypeScript-type of a Type.
      * @internal
      */
-    readonly [designType]: ResultType;
+    readonly [designType]!: ResultType;
 
     /** The name of the Type. */
     abstract readonly name: string;
@@ -549,7 +549,7 @@ export function createType<Impl extends BaseTypeImpl<any, any>>(
 ): TypeImpl<Impl> {
     // Replace the complete `impl` onto the `construct` function.
     const type = Object.defineProperties(
-        Object.setPrototypeOf((input: unknown) => type.construct(input) as unknown, Object.getPrototypeOf(impl)),
+        Object.setPrototypeOf((input: unknown) => type.construct(input) as unknown, Object.getPrototypeOf(impl) as object),
         {
             ...FUNCTION_PROTOTYPE_DESCRIPTORS,
             ...Object.getOwnPropertyDescriptors(impl),
@@ -570,7 +570,8 @@ function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType, any>, options: V
     const visited = (options.visited ??= new Map<unknown, Map<unknown, Result<unknown>>>());
     let valueMap = visited.get(me);
     if (!valueMap) {
-        visited.set(me, (valueMap = new Map()));
+        valueMap = new Map();
+        visited.set(me, valueMap);
     }
     return valueMap as Map<unknown, Result<ResultType>>;
 }

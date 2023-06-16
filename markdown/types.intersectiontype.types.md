@@ -4,7 +4,7 @@
 
 ## IntersectionType.types property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly types: Types;

@@ -6,7 +6,7 @@
 
 Create a type that checks whether the input is an array and all elements conform to the given `elementType`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function array<Element>(
@@ -22,6 +22,6 @@ export declare function array<Element>(
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
 | args      | \[name: string, elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] \| \[elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] | optional name and element-type |
 
-<b>Returns:</b>
+**Returns:**
 
 [TypeImpl](./types.typeimpl.md)<!-- -->&lt;[ArrayType](./types.arraytype.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, Element, Element\[\]&gt;&gt;

@@ -6,7 +6,7 @@
 
 An object that has an associated TypeScript type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface TypeLink<AssociatedType>
@@ -14,6 +14,6 @@ export interface TypeLink<AssociatedType>
 
 ## Properties
 
-| Property                                           | Type           | Description                                           |
-| -------------------------------------------------- | -------------- | ----------------------------------------------------- |
-| [\[designType\]](./types.typelink._designtype_.md) | AssociatedType | The associated TypeScript-type of the current object. |
+| Property                                           | Modifiers             | Type           | Description                                           |
+| -------------------------------------------------- | --------------------- | -------------- | ----------------------------------------------------- |
+| [\[designType\]](./types.typelink._designtype_.md) | <code>readonly</code> | AssociatedType | The associated TypeScript-type of the current object. |

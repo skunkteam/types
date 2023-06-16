@@ -4,7 +4,7 @@
 
 ## Visitor.visitObjectLikeType() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
@@ -16,6 +16,6 @@ visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
 | --------- | ---------------------------------------------------------------------------------- | ----------- |
 | type      | [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;unknown&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 R

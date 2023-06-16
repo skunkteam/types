@@ -6,7 +6,7 @@
 
 The type that failed validation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 type: BaseTypeImpl<unknown>;

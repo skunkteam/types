@@ -6,7 +6,7 @@
 
 The kind of values this type validates.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 abstract readonly basicType: BasicType | 'mixed';

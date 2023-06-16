@@ -6,7 +6,7 @@
 
 The new name to use in error messages.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 name?: string;

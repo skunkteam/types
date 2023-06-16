@@ -4,7 +4,7 @@
 
 ## KeyofType.keys property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly keys: T;

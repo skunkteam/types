@@ -8,42 +8,47 @@ Runtime type-validation with derived TypeScript types.
 
 ## Classes
 
-| Class                                                       | Description                                                                                                                                                                                                      |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [ArrayType](./types.arraytype.md)                           | The implementation behind types created with [array()](./types.array.md)<!-- -->.                                                                                                                                |
-| [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md) | The base implementation for all object-like Types.                                                                                                                                                               |
-| [BaseTypeImpl](./types.basetypeimpl.md)                     | The base-class of all type-implementations.                                                                                                                                                                      |
-| [InterfaceType](./types.interfacetype.md)                   | The implementation behind types created with [object()](./types.object.md) and [partial()](./types.partial.md)<!-- -->.                                                                                          |
-| [IntersectionType](./types.intersectiontype.md)             | The implementation behind types created with [intersection()](./types.intersection.md) and [BaseObjectLikeTypeImpl.and()](./types.baseobjectliketypeimpl.and.md)<!-- -->.                                        |
-| [KeyofType](./types.keyoftype.md)                           | The implementation behind types created with [keyof()](./types.keyof.md) and [valueof()](./types.valueof.md)<!-- -->.                                                                                            |
-| [LiteralType](./types.literaltype.md)                       | The implementation behind types created with [literal()](./types.literal.md) and [nullType](./types.nulltype.md)<!-- -->, [undefinedType](./types.undefinedtype.md) and [voidType](./types.voidtype.md)<!-- -->. |
-| [RecordType](./types.recordtype.md)                         | The implementation behind types created with [record()](./types.record.md)<!-- -->.                                                                                                                              |
-| [SimpleType](./types.simpletype.md)                         | Implementation for simple types such as primitive types.                                                                                                                                                         |
-| [UnionType](./types.uniontype.md)                           | The implementation behind types created with [union()](./types.union.md) and [BaseTypeImpl.or()](./types.basetypeimpl.or.md)<!-- -->.                                                                            |
-| [ValidationError](./types.validationerror.md)               | The error that is thrown on any validation- or parse-error within this library.                                                                                                                                  |
+| Class                                           | Description                                                                                                                                                                                                      |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ArrayType](./types.arraytype.md)               | The implementation behind types created with [array()](./types.array.md)<!-- -->.                                                                                                                                |
+| [InterfaceType](./types.interfacetype.md)       | The implementation behind types created with [object()](./types.object.md) and [partial()](./types.partial.md)<!-- -->.                                                                                          |
+| [IntersectionType](./types.intersectiontype.md) | The implementation behind types created with [intersection()](./types.intersection.md) and [BaseObjectLikeTypeImpl.and()](./types.baseobjectliketypeimpl.and.md)<!-- -->.                                        |
+| [KeyofType](./types.keyoftype.md)               | The implementation behind types created with [keyof()](./types.keyof.md) and [valueof()](./types.valueof.md)<!-- -->.                                                                                            |
+| [LiteralType](./types.literaltype.md)           | The implementation behind types created with [literal()](./types.literal.md) and [nullType](./types.nulltype.md)<!-- -->, [undefinedType](./types.undefinedtype.md) and [voidType](./types.voidtype.md)<!-- -->. |
+| [RecordType](./types.recordtype.md)             | The implementation behind types created with [record()](./types.record.md)<!-- -->.                                                                                                                              |
+| [SimpleType](./types.simpletype.md)             | Implementation for simple types such as primitive types.                                                                                                                                                         |
+| [UnionType](./types.uniontype.md)               | The implementation behind types created with [union()](./types.union.md) and [BaseTypeImpl.or()](./types.basetypeimpl.or.md)<!-- -->.                                                                            |
+| [ValidationError](./types.validationerror.md)   | The error that is thrown on any validation- or parse-error within this library.                                                                                                                                  |
+
+## Abstract Classes
+
+| Abstract Class                                              | Description                                        |
+| ----------------------------------------------------------- | -------------------------------------------------- |
+| [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md) | The base implementation for all object-like Types. |
+| [BaseTypeImpl](./types.basetypeimpl.md)                     | The base-class of all type-implementations.        |
 
 ## Functions
 
-| Function                                                      | Description                                                                                                                                       |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [array(args)](./types.array.md)                               | Create a type that checks whether the input is an array and all elements conform to the given <code>elementType</code>.                           |
-| [booleanAutoCaster(input)](./types.booleanautocaster.md)      |                                                                                                                                                   |
-| [createType(impl, override)](./types.createtype.md)           | Create a Type from the given type-implementation.                                                                                                 |
-| [intersection(args)](./types.intersection.md)                 | Intersect the given types.                                                                                                                        |
-| [isType(value)](./types.istype.md)                            | Type-guard that asserts that a given value is a Type.                                                                                             |
-| [keyof(args)](./types.keyof.md)                               |                                                                                                                                                   |
-| [literal(value)](./types.literal.md)                          |                                                                                                                                                   |
-| [numberAutoCaster(input)](./types.numberautocaster.md)        |                                                                                                                                                   |
-| [object(args)](./types.object.md)                             | Create a type-validator that validates (or parses) an object structure.                                                                           |
-| [partial(args)](./types.partial.md)                           | Create a type-validator that validates (or parses) an object structure with only optional properties.                                             |
-| [pattern(name, regExp, customMessage)](./types.pattern.md)    |                                                                                                                                                   |
-| [printKey(key)](./types.printkey.md)                          | Print a property-key in a JavaScript compatible way.                                                                                              |
-| [printPath(path)](./types.printpath.md)                       | Print a property-path in a "JavaScripty way".                                                                                                     |
-| [printValue(input, budget, visited)](./types.printvalue.md)   | Print an unknown value with a given character budget (default: 50).                                                                               |
-| [record(args)](./types.record.md)                             | Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document |
-| [reportError(root, level, omitInput)](./types.reporterror.md) | Creates an human-readable error report of the given failure.                                                                                      |
-| [union(args)](./types.union.md)                               |                                                                                                                                                   |
-| [valueof(args)](./types.valueof.md)                           |                                                                                                                                                   |
+| Function                                                          | Description                                                                                                                                       |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [array(args)](./types.array.md)                                   | Create a type that checks whether the input is an array and all elements conform to the given <code>elementType</code>.                           |
+| [booleanAutoCaster(input)](./types.booleanautocaster.md)          |                                                                                                                                                   |
+| [createType(impl, override)](./types.createtype.md)               | Create a Type from the given type-implementation.                                                                                                 |
+| [intersection(args)](./types.intersection.md)                     | Intersect the given types.                                                                                                                        |
+| [isType(value)](./types.istype.md)                                | Type-guard that asserts that a given value is a Type.                                                                                             |
+| [keyof(args)](./types.keyof.md)                                   |                                                                                                                                                   |
+| [literal(value)](./types.literal.md)                              |                                                                                                                                                   |
+| [numberAutoCaster(input)](./types.numberautocaster.md)            |                                                                                                                                                   |
+| [object(args)](./types.object.md)                                 | Create a type-validator that validates (or parses) an object structure.                                                                           |
+| [partial(args)](./types.partial.md)                               | Create a type-validator that validates (or parses) an object structure with only optional properties.                                             |
+| [pattern(name, regExp, customMessage)](./types.pattern.md)        |                                                                                                                                                   |
+| [printKey(key)](./types.printkey.md)                              | Print a property-key in a JavaScript compatible way.                                                                                              |
+| [printPath(path)](./types.printpath.md)                           | Print a property-path in a "JavaScripty way".                                                                                                     |
+| [printValue(input, budget, visited)](./types.printvalue.md)       | Print an unknown value with a given character budget (default: 50).                                                                               |
+| [record(args)](./types.record.md)                                 | Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document |
+| [reportError_2(root, level, omitInput)](./types.reporterror_2.md) | Creates an human-readable error report of the given failure.                                                                                      |
+| [union(args)](./types.union.md)                                   |                                                                                                                                                   |
+| [valueof(args)](./types.valueof.md)                               |                                                                                                                                                   |
 
 ## Interfaces
 

@@ -6,7 +6,7 @@
 
 Clone this type with all properties marked optional.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 toPartial(name?: string): PartialType<Props>;
@@ -14,10 +14,10 @@ toPartial(name?: string): PartialType<Props>;
 
 ## Parameters
 
-| Parameter | Type   | Description |
-| --------- | ------ | ----------- |
-| name      | string |             |
+| Parameter | Type   | Description  |
+| --------- | ------ | ------------ |
+| name      | string | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 [PartialType](./types.partialtype.md)<!-- -->&lt;Props&gt;

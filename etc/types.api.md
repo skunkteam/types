@@ -277,8 +277,8 @@ export type LiteralValue = string | number | boolean | null | undefined | void;
 
 // @public
 export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? {
-    [P in keyof T]: MergeIntersection<T[P]>;
-} : T;
+    [P in keyof T]: T[P];
+} & {} : T;
 
 // @public
 export type MessageDetails = Partial<ValidationDetails> & {
@@ -428,7 +428,8 @@ export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType exten
 }
 
 // @public
-export function reportError(root: Failure, level?: number, omitInput?: boolean): string;
+function reportError_2(root: Failure, level?: number, omitInput?: boolean): string;
+export { reportError_2 as reportError }
 
 // @public
 export type Result<T> = Success<T> | Failure;

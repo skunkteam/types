@@ -4,7 +4,7 @@
 
 ## UnionType.collapsedTypes property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly collapsedTypes: Types;

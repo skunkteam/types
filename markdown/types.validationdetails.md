@@ -6,14 +6,14 @@
 
 Information about the performed validation for error-reporting.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type ValidationDetails = {
+export type ValidationDetails = {
     type: BaseTypeImpl<unknown>;
     input: unknown;
     parserInput?: unknown;
 };
 ```
 
-<b>References:</b> [BaseTypeImpl](./types.basetypeimpl.md)
+**References:** [BaseTypeImpl](./types.basetypeimpl.md)

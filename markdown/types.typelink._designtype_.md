@@ -6,7 +6,7 @@
 
 The associated TypeScript-type of the current object.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly [designType]: AssociatedType;

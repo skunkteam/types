@@ -4,7 +4,7 @@
 
 ## StringTypeConfig.customMessage property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 customMessage?: CustomMessage<string, StringViolation[]> | Partial<Record<StringViolation, CustomMessage<string, StringViolation>>>;

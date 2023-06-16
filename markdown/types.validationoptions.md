@@ -4,7 +4,7 @@
 
 ## ValidationOptions interface
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface ValidationOptions
@@ -12,6 +12,6 @@ export interface ValidationOptions
 
 ## Properties
 
-| Property                                  | Type                                        | Description |
-| ----------------------------------------- | ------------------------------------------- | ----------- |
-| [mode](./types.validationoptions.mode.md) | [ValidationMode](./types.validationmode.md) |             |
+| Property                                  | Modifiers | Type                                        | Description |
+| ----------------------------------------- | --------- | ------------------------------------------- | ----------- |
+| [mode](./types.validationoptions.mode.md) |           | [ValidationMode](./types.validationmode.md) |             |

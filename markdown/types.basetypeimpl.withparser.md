@@ -6,7 +6,7 @@
 
 Define a new type with the same specs, but with the given parser and an optional new name.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, newConstructor: (i: unknown) => unknown] | [options: ParserOptions, newConstructor: (i: unknown) => unknown]): this;
@@ -18,7 +18,7 @@ withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, n
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | args      | \[newConstructor: (i: unknown) =&gt; unknown\] \| \[name: string, newConstructor: (i: unknown) =&gt; unknown\] \| \[options: [ParserOptions](./types.parseroptions.md)<!-- -->, newConstructor: (i: unknown) =&gt; unknown\] |             |
 
-<b>Returns:</b>
+**Returns:**
 
 this
 

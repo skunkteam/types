@@ -144,13 +144,13 @@ const User = object('User', {
 
 test('User example', () => {
     expect(createExample(User)).toMatchInlineSnapshot(`
-    Object {
-      "name": Object {
-        "first": "x",
-        "last": "xx",
-      },
-      "shoeSize": 3,
-    }
+        {
+          "name": {
+            "first": "x",
+            "last": "xx",
+          },
+          "shoeSize": 3,
+        }
     `);
 });
 

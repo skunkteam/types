@@ -6,7 +6,7 @@
 
 Create a new instance of this Type with the additional type-specific config, such as min/max values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withConfig<BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
@@ -19,7 +19,7 @@ withConfig<BrandName extends string>(name: BrandName, newConfig: TypeConfig): Ty
 | name      | BrandName  | the name to use in error messages                                       |
 | newConfig | TypeConfig | the new type-specific config that further restricts the accepted values |
 
-<b>Returns:</b>
+**Returns:**
 
 [Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;ResultType, BrandName&gt;, TypeConfig&gt;
 

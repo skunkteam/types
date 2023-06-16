@@ -4,7 +4,7 @@
 
 ## SimpleTypeOptions.acceptVisitor property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 acceptVisitor?: SimpleAcceptVisitor<ResultType, TypeConfig>;

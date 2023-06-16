@@ -4,7 +4,7 @@
 
 ## BaseObjectLikeTypeImpl.props property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 abstract readonly props: Properties;

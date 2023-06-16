@@ -6,7 +6,7 @@
 
 Options that can be passed to [BaseTypeImpl.withParser()](./types.basetypeimpl.withparser.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface ParserOptions
@@ -14,7 +14,7 @@ export interface ParserOptions
 
 ## Properties
 
-| Property                                 | Type    | Description                                                                   |
-| ---------------------------------------- | ------- | ----------------------------------------------------------------------------- |
-| [chain?](./types.parseroptions.chain.md) | boolean | <i>(Optional)</i> Whether to chain this parser on top of any existing parser. |
-| [name?](./types.parseroptions.name.md)   | string  | <i>(Optional)</i> The new name to use in error messages.                      |
+| Property                                 | Modifiers | Type    | Description                                                              |
+| ---------------------------------------- | --------- | ------- | ------------------------------------------------------------------------ |
+| [chain?](./types.parseroptions.chain.md) |           | boolean | _(Optional)_ Whether to chain this parser on top of any existing parser. |
+| [name?](./types.parseroptions.name.md)   |           | string  | _(Optional)_ The new name to use in error messages.                      |

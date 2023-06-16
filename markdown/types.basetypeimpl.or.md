@@ -6,7 +6,7 @@
 
 Union this Type with another Type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other>;
@@ -18,7 +18,7 @@ or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other>;
 | --------- | ----------------------------------------------------------------- | ----------- |
 | \_other   | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Other, any&gt; |             |
 
-<b>Returns:</b>
+**Returns:**
 
 [Type](./types.type.md)<!-- -->&lt;ResultType \| Other&gt;
 

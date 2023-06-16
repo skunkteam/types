@@ -6,7 +6,7 @@
 
 Create a new type use the given constraint function to restrict the current type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
@@ -19,7 +19,7 @@ withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<
 | name       | BrandName                                                   | the new name to use in error messages                  |
 | constraint | [Validator](./types.validator.md)<!-- -->&lt;ResultType&gt; | the additional validation to restrict the current type |
 
-<b>Returns:</b>
+**Returns:**
 
 [Type](./types.type.md)<!-- -->&lt;[Branded](./types.branded.md)<!-- -->&lt;ResultType, BrandName&gt;, TypeConfig&gt;
 

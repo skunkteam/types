@@ -4,7 +4,7 @@
 
 ## LengthChecksConfig interface
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface LengthChecksConfig
@@ -12,7 +12,7 @@ export interface LengthChecksConfig
 
 ## Properties
 
-| Property                                              | Type   | Description       |
-| ----------------------------------------------------- | ------ | ----------------- |
-| [maxLength?](./types.lengthchecksconfig.maxlength.md) | number | <i>(Optional)</i> |
-| [minLength?](./types.lengthchecksconfig.minlength.md) | number | <i>(Optional)</i> |
+| Property                                              | Modifiers | Type   | Description  |
+| ----------------------------------------------------- | --------- | ------ | ------------ |
+| [maxLength?](./types.lengthchecksconfig.maxlength.md) |           | number | _(Optional)_ |
+| [minLength?](./types.lengthchecksconfig.minlength.md) |           | number | _(Optional)_ |
