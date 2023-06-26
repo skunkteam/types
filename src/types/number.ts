@@ -1,3 +1,4 @@
+import big from 'big.js';
 import type { Branded, NumberTypeConfig, The, Type } from '../interfaces.js';
 import { SimpleType } from '../simple-type.js';
 import { autoCastFailure } from '../symbols.js';
@@ -69,41 +70,17 @@ export function numberAutoCaster(input: unknown): number | typeof autoCastFailur
     return Number.isNaN(nr) ? autoCastFailure : nr;
 }
 
-const BIG = typeof BigInt === 'function' ? BigInt : (Number as typeof BigInt);
-const ZERO = BIG(0);
-const TEN = BIG(10);
+const ZERO = big(0);
 
-function isMultiple(value: number, multiple: number) {
-    if (!isFinite(value) || !isFinite(multiple)) return false;
+function isMultiple(value: number, multiple: number): boolean {
+    if (!isFinite(value) || !isFinite(multiple) || multiple === 0) return false;
 
     // Using the remainder operation is only safe in the integer space.
     if (Math.abs(value) <= Number.MAX_SAFE_INTEGER && Number.isSafeInteger(multiple)) return value % multiple === 0;
 
     // It gets tricky for non-integer and especially small divisors. Using remainder does not work for small divisors, e.g.
-    // `1 % 0.1 === 0.09999999999999995`. As a workaround, we convert both operands to integers first.
-    const valueParts = decomposeFloat(value);
-    const multipleParts = decomposeFloat(multiple);
-
-    // Now sync the exponent, so we can only focus on the significands
-    const exponent = Math.min(valueParts.exponent, multipleParts.exponent);
-    const valueSignificand = significandForGivenExponent(valueParts, exponent);
-    const multipleSignificand = significandForGivenExponent(multipleParts, exponent);
-    return valueSignificand % multipleSignificand === ZERO;
-}
-
-// rewrite float to an integer and exponent, for example 123456789.222 to 123456789222e-3
-function decomposeFloat(n: number) {
-    const [significand, exponent] = n.toExponential().split('e') as [string, string];
-    // Now denormalize the significand to get rid of the decimal point.
-    const [base, frac] = significand.split('.') as [string, string | undefined];
-    return {
-        significand: BIG(base + (frac || '')),
-        exponent: +exponent - (frac ? frac.length : 0),
-    };
-}
-
-function significandForGivenExponent(input: ReturnType<typeof decomposeFloat>, exponent: number) {
-    return BIG(input.significand) * TEN ** BIG(input.exponent - exponent);
+    // `1 % 0.1 === 0.09999999999999995`. Big.js to the rescue.
+    return big(value).mod(multiple).eq(ZERO);
 }
 
 type Bound<T extends 'min' | 'max'> = {
