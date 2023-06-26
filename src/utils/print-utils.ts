@@ -76,7 +76,7 @@ function truncateArray<T>(arr: OneOrMore<T>, budget: number, printer: (element: 
 /**
  * Print a property-path in a "JavaScripty way".
  */
-export function printPath(path: Array<PropertyKey>): string {
+export function printPath(path: ReadonlyArray<PropertyKey>): string {
     let result = '';
     for (const e of path) {
         if (typeof e === 'string' && isValidIdentifier(e)) {

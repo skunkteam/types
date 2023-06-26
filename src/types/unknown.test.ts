@@ -1,4 +1,4 @@
-import { basicTypeMessage, createExample, defaultUsualSuspects, testTypeImpl, USUAL_SUSPECTS } from '../testutils.js';
+import { USUAL_SUSPECTS, basicTypeMessage, createExample, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
 import { unknown, unknownArray, unknownRecord } from './unknown.js';
 
 testTypeImpl({

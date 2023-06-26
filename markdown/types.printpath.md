@@ -9,14 +9,14 @@ Print a property-path in a "JavaScripty way".
 **Signature:**
 
 ```typescript
-export declare function printPath(path: Array<PropertyKey>): string;
+export declare function printPath(path: ReadonlyArray<PropertyKey>): string;
 ```
 
 ## Parameters
 
-| Parameter | Type                     | Description |
-| --------- | ------------------------ | ----------- |
-| path      | Array&lt;PropertyKey&gt; |             |
+| Parameter | Type                             | Description |
+| --------- | -------------------------------- | ----------- |
+| path      | ReadonlyArray&lt;PropertyKey&gt; |             |
 
 **Returns:**
 

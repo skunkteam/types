@@ -370,3 +370,15 @@ export interface Visitor<R> {
     visitUnknownArrayType(type: BaseTypeImpl<unknown[]>): R;
     visitCustomType(type: BaseTypeImpl<unknown>): R;
 }
+
+/**
+ * A description of the property-paths and possible values that might be used to identify this type inside a union.
+ */
+export type PossibleDiscriminator = {
+    /** The property-path that points to a literal type that is available as a possible discriminator. */
+    readonly path: readonly string[];
+    /** The allowed values of the type at the given `path`. */
+    readonly values: readonly LiteralValue[];
+    /** In case of a union, this maps all `values` to their appropriate subtype of the union. */
+    readonly mapping?: ReadonlyArray<{ type: BaseTypeImpl<unknown>; values: readonly LiteralValue[] }>;
+};

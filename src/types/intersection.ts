@@ -1,8 +1,8 @@
-import { BaseObjectLikeTypeImpl, createType, TypedPropertyInformation } from '../base-type.js';
+import { BaseObjectLikeTypeImpl, TypedPropertyInformation, createType } from '../base-type.js';
 import type {
-    LiteralValue,
     MergeIntersection,
     OneOrMore,
+    PossibleDiscriminator,
     Properties,
     PropertiesInfo,
     Result,
@@ -40,7 +40,6 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
         super();
         this.isDefaultName = !name;
         this.name = name || defaultName(types);
-        checkBasicTypes(types);
         checkOverlap(types);
     }
 
@@ -48,7 +47,9 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly props = Object.assign({}, ...this.types.map(type => type.props)) as PropertiesOfTypeTuple<Types>;
     readonly propsInfo = Object.assign({}, ...this.types.map(type => type.propsInfo)) as PropertiesInfo<PropertiesOfTypeTuple<Types>>;
     readonly combinedName = combinedName(this.types);
-    readonly possibleDiscriminators: Array<{ path: string[]; values: LiteralValue[] }> = this.types.flatMap(t => t.possibleDiscriminators);
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[] = this.types
+        .flatMap(t => t.possibleDiscriminators || throwWrongBasicType(this.types))
+        .map(({ path, values }) => ({ path, values }));
 
     protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>> {
         if (!unknownRecord.is(input)) {
@@ -81,11 +82,9 @@ define(IntersectionType, 'createAutoCastAllType', function (this: IntersectionTy
     return createType(new IntersectionType(types, extensionName(this, 'autoCastAll')));
 });
 
-function checkBasicTypes(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
+function throwWrongBasicType(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
     const nonObjectTypes = types.filter(t => t.basicType !== 'object');
-    if (nonObjectTypes.length) {
-        throw new Error(`can only create an intersection of objects, got: ${humanList(nonObjectTypes, 'and', t => t.name)}`);
-    }
+    throw new Error(`can only create an intersection of objects, got: ${humanList(nonObjectTypes, 'and', t => t.name)}`);
 }
 
 function checkOverlap(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
@@ -118,9 +117,9 @@ export function intersection<Types extends OneOrMore<BaseObjectLikeTypeImpl<unkn
     return createType(new IntersectionType(types, name));
 }
 
-function defaultName(types: BaseObjectLikeTypeImpl<unknown>[]): string {
+function defaultName(types: readonly BaseObjectLikeTypeImpl<unknown>[]): string {
     const [combinableTypes, restTypes] = partition(
-        types,
+        types.slice(),
         type => !(type instanceof UnionType) && type.basicType === 'object' && type.isDefaultName,
     );
     const names = restTypes.map(({ name }) => bracketsIfNeeded(name, '&'));
@@ -131,7 +130,7 @@ function defaultName(types: BaseObjectLikeTypeImpl<unknown>[]): string {
     return names.join(' & ');
 }
 
-function combinedName(types: BaseObjectLikeTypeImpl<unknown>[]) {
+function combinedName(types: readonly BaseObjectLikeTypeImpl<unknown>[]) {
     const collectedProps: PropertiesInfo = {};
     for (const { propsInfo } of types) {
         for (const [key, prop] of Object.entries(propsInfo ?? {})) {
