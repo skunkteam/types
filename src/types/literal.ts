@@ -1,7 +1,7 @@
 import { BaseTypeImpl, createType } from '../base-type.js';
 import type { BasicType, LiteralValue, Result, TypeImpl, Visitor } from '../interfaces.js';
 import { autoCastFailure } from '../symbols.js';
-import { basicType, define, printValue } from '../utils/index.js';
+import { basicType, defaultStringify, define, printValue } from '../utils/index.js';
 import { booleanAutoCaster } from './boolean.js';
 import { numberAutoCaster } from './number.js';
 
@@ -15,6 +15,8 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
     constructor(readonly value: ResultType) {
         super();
         this.name = printValue(value);
+        const stringified = defaultStringify(this.basicType, this.value, this.name);
+        this.maybeStringify = () => stringified;
     }
 
     readonly basicType: BasicType = basicType(this.value);

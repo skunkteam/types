@@ -18,6 +18,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
     readonly elementType: ElementType;
     // (undocumented)
     readonly isDefaultName: boolean;
+    maybeStringify(value: ResultType): string;
     // (undocumented)
     readonly name: string;
     // (undocumented)
@@ -68,10 +69,12 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
     extendWith<E>(factory: (type: this) => E): this & E;
-    get is(): <Input>(this: void, input: Input) => input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never;
+    get is(): TypeguardFor<ResultType>;
     literal(input: DeepUnbranded<ResultType>): ResultType;
+    maybeStringify(value: ResultType): string | undefined;
     abstract readonly name: string;
     or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other>;
+    stringify(value: ResultType): string;
     abstract readonly typeConfig: TypeConfig;
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
     protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
@@ -141,6 +144,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     // (undocumented)
     readonly isDefaultName: boolean;
     readonly keys: readonly (keyof Props)[];
+    maybeStringify(value: ResultType): string;
     // (undocumented)
     readonly name: string;
     // (undocumented)
@@ -188,6 +192,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly combinedName: string;
     // (undocumented)
     readonly isDefaultName: boolean;
+    maybeStringify(value: IntersectionOfTypeTuple<Types>): string;
     // (undocumented)
     readonly name: string;
     // (undocumented)
@@ -376,6 +381,9 @@ export type PossibleDiscriminator = {
     }>;
 };
 
+// @public (undocumented)
+export type Primitive = LiteralValue | bigint | symbol;
+
 // @public
 export function printKey(key: string): string;
 
@@ -417,6 +425,7 @@ export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType exten
     readonly isDefaultName: boolean;
     // (undocumented)
     readonly keyType: KeyTypeImpl;
+    maybeStringify(value: ResultType): string;
     // (undocumented)
     readonly name: string;
     // (undocumented)
@@ -465,6 +474,8 @@ export interface SimpleTypeOptions<ResultType, TypeConfig> {
     // (undocumented)
     enumerableLiteralDomain?: BaseTypeImpl<ResultType, TypeConfig>['enumerableLiteralDomain'];
     // (undocumented)
+    maybeStringify?: (value: ResultType) => string | undefined;
+    // (undocumented)
     typeConfig: BaseTypeImpl<ResultType, TypeConfig>['typeConfig'];
 }
 
@@ -505,6 +516,14 @@ export interface TypedPropertyInformation<Props extends Properties> {
     // (undocumented)
     readonly propsInfo: PropertiesInfo<Props>;
 }
+
+// @public
+export type TypeguardFor<ResultType> = <Input>(this: void, input: Input) => input is TypeguardResult<ResultType, Input>;
+
+// @public
+export type TypeguardResult<ResultType, Input> = unknown extends Input ? Input & ResultType : [
+Extract<Input, ResultType>
+] extends [never] ? Input & ResultType : Extract<Input, ResultType>;
 
 // @public
 export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
@@ -551,6 +570,7 @@ export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultTyp
     findApplicableSubtype(input: unknown): BaseTypeImpl<unknown> | undefined;
     // (undocumented)
     readonly isDefaultName: boolean;
+    maybeStringify(value: ResultType): string | undefined;
     // (undocumented)
     readonly name: string;
     // (undocumented)

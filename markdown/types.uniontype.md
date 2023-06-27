@@ -37,8 +37,9 @@ export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, R
 
 ## Methods
 
-| Method                                                                     | Modifiers              | Description |
-| -------------------------------------------------------------------------- | ---------------------- | ----------- |
-| [accept(visitor)](./types.uniontype.accept.md)                             |                        |             |
-| [findApplicableSubtype(input)](./types.uniontype.findapplicablesubtype.md) |                        |             |
-| [typeValidator(input, options)](./types.uniontype.typevalidator.md)        | <code>protected</code> |             |
+| Method                                                                     | Modifiers              | Description                                                                                                                                |
+| -------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [accept(visitor)](./types.uniontype.accept.md)                             |                        |                                                                                                                                            |
+| [findApplicableSubtype(input)](./types.uniontype.findapplicablesubtype.md) |                        |                                                                                                                                            |
+| [maybeStringify(value)](./types.uniontype.maybestringify.md)               |                        | Create a JSON string of the given value, using the type information of the current type. Matches the specs of <code>JSON.stringify</code>. |
+| [typeValidator(input, options)](./types.uniontype.typevalidator.md)        | <code>protected</code> |                                                                                                                                            |

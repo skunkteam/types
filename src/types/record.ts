@@ -1,6 +1,6 @@
 import { BaseTypeImpl, createType } from '../base-type.js';
 import type { MessageDetails, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces.js';
-import { decodeOptionalName, define, extensionName, prependPathToDetails } from '../utils/index.js';
+import { decodeOptionalName, define, extensionName, prependPathToDetails, stringStringify } from '../utils/index.js';
 import { unknownRecord } from './unknown.js';
 
 /**
@@ -28,7 +28,7 @@ export class RecordType<
         if (!unknownRecord.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
-        const constructResult = {} as Record<KeyType, ValueType>;
+        const constructResult = options.mode === 'construct' ? ({} as Record<KeyType, ValueType>) : undefined;
         const details: MessageDetails[] = [];
         const missingKeys = this.keyType.enumerableLiteralDomain && new Set(this.keyType.enumerableLiteralDomain);
         for (const [key, value] of Object.entries(input)) {
@@ -41,7 +41,7 @@ export class RecordType<
             missingKeys?.delete(keyResult.value);
             if (!valueResult.ok) {
                 details.push(...prependPathToDetails(valueResult, key));
-            } else {
+            } else if (constructResult) {
                 constructResult[keyResult.value] = valueResult.value;
             }
         }
@@ -50,11 +50,28 @@ export class RecordType<
                 details.push({ type: this.valueType, kind: 'missing property', property: String(key) });
             }
         }
-        return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
+        return this.createResult(input, constructResult ?? input, details);
     }
 
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitRecordType(this);
+    }
+
+    /** {@inheritdoc BaseTypeImpl.maybeStringify} */
+    override maybeStringify(value: ResultType): string {
+        const { keyType, valueType, strict } = this;
+        return (
+            '{' +
+            Object.entries(value)
+                .map(([key, propValue]) => {
+                    if (!strict && !keyType.is(key)) return;
+                    const propString = valueType.maybeStringify(propValue as ValueType);
+                    return propString && `${stringStringify(key)}:${propString}`;
+                })
+                .filter(Boolean)
+                .toString() +
+            '}'
+        );
     }
 }
 define(RecordType, 'basicType', 'object');

@@ -24,6 +24,8 @@ export interface TypeTestCase {
     invalidConversions?: [input: unknown, message: string | string[] | RegExp][];
 }
 
+export const stripped = Symbol('stripped');
+
 export function testTypeImpl({
     name,
     basicType: expectedBasicType,
@@ -55,6 +57,17 @@ export function testTypeImpl({
             test.each(validValues)('accepts: %p', value => {
                 expect(type.check(value)).toBe(value);
                 expect(type.is(value)).toBeTrue();
+            });
+
+        validValues &&
+            test.each(validValues)('correctly stringifies: %p', value => {
+                const jsonStr = JSON.stringify(typeof value === 'object' && value && stripped in value ? value[stripped] : value);
+                expect(type.maybeStringify(value)).toBe(jsonStr);
+                if (jsonStr) {
+                    expect(type.stringify(value)).toBe(jsonStr);
+                } else {
+                    expect(() => type.stringify(value)).toThrow('Do not know how to serialize a');
+                }
             });
 
         invalidValues &&

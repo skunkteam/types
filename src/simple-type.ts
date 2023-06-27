@@ -9,6 +9,7 @@ export interface SimpleTypeOptions<ResultType, TypeConfig> {
     autoCaster?: BaseTypeImpl<ResultType, TypeConfig>['autoCaster'];
     combineConfig?: BaseTypeImpl<ResultType, TypeConfig>['combineConfig'];
     acceptVisitor?: SimpleAcceptVisitor<ResultType, TypeConfig>;
+    maybeStringify?: (value: ResultType) => string | undefined;
 }
 
 /**

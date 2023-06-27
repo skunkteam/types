@@ -32,7 +32,8 @@ export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Elemen
 
 ## Methods
 
-| Method                                                              | Modifiers              | Description |
-| ------------------------------------------------------------------- | ---------------------- | ----------- |
-| [accept(visitor)](./types.arraytype.accept.md)                      |                        |             |
-| [typeValidator(input, options)](./types.arraytype.typevalidator.md) | <code>protected</code> |             |
+| Method                                                              | Modifiers              | Description                                                                                                                                |
+| ------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [accept(visitor)](./types.arraytype.accept.md)                      |                        |                                                                                                                                            |
+| [maybeStringify(value)](./types.arraytype.maybestringify.md)        |                        | Create a JSON string of the given value, using the type information of the current type. Matches the specs of <code>JSON.stringify</code>. |
+| [typeValidator(input, options)](./types.arraytype.typevalidator.md) | <code>protected</code> |                                                                                                                                            |

@@ -2,6 +2,7 @@ import type { The } from '../interfaces.js';
 import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
 import { array } from './array.js';
 import { object } from './interface.js';
+import { undefinedType } from './literal.js';
 import { number } from './number.js';
 import { string } from './string.js';
 
@@ -123,6 +124,13 @@ testTypeImpl({
         [[], 'error in [SmallArray]: expected at least 1 element, got: []'],
         [['a', 'b', 'c', 'd'], 'error in [SmallArray]: expected at most 3 elements, got: ["a", "b", "c", "d"]'],
     ],
+});
+
+testTypeImpl({
+    name: 'undefined[]',
+    type: array(undefinedType),
+    validValues: [[[]], [[undefined]], [[undefined, undefined]]],
+    invalidValues: [[[null], 'error in [undefined[]] at <[0]>: expected an undefined, got a null']],
 });
 
 testTypes(() => {

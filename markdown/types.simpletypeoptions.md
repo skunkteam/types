@@ -18,4 +18,5 @@ export interface SimpleTypeOptions<ResultType, TypeConfig>
 | [autoCaster?](./types.simpletypeoptions.autocaster.md)                           |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['autoCaster'\]              | _(Optional)_ |
 | [combineConfig?](./types.simpletypeoptions.combineconfig.md)                     |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['combineConfig'\]           | _(Optional)_ |
 | [enumerableLiteralDomain?](./types.simpletypeoptions.enumerableliteraldomain.md) |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['enumerableLiteralDomain'\] | _(Optional)_ |
+| [maybeStringify?](./types.simpletypeoptions.maybestringify.md)                   |           | (value: ResultType) =&gt; string \| undefined                                                              | _(Optional)_ |
 | [typeConfig](./types.simpletypeoptions.typeconfig.md)                            |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['typeConfig'\]              |              |
