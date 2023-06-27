@@ -4,6 +4,8 @@
 
 ## InterfaceType.name property
 
+The name of the Type.
+
 **Signature:**
 
 ```typescript

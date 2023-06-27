@@ -53,7 +53,8 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      */
     abstract readonly basicType: BasicType | 'mixed';
 
-    /** The set of valid literals if enumerable.
+    /**
+     * The set of valid literals if enumerable.
      *
      * @remarks
      * If a Type (only) accepts a known number of literal values, these should be enumerated in this set. A record with such a

@@ -22,17 +22,17 @@ export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Elemen
 
 ## Properties
 
-| Property                                            | Modifiers             | Type                                          | Description |
-| --------------------------------------------------- | --------------------- | --------------------------------------------- | ----------- |
-| [basicType](./types.arraytype.basictype.md)         | <code>readonly</code> | 'array'                                       |             |
-| [elementType](./types.arraytype.elementtype.md)     | <code>readonly</code> | ElementType                                   |             |
-| [isDefaultName](./types.arraytype.isdefaultname.md) | <code>readonly</code> | boolean                                       |             |
-| [name](./types.arraytype.name.md)                   | <code>readonly</code> | string                                        |             |
-| [typeConfig](./types.arraytype.typeconfig.md)       | <code>readonly</code> | [ArrayTypeConfig](./types.arraytypeconfig.md) |             |
+| Property                                            | Modifiers             | Type                                          | Description                                                                 |
+| --------------------------------------------------- | --------------------- | --------------------------------------------- | --------------------------------------------------------------------------- |
+| [basicType](./types.arraytype.basictype.md)         | <code>readonly</code> | 'array'                                       | The kind of values this type validates.                                     |
+| [elementType](./types.arraytype.elementtype.md)     | <code>readonly</code> | ElementType                                   |                                                                             |
+| [isDefaultName](./types.arraytype.isdefaultname.md) | <code>readonly</code> | boolean                                       |                                                                             |
+| [name](./types.arraytype.name.md)                   | <code>readonly</code> | string                                        | The name of the Type.                                                       |
+| [typeConfig](./types.arraytype.typeconfig.md)       | <code>readonly</code> | [ArrayTypeConfig](./types.arraytypeconfig.md) | Extra information that is made available by this Type for runtime analysis. |
 
 ## Methods
 
-| Method                                                              | Modifiers              | Description |
-| ------------------------------------------------------------------- | ---------------------- | ----------- |
-| [accept(visitor)](./types.arraytype.accept.md)                      |                        |             |
-| [typeValidator(input, options)](./types.arraytype.typevalidator.md) | <code>protected</code> |             |
+| Method                                                              | Modifiers              | Description                         |
+| ------------------------------------------------------------------- | ---------------------- | ----------------------------------- |
+| [accept(visitor)](./types.arraytype.accept.md)                      |                        | Accept a visitor (visitor pattern). |
+| [typeValidator(input, options)](./types.arraytype.typevalidator.md) | <code>protected</code> | The actual validation-logic.        |

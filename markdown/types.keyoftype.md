@@ -22,18 +22,18 @@ export declare class KeyofType<T extends Record<string, unknown>, ResultType ext
 
 ## Properties
 
-| Property                                                                | Modifiers             | Type       | Description |
-| ----------------------------------------------------------------------- | --------------------- | ---------- | ----------- |
-| [basicType](./types.keyoftype.basictype.md)                             | <code>readonly</code> | 'string'   |             |
-| [enumerableLiteralDomain](./types.keyoftype.enumerableliteraldomain.md) | <code>readonly</code> | string\[\] |             |
-| [keys](./types.keyoftype.keys.md)                                       | <code>readonly</code> | T          |             |
-| [name](./types.keyoftype.name.md)                                       | <code>readonly</code> | string     |             |
-| [typeConfig](./types.keyoftype.typeconfig.md)                           | <code>readonly</code> | undefined  |             |
+| Property                                                                | Modifiers             | Type       | Description                                                                 |
+| ----------------------------------------------------------------------- | --------------------- | ---------- | --------------------------------------------------------------------------- |
+| [basicType](./types.keyoftype.basictype.md)                             | <code>readonly</code> | 'string'   | The kind of values this type validates.                                     |
+| [enumerableLiteralDomain](./types.keyoftype.enumerableliteraldomain.md) | <code>readonly</code> | string\[\] | The set of valid literals if enumerable.                                    |
+| [keys](./types.keyoftype.keys.md)                                       | <code>readonly</code> | T          |                                                                             |
+| [name](./types.keyoftype.name.md)                                       | <code>readonly</code> | string     | The name of the Type.                                                       |
+| [typeConfig](./types.keyoftype.typeconfig.md)                           | <code>readonly</code> | undefined  | Extra information that is made available by this Type for runtime analysis. |
 
 ## Methods
 
-| Method                                                     | Modifiers              | Description |
-| ---------------------------------------------------------- | ---------------------- | ----------- |
-| [accept(visitor)](./types.keyoftype.accept.md)             |                        |             |
-| [translate(input)](./types.keyoftype.translate.md)         |                        |             |
-| [typeValidator(input)](./types.keyoftype.typevalidator.md) | <code>protected</code> |             |
+| Method                                                     | Modifiers              | Description                         |
+| ---------------------------------------------------------- | ---------------------- | ----------------------------------- |
+| [accept(visitor)](./types.keyoftype.accept.md)             |                        | Accept a visitor (visitor pattern). |
+| [translate(input)](./types.keyoftype.translate.md)         |                        |                                     |
+| [typeValidator(input)](./types.keyoftype.typevalidator.md) | <code>protected</code> | The actual validation-logic.        |

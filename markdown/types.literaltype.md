@@ -22,17 +22,17 @@ export declare class LiteralType<ResultType extends LiteralValue> extends BaseTy
 
 ## Properties
 
-| Property                                                                  | Modifiers             | Type                              | Description |
-| ------------------------------------------------------------------------- | --------------------- | --------------------------------- | ----------- |
-| [basicType](./types.literaltype.basictype.md)                             | <code>readonly</code> | [BasicType](./types.basictype.md) |             |
-| [enumerableLiteralDomain](./types.literaltype.enumerableliteraldomain.md) | <code>readonly</code> | ResultType\[\]                    |             |
-| [name](./types.literaltype.name.md)                                       | <code>readonly</code> | string                            |             |
-| [typeConfig](./types.literaltype.typeconfig.md)                           | <code>readonly</code> | undefined                         |             |
-| [value](./types.literaltype.value.md)                                     | <code>readonly</code> | ResultType                        |             |
+| Property                                                                  | Modifiers             | Type                              | Description                                                                 |
+| ------------------------------------------------------------------------- | --------------------- | --------------------------------- | --------------------------------------------------------------------------- |
+| [basicType](./types.literaltype.basictype.md)                             | <code>readonly</code> | [BasicType](./types.basictype.md) | The kind of values this type validates.                                     |
+| [enumerableLiteralDomain](./types.literaltype.enumerableliteraldomain.md) | <code>readonly</code> | ResultType\[\]                    | The set of valid literals if enumerable.                                    |
+| [name](./types.literaltype.name.md)                                       | <code>readonly</code> | string                            | The name of the Type.                                                       |
+| [typeConfig](./types.literaltype.typeconfig.md)                           | <code>readonly</code> | undefined                         | Extra information that is made available by this Type for runtime analysis. |
+| [value](./types.literaltype.value.md)                                     | <code>readonly</code> | ResultType                        |                                                                             |
 
 ## Methods
 
-| Method                                                       | Modifiers              | Description |
-| ------------------------------------------------------------ | ---------------------- | ----------- |
-| [accept(visitor)](./types.literaltype.accept.md)             |                        |             |
-| [typeValidator(input)](./types.literaltype.typevalidator.md) | <code>protected</code> |             |
+| Method                                                       | Modifiers              | Description                         |
+| ------------------------------------------------------------ | ---------------------- | ----------------------------------- |
+| [accept(visitor)](./types.literaltype.accept.md)             |                        | Accept a visitor (visitor pattern). |
+| [typeValidator(input)](./types.literaltype.typevalidator.md) | <code>protected</code> | The actual validation-logic.        |

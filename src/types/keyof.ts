@@ -6,11 +6,14 @@ import { decodeOptionalName, define, hasOwnProperty, transpose } from '../utils/
  * The implementation behind types created with {@link keyof} and {@link valueof}.
  */
 export class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType> {
+    /** {@inheritdoc BaseTypeImpl.basicType} */
     readonly basicType!: 'string';
+    /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
     constructor(
         readonly keys: T,
+        /** {@inheritdoc BaseTypeImpl.name} */
         readonly name = Object.keys(keys)
             .map(key => JSON.stringify(key))
             .join(' | '),
@@ -18,8 +21,10 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
         super();
     }
 
+    /** {@inheritdoc BaseTypeImpl.enumerableLiteralDomain} */
     override readonly enumerableLiteralDomain = Object.keys(this.keys);
 
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
             input,
@@ -35,6 +40,7 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
         return this.keys[input];
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitKeyofType(this);
     }

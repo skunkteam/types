@@ -9,7 +9,8 @@ Constructs a new instance of the `KeyofType` class
 **Signature:**
 
 ```typescript
-constructor(keys: T, name?: string);
+constructor(keys: T,
+    name?: string);
 ```
 
 ## Parameters

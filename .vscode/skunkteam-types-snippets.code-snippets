@@ -18,7 +18,13 @@
     "Exported type with @skunkteam/types": {
         "scope": "typescript",
         "prefix": "skunk-type",
-        "description": "Create a new exported type with @skunkteam/types including all boilerplate",
+        "description": "Create a new type with @skunkteam/types including all boilerplate",
         "body": ["type ${1:Name} = The<typeof $1>;", "const $1 = ${2:type}('$1', $0);"]
+    },
+    "Inherit docs": {
+        "scope": "typescript",
+        "prefix": "inherit",
+        "description": "Inherit docs from BaseTypeImpl class",
+        "body": "/** {@inheritdoc ${1|BaseTypeImpl,BaseObjectLikeTypeImpl|}.$0} */"
     }
 }

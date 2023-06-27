@@ -4,8 +4,14 @@
 
 ## IntersectionType.basicType property
 
+The kind of values this type validates.
+
 **Signature:**
 
 ```typescript
 readonly basicType: 'object';
 ```
+
+## Remarks
+
+See [BasicType](./types.basictype.md) for more info about the rationale behind the basic type.

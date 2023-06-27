@@ -16,17 +16,17 @@ export declare class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<Res
 
 ## Properties
 
-| Property                                       | Modifiers             | Type                                         | Description |
-| ---------------------------------------------- | --------------------- | -------------------------------------------- | ----------- |
-| [basicType](./types.simpletype.basictype.md)   | <code>readonly</code> | [BasicType](./types.basictype.md) \| 'mixed' |             |
-| [name](./types.simpletype.name.md)             | <code>readonly</code> | string                                       |             |
-| [typeConfig](./types.simpletype.typeconfig.md) | <code>readonly</code> | TypeConfig                                   |             |
+| Property                                       | Modifiers             | Type                                         | Description                                                                 |
+| ---------------------------------------------- | --------------------- | -------------------------------------------- | --------------------------------------------------------------------------- |
+| [basicType](./types.simpletype.basictype.md)   | <code>readonly</code> | [BasicType](./types.basictype.md) \| 'mixed' | The kind of values this type validates.                                     |
+| [name](./types.simpletype.name.md)             | <code>readonly</code> | string                                       | The name of the Type.                                                       |
+| [typeConfig](./types.simpletype.typeconfig.md) | <code>readonly</code> | TypeConfig                                   | Extra information that is made available by this Type for runtime analysis. |
 
 ## Methods
 
 | Method                                                                              | Modifiers              | Description                                                     |
 | ----------------------------------------------------------------------------------- | ---------------------- | --------------------------------------------------------------- |
-| [accept(visitor)](./types.simpletype.accept.md)                                     |                        |                                                                 |
+| [accept(visitor)](./types.simpletype.accept.md)                                     |                        | Accept a visitor (visitor pattern).                             |
 | [create(name, basicType, simpleValidator, options)](./types.simpletype.create.md)   | <code>static</code>    | Create a simple (limited) type implementation with type config. |
 | [create(name, basicType, simpleValidator, options)](./types.simpletype.create_1.md) | <code>static</code>    | Create a simple (limited) type implementation.                  |
-| [typeValidator(input, options)](./types.simpletype.typevalidator.md)                | <code>protected</code> |                                                                 |
+| [typeValidator(input, options)](./types.simpletype.typevalidator.md)                | <code>protected</code> | The actual validation-logic.                                    |
