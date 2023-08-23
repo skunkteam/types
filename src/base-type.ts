@@ -10,6 +10,8 @@ import type {
     PropertiesInfo,
     Result,
     Type,
+    TypeguardFor,
+    TypeguardResult,
     TypeImpl,
     TypeLink,
     ValidationOptions,
@@ -276,13 +278,8 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     /**
      * A type guard for this Type.
      */
-    get is(): <Input>(
-        this: void,
-        input: Input,
-    ) => input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never {
-        this._instanceCache.boundIs ??= <Input>(
-            input: Input,
-        ): input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never =>
+    get is(): TypeguardFor<ResultType> {
+        this._instanceCache.boundIs ??= <Input>(input: Input): input is TypeguardResult<ResultType, Input> =>
             this.validate(input, { mode: 'check' }).ok;
         return this._instanceCache.boundIs;
     }
