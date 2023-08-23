@@ -2,25 +2,15 @@
 
 [Home](./index.md) &gt; [@skunkteam/types](./types.md) &gt; [BaseTypeImpl](./types.basetypeimpl.md) &gt; [check](./types.basetypeimpl.check.md)
 
-## BaseTypeImpl.check() method
+## BaseTypeImpl.check property
 
 Asserts that a value conforms to this Type and returns the input as is, if it does.
 
 **Signature:**
 
 ```typescript
-check(input: unknown): ResultType;
+get check(): (this: void, input: unknown) => ResultType;
 ```
-
-## Parameters
-
-| Parameter | Type    | Description        |
-| --------- | ------- | ------------------ |
-| input     | unknown | the value to check |
-
-**Returns:**
-
-ResultType
 
 ## Remarks
 

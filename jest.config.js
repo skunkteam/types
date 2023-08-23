@@ -12,10 +12,10 @@ const config = {
     restoreMocks: true,
     coverageThreshold: {
         global: {
-            statements: 99,
-            branches: 96,
-            functions: 99,
-            lines: 99,
+            statements: -4,
+            branches: -21,
+            functions: -2,
+            lines: 100,
         },
     },
     moduleNameMapper: { '^(.*)\\.js$': ['$1.js', '$1.ts'] },
