@@ -2,22 +2,12 @@
 
 [Home](./index.md) &gt; [@skunkteam/types](./types.md) &gt; [BaseTypeImpl](./types.basetypeimpl.md) &gt; [is](./types.basetypeimpl.is.md)
 
-## BaseTypeImpl.is() method
+## BaseTypeImpl.is property
 
 A type guard for this Type.
 
 **Signature:**
 
 ```typescript
-is(input: unknown): input is ResultType;
+get is(): <Input>(this: void, input: Input) => input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never;
 ```
-
-## Parameters
-
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| input     | unknown |             |
-
-**Returns:**
-
-input is ResultType

@@ -58,7 +58,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     get autoCastAll(): this;
     protected autoCaster?(this: BaseTypeImpl<ResultType, TypeConfig>, value: unknown): unknown;
     abstract readonly basicType: BasicType | 'mixed';
-    check(input: unknown): ResultType;
+    get check(): (this: void, input: unknown) => ResultType;
     protected combineConfig(oldConfig: TypeConfig, newConfig: TypeConfig): TypeConfig;
     construct(input: unknown): ResultType;
     // (undocumented)
@@ -66,7 +66,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
     extendWith<E>(factory: (type: this) => E): this & E;
-    is(input: unknown): input is ResultType;
+    get is(): <Input>(this: void, input: Input) => input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never;
     literal(input: DeepUnbranded<ResultType>): ResultType;
     abstract readonly name: string;
     or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other>;
