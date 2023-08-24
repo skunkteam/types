@@ -24,17 +24,17 @@ export declare class InterfaceType<Props extends Properties, ResultType> extends
 
 ## Properties
 
-| Property                                                                  | Modifiers             | Type                                                                                   | Description                                          |
-| ------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| [basicType](./types.interfacetype.basictype.md)                           | <code>readonly</code> | 'object'                                                                               |                                                      |
-| [isDefaultName](./types.interfacetype.isdefaultname.md)                   | <code>readonly</code> | boolean                                                                                |                                                      |
-| [keys](./types.interfacetype.keys.md)                                     | <code>readonly</code> | (keyof Props)\[\]                                                                      | The keys (property-names) for this object-like type. |
-| [name](./types.interfacetype.name.md)                                     | <code>readonly</code> | string                                                                                 |                                                      |
-| [options](./types.interfacetype.options.md)                               | <code>readonly</code> | [InterfaceTypeOptions](./types.interfacetypeoptions.md)                                |                                                      |
-| [possibleDiscriminators](./types.interfacetype.possiblediscriminators.md) | <code>readonly</code> | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\] |                                                      |
-| [props](./types.interfacetype.props.md)                                   | <code>readonly</code> | Props                                                                                  |                                                      |
-| [propsInfo](./types.interfacetype.propsinfo.md)                           | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt;                       |                                                      |
-| [typeConfig](./types.interfacetype.typeconfig.md)                         | <code>readonly</code> | undefined                                                                              |                                                      |
+| Property                                                                  | Modifiers             | Type                                                                           | Description                                          |
+| ------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| [basicType](./types.interfacetype.basictype.md)                           | <code>readonly</code> | 'object'                                                                       |                                                      |
+| [isDefaultName](./types.interfacetype.isdefaultname.md)                   | <code>readonly</code> | boolean                                                                        |                                                      |
+| [keys](./types.interfacetype.keys.md)                                     | <code>readonly</code> | readonly (keyof Props)\[\]                                                     | The keys (property-names) for this object-like type. |
+| [name](./types.interfacetype.name.md)                                     | <code>readonly</code> | string                                                                         |                                                      |
+| [options](./types.interfacetype.options.md)                               | <code>readonly</code> | [InterfaceTypeOptions](./types.interfacetypeoptions.md)                        |                                                      |
+| [possibleDiscriminators](./types.interfacetype.possiblediscriminators.md) | <code>readonly</code> | readonly [PossibleDiscriminator](./types.possiblediscriminator.md)<!-- -->\[\] |                                                      |
+| [props](./types.interfacetype.props.md)                                   | <code>readonly</code> | Props                                                                          |                                                      |
+| [propsInfo](./types.interfacetype.propsinfo.md)                           | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt;               |                                                      |
+| [typeConfig](./types.interfacetype.typeconfig.md)                         | <code>readonly</code> | undefined                                                                      |                                                      |
 
 ## Methods
 

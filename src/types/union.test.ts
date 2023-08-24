@@ -1,7 +1,7 @@
 import type { DeepUnbranded, The } from '../interfaces.js';
 import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
 import { boolean } from './boolean.js';
-import { object } from './interface.js';
+import { object, partial } from './interface.js';
 import { keyof } from './keyof.js';
 import { literal, nullType, undefinedType } from './literal.js';
 import { number } from './number.js';
@@ -416,26 +416,64 @@ testTypeImpl({
     ],
 });
 
-const MixedUnion = union([ObjectUnion, StringLiteralUnion]);
-testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b" | "c", b: number.autoCast } | "abc" | "def"', type: MixedUnion });
+type MixedUnion = The<typeof MixedUnion>;
+const MixedUnion = union([...ObjectUnion.types, ...StringLiteralUnion.types]);
+testTypeImpl({
+    name: '{ tag: "a", a: string } | { tag: "b" | "c", b: number.autoCast } | "abc" | "def"',
+    type: MixedUnion,
+    validValues: [{ tag: 'a', a: 'string' }, { tag: 'b', b: 123 }, 'abc', 'def'],
+});
 testTypeImpl({ name: 'MixedUnion', type: MixedUnion.withName('MixedUnion'), basicType: 'mixed' });
 
-const ProperDiscriminators = union('ProperDiscriminators', [
-    object({
-        boolean: literal(true),
-        noOverlap: keyof({ a: null, b: null }),
-        overlap: keyof({ a: null, b: null }),
-    }),
-    object({
-        boolean: literal(false),
-        noOverlap: keyof({ c: null, d: null }),
-        overlap: keyof({ b: null, c: null }),
-        optional: literal(true),
-    }),
-]);
+const left = object('left', {
+    nested: object({ boolean: literal(true) }),
+    noOverlap: keyof({ a: null, b: null }),
+    overlap: keyof({ a: null, b: null }),
+});
+const right = object('right', {
+    nested: partial({ boolean: literal(false) }),
+    noOverlap: keyof({ c: null, d: null }),
+    overlap: keyof({ b: null, c: null }),
+    optional: literal(true),
+});
+const ProperDiscriminators = union('ProperDiscriminators', [left, right]);
 test('proper discriminators', () => {
     expect(ProperDiscriminators.possibleDiscriminators).toIncludeSameMembers([
-        { path: ['boolean'], values: [true, false] },
-        { path: ['noOverlap'], values: ['a', 'b', 'c', 'd'] },
+        {
+            path: ['nested', 'boolean'],
+            values: [true, false, undefined],
+            mapping: [
+                { type: left, values: [true] },
+                { type: right, values: [false, undefined] },
+            ],
+        },
+        {
+            path: ['noOverlap'],
+            values: ['a', 'b', 'c', 'd'],
+            mapping: [
+                { type: left, values: ['a', 'b'] },
+                { type: right, values: ['c', 'd'] },
+            ],
+        },
     ]);
+});
+
+testTypeImpl({
+    name: 'ProperDiscriminators',
+    type: ProperDiscriminators,
+    basicType: 'object',
+    validValues: [
+        { nested: { boolean: true }, noOverlap: 'a', overlap: 'b' },
+        { nested: {}, noOverlap: 'c', overlap: 'b', optional: true },
+    ],
+    invalidValues: [
+        [
+            { noOverlap: 'e' },
+            [
+                'error in [ProperDiscriminators]: every subtype of union has at least one discriminator mismatch',
+                '  • [left] requires <noOverlap> to be "a" or "b", got: "e"',
+                '  • [right] requires <noOverlap> to be "c" or "d", got: "e"',
+            ],
+        ],
+    ],
 });

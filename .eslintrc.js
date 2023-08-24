@@ -16,7 +16,7 @@ const config = {
     rules: {
         'no-fallthrough': 'off', // checked by TS compiler
         'object-shorthand': ['error', 'always'],
-        'sort-imports': ['error', { ignoreCase: true, ignoreDeclarationSort: true }],
+        'sort-imports': ['error', { ignoreDeclarationSort: true }],
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
         'import/extensions': ['error', 'ignorePackages'],

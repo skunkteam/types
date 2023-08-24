@@ -20,13 +20,12 @@ export function decodeOptionalOptions<Options extends { name?: string }, OtherPa
 }
 
 export function partition<Base, Filtered extends Base>(
-    array: readonly Base[],
+    array: Base[],
     filter: (value: Base) => value is Filtered,
 ): [Filtered[], Exclude<Base, Filtered>[]];
-export function partition<Base>(array: readonly Base[], filter: (value: Base) => boolean): [Base[], Base[]];
-export function partition<T>(array: readonly T[], filter: (value: T) => boolean): [T[], T[]] {
-    const no: T[] = array.slice();
-    return [remove(no, filter), no];
+export function partition<Base>(array: Base[], filter: (value: Base) => boolean): [Base[], Base[]];
+export function partition<T>(array: T[], filter: (value: T) => boolean): [T[], T[]] {
+    return [remove(array, filter), array];
 }
 
 export function remove<Base, Filtered extends Base>(array: Base[], filter: (value: Base) => value is Filtered): Filtered[];

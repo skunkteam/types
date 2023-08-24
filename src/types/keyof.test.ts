@@ -1,5 +1,5 @@
 import type { The } from '../interfaces.js';
-import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes, ValidationErrorForTest } from '../testutils.js';
+import { ValidationErrorForTest, assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
 import { keyof, valueof } from './keyof.js';
 import { literal } from './literal.js';
 import { union } from './union.js';

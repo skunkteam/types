@@ -41,12 +41,10 @@ export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> e
     // (undocumented)
     abstract readonly isDefaultName: boolean;
     // (undocumented)
-    abstract readonly possibleDiscriminators: Array<{
-        path: string[];
-        values: LiteralValue[];
-    }>;
+    abstract readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     abstract readonly props: Properties;
+    protected get propsArray(): ReadonlyArray<[string, Type<unknown>]>;
     // (undocumented)
     abstract readonly propsInfo: PropertiesInfo;
 }
@@ -142,16 +140,13 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
-    readonly keys: (keyof Props)[];
+    readonly keys: readonly (keyof Props)[];
     // (undocumented)
     readonly name: string;
     // (undocumented)
     readonly options: InterfaceTypeOptions;
     // (undocumented)
-    readonly possibleDiscriminators: {
-        path: string[];
-        values: LiteralValue[];
-    }[];
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     readonly props: Props;
     // (undocumented)
@@ -196,10 +191,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     // (undocumented)
     readonly name: string;
     // (undocumented)
-    readonly possibleDiscriminators: Array<{
-        path: string[];
-        values: LiteralValue[];
-    }>;
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     readonly props: PropertiesOfTypeTuple<Types>;
     // (undocumented)
@@ -375,10 +367,20 @@ export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props
 export function pattern<BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: StringTypeConfig['customMessage']): Type<Branded<string, BrandName>, StringTypeConfig>;
 
 // @public
+export type PossibleDiscriminator = {
+    readonly path: readonly string[];
+    readonly values: readonly LiteralValue[];
+    readonly mapping?: ReadonlyArray<{
+        type: BaseTypeImpl<unknown>;
+        values: readonly LiteralValue[];
+    }>;
+};
+
+// @public
 export function printKey(key: string): string;
 
 // @public
-export function printPath(path: Array<PropertyKey>): string;
+export function printPath(path: ReadonlyArray<PropertyKey>): string;
 
 // @public
 export function printValue(input: unknown, budget?: number, visited?: Set<unknown>): string;
@@ -546,14 +548,13 @@ export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultTyp
     // (undocumented)
     readonly enumerableLiteralDomain: Set<LiteralValue> | undefined;
     // (undocumented)
+    findApplicableSubtype(input: unknown): BaseTypeImpl<unknown> | undefined;
+    // (undocumented)
     readonly isDefaultName: boolean;
     // (undocumented)
     readonly name: string;
     // (undocumented)
-    readonly possibleDiscriminators: {
-        path: string[];
-        values: LiteralValue[];
-    }[];
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     readonly props: Properties;
     // (undocumented)
