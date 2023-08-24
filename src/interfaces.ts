@@ -278,6 +278,8 @@ export interface ParserOptions {
 /** The supported types of literals. */
 export type LiteralValue = string | number | boolean | null | undefined | void;
 
+export type Primitive = LiteralValue | bigint | symbol;
+
 /**
  * Basic categories of types.
  *
@@ -295,6 +297,28 @@ export type BasicType = 'string' | 'number' | 'bigint' | 'boolean' | 'function' 
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? { [P in keyof T]: T[P] } & {} : T;
+
+/**
+ * The type of the type-guard that comes with each Type (the #is method).
+ *
+ * @remarks
+ * Normally a typeguard wouldn't need the Input type-parameter, but this is needed for compatibility with `Array#every`. That method
+ * requires the use of this type-param.
+ */
+export type TypeguardFor<ResultType> = <Input>(this: void, input: Input) => input is TypeguardResult<ResultType, Input>;
+
+/**
+ * The resulting type of a typeguard based on the `ResultType` of the Type and the given `Input`.
+ */
+export type TypeguardResult<ResultType, Input> =
+    // TypeScript does not allow us to define the TypeGuardResult based on ResultType (in our case), so we need to base it on the Input itself.
+    // If the input is unknown, we can fall back to basic typeguard result which is by far the best scenario.
+    unknown extends Input
+        ? Input & ResultType // <-- this is the best scenario, TypeScript needs to see `Input &` here, but `Input` is `unknown`, so it doesn't matter
+        : // If Input is not unknown, we support two scenarios. It will never be really type-safe in all cases, but that is typeguards for you
+        [Extract<Input, ResultType>] extends [never] // scenario 1: if we cannot identify elements of a union that look compatible...
+        ? Input & ResultType // ... then let TypeScript try to figure it out, which often works, ...
+        : Extract<Input, ResultType>; // ... otherwise pick those elements of the union and hope for the best.
 
 /**
  * An Array with at least one element.
