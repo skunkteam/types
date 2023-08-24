@@ -4,7 +4,7 @@ import { assignableTo, testTypeImpl, testTypes } from '../testutils.js';
 import { array } from './array.js';
 import { boolean } from './boolean.js';
 import { object, partial } from './interface.js';
-import { intersection, IntersectionOfTypeTuple } from './intersection.js';
+import { IntersectionOfTypeTuple, intersection } from './intersection.js';
 import { literal } from './literal.js';
 import { number } from './number.js';
 import { union } from './union.js';
@@ -20,6 +20,7 @@ describe(intersection, () => {
         ${'{ a: "property", b?: number }'}           | ${object({ a: literal('property') }).and(partial({ b: number }))}
         ${'NamedObject & { a?: number, b: number }'} | ${intersection([partial({ a: number }), object('NamedObject', {}), object({ b: number })])}
         ${'{ a?: number, b: number }'}               | ${intersection([intersection([partial({ a: number })]), object({ b: number })])}
+        ${'NamedObjectA & NamedObjectB'}             | ${intersection([object('NamedObjectA', { a: number }), object('NamedObjectB', { b: number })])}
     `('default name: $name', ({ impl, name }) => {
         expect(impl).toHaveProperty('name', name);
         expect(impl.props).toEqual({
@@ -64,6 +65,19 @@ describe(intersection, () => {
 
         expect(U.is({ tag: '{', tok: '123' })).toBeFalse();
         expect(U.is({ tag: '(' })).toBeFalse();
+    });
+
+    test('possibleDiscriminators', () => {
+        type IntersectionOfUnions = The<typeof IntersectionOfUnions>;
+        const IntersectionOfUnions = intersection('IntersectionOfUnions', [
+            union('left', [object({ leftProp: literal('a') }), object({ leftProp: literal('b') })]),
+            union('right', [object({ rightProp: literal('c') }), object({ rightProp: literal('d') })]),
+        ]);
+
+        expect(IntersectionOfUnions.possibleDiscriminators).toEqual([
+            { path: ['leftProp'], values: ['a', 'b'] },
+            { path: ['rightProp'], values: ['c', 'd'] },
+        ]);
     });
 
     test('invalid type defs', () => {

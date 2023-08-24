@@ -9,5 +9,5 @@ A type guard for this Type.
 **Signature:**
 
 ```typescript
-get is(): <Input>(this: void, input: Input) => input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never;
+get is(): TypeguardFor<ResultType>;
 ```

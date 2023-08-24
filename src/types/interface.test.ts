@@ -1,7 +1,7 @@
 import type { The } from '../interfaces.js';
 import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
 import { boolean } from './boolean.js';
-import { object, partial, PartialType } from './interface.js';
+import { PartialType, object, partial } from './interface.js';
 import { IntersectionType } from './intersection.js';
 import { undefinedType } from './literal.js';
 import { number } from './number.js';

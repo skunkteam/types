@@ -37,12 +37,10 @@ export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> e
     // (undocumented)
     abstract readonly isDefaultName: boolean;
     // (undocumented)
-    abstract readonly possibleDiscriminators: Array<{
-        path: string[];
-        values: LiteralValue[];
-    }>;
+    abstract readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     abstract readonly props: Properties;
+    protected get propsArray(): ReadonlyArray<[string, Type<unknown>]>;
     // (undocumented)
     abstract readonly propsInfo: PropertiesInfo;
 }
@@ -66,7 +64,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
     extendWith<E>(factory: (type: this) => E): this & E;
-    get is(): <Input>(this: void, input: Input) => input is unknown extends Input ? ResultType & Input : Input extends ResultType ? Input : never;
+    get is(): TypeguardFor<ResultType>;
     literal(input: DeepUnbranded<ResultType>): ResultType;
     abstract readonly name: string;
     or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other>;
@@ -137,15 +135,12 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
-    readonly keys: (keyof Props)[];
+    readonly keys: readonly (keyof Props)[];
     readonly name: string;
     // (undocumented)
     readonly options: InterfaceTypeOptions;
     // (undocumented)
-    readonly possibleDiscriminators: {
-        path: string[];
-        values: LiteralValue[];
-    }[];
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     readonly props: Props;
     // (undocumented)
@@ -185,10 +180,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly isDefaultName: boolean;
     readonly name: string;
     // (undocumented)
-    readonly possibleDiscriminators: Array<{
-        path: string[];
-        values: LiteralValue[];
-    }>;
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     readonly props: PropertiesOfTypeTuple<Types>;
     // (undocumented)
@@ -351,10 +343,23 @@ export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props
 export function pattern<BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: StringTypeConfig['customMessage']): Type<Branded<string, BrandName>, StringTypeConfig>;
 
 // @public
+export type PossibleDiscriminator = {
+    readonly path: readonly string[];
+    readonly values: readonly LiteralValue[];
+    readonly mapping?: ReadonlyArray<{
+        type: BaseTypeImpl<unknown>;
+        values: readonly LiteralValue[];
+    }>;
+};
+
+// @public (undocumented)
+export type Primitive = LiteralValue | bigint | symbol;
+
+// @public
 export function printKey(key: string): string;
 
 // @public
-export function printPath(path: Array<PropertyKey>): string;
+export function printPath(path: ReadonlyArray<PropertyKey>): string;
 
 // @public
 export function printValue(input: unknown, budget?: number, visited?: Set<unknown>): string;
@@ -471,6 +476,14 @@ export interface TypedPropertyInformation<Props extends Properties> {
 }
 
 // @public
+export type TypeguardFor<ResultType> = <Input>(this: void, input: Input) => input is TypeguardResult<ResultType, Input>;
+
+// @public
+export type TypeguardResult<ResultType, Input> = unknown extends Input ? Input & ResultType : [
+Extract<Input, ResultType>
+] extends [never] ? Input & ResultType : Extract<Input, ResultType>;
+
+// @public
 export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
     new (input: unknown): TypeOf<Impl>;
     (input: unknown): TypeOf<Impl>;
@@ -509,13 +522,12 @@ export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultTyp
     readonly collapsedTypes: Types;
     readonly enumerableLiteralDomain: Set<LiteralValue> | undefined;
     // (undocumented)
+    findApplicableSubtype(input: unknown): BaseTypeImpl<unknown> | undefined;
+    // (undocumented)
     readonly isDefaultName: boolean;
     readonly name: string;
     // (undocumented)
-    readonly possibleDiscriminators: {
-        path: string[];
-        values: LiteralValue[];
-    }[];
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     readonly props: Properties;
     // (undocumented)

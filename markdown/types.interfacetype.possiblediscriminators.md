@@ -7,8 +7,5 @@
 **Signature:**
 
 ```typescript
-readonly possibleDiscriminators: {
-        path: string[];
-        values: LiteralValue[];
-    }[];
+readonly possibleDiscriminators: readonly PossibleDiscriminator[];
 ```
