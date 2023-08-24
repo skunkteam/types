@@ -3,6 +3,7 @@ import type {
     BasicType,
     LiteralValue,
     OneOrMore,
+    PossibleDiscriminator,
     Properties,
     PropertiesInfo,
     Result,
@@ -40,19 +41,25 @@ export class UnionType<
     /** {@inheritdoc BaseObjectLikeTypeImpl.props} */
     readonly props = propsInfoToProps(this.propsInfo);
     /** {@inheritdoc BaseObjectLikeTypeImpl.possibleDiscriminators} */
-    readonly possibleDiscriminators = analyzePossibleDiscriminators(this.types);
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[] = analyzePossibleDiscriminators(this.types);
     readonly collapsedTypes = this.types.flatMap(type => (type instanceof UnionType ? (type.types as Types) : type)) as Types;
     /** {@inheritdoc BaseTypeImpl.enumerableLiteralDomain} */
     override readonly enumerableLiteralDomain = analyzeEnumerableLiteralDomain(this.types);
 
     /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
-        const failures = [];
+        // Fast path:
+        const optimisticType = this.findApplicableSubtype(input);
+        const optimisticResult = optimisticType?.validate(input, options);
+        if (optimisticResult?.ok) return this.createResult(input, optimisticResult.value, true);
+
+        // Slower to evaluate the rest of the sub-types.
+        const failures = optimisticResult ? [optimisticResult] : [];
         for (const type of this.collapsedTypes) {
+            if (type === optimisticType) continue;
             const result = type.validate(input, options);
-            if (result.ok) {
-                return this.createResult(input, result.value, true);
-            }
+            if (result.ok) return this.createResult(input, result.value, true);
+
             failures.push(result);
         }
         return this.createResult(input, undefined, { kind: 'union', failures });
@@ -61,6 +68,23 @@ export class UnionType<
     /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitUnionType(this);
+    }
+
+    findApplicableSubtype(input: unknown): BaseTypeImpl<unknown> | undefined {
+        if (typeof input !== 'object' || !input) return;
+
+        discriminators: for (const { path, mapping } of this.possibleDiscriminators) {
+            let value: unknown = input;
+            for (const key of path) {
+                if (typeof value !== 'object' || !value) continue discriminators;
+                value = (value as Record<string, unknown>)[key];
+            }
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- mapping is always provided in UnionType
+            const found = mapping!.find(m => m.values.includes(value as LiteralValue));
+            if (found) return found.type;
+        }
+
+        return;
     }
 }
 
@@ -102,15 +126,17 @@ function analyzePropsInfo<Types extends OneOrMore<BaseTypeImpl<unknown> | BaseOb
     return result;
 }
 
-function analyzePossibleDiscriminators(types: Array<BaseTypeImpl<unknown> | BaseObjectLikeTypeImpl<unknown>>) {
-    let found: Record<string, { path: string[]; values: LiteralValue[] }> | undefined;
+function analyzePossibleDiscriminators(
+    types: ReadonlyArray<BaseTypeImpl<unknown> | BaseObjectLikeTypeImpl<unknown>>,
+): PossibleDiscriminator[] {
+    let found: Record<string, Required<PossibleDiscriminator>> | undefined;
     // Generate the intersection (based on path) of all 'possibleDiscriminators' in all object like types in `types`
     for (const type of types) {
         // All object-types have 'possibleDiscriminators' (even if it is empty)
         if ('possibleDiscriminators' in type) {
             const pds: typeof found = {};
-            for (const d of type.possibleDiscriminators) {
-                pds[printPath(d.path)] = d;
+            for (const { path, values } of type.possibleDiscriminators) {
+                pds[printPath(path)] = { path, values, mapping: [{ type, values }] };
             }
             if (!found) {
                 found = pds;
@@ -118,7 +144,11 @@ function analyzePossibleDiscriminators(types: Array<BaseTypeImpl<unknown> | Base
                 for (const [path, thisOne] of Object.entries(found)) {
                     const otherOne = pds[path];
                     if (otherOne && !otherOne.values.some(value => thisOne.values.includes(value))) {
-                        found[path] = { path: thisOne.path, values: [...thisOne.values, ...otherOne.values] };
+                        found[path] = {
+                            path: thisOne.path,
+                            values: [...thisOne.values, ...otherOne.values],
+                            mapping: [...thisOne.mapping, ...otherOne.mapping],
+                        };
                     } else {
                         delete found[path];
                     }

@@ -1,9 +1,9 @@
-import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType, TypedPropertyInformation } from '../base-type.js';
+import { BaseObjectLikeTypeImpl, BaseTypeImpl, TypedPropertyInformation, createType } from '../base-type.js';
 import type {
-    LiteralValue,
     MergeIntersection,
     MessageDetails,
     ObjectType,
+    PossibleDiscriminator,
     Properties,
     PropertiesInfo,
     Result,
@@ -75,11 +75,13 @@ export class InterfaceType<Props extends Properties, ResultType>
     }
 
     /** The keys (property-names) for this object-like type. */
-    readonly keys = Object.keys(this.props) as Array<keyof Props>;
+    readonly keys = this.propsArray.map(e => e[0]) as ReadonlyArray<keyof Props>;
     /** {@inheritdoc BaseObjectLikeTypeImpl.propsInfo} */
-    readonly propsInfo = toPropsInfo(this.props, this.options.partial);
+    readonly propsInfo = Object.fromEntries(this.propsArray.map(e => toPropsInfoEntry(e, this.options.partial))) as PropertiesInfo<Props>;
     /** {@inheritdoc BaseObjectLikeTypeImpl.possibleDiscriminators} */
-    readonly possibleDiscriminators = this.options.partial ? [] : getPossibleDiscriminators(this.props);
+    readonly possibleDiscriminators: readonly PossibleDiscriminator[] = this.propsArray.flatMap(e =>
+        getPossibleDiscriminators(e, this.options.partial),
+    );
 
     /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
@@ -93,7 +95,7 @@ export class InterfaceType<Props extends Properties, ResultType>
         const { strictMissingKeys, partial } = this.options;
         const constructResult = {} as Record<string, unknown>;
         const details: MessageDetails[] = [];
-        for (const [key, innerType] of Object.entries(this.props)) {
+        for (const [key, innerType] of this.propsArray) {
             const missingKey = !hasOwnProperty(input, key);
             if (partial) {
                 if (missingKey || (!strictMissingKeys && input[key] === undefined)) {
@@ -142,7 +144,7 @@ define(InterfaceType, 'basicType', 'object');
 define(InterfaceType, 'createAutoCastAllType', function (this: InterfaceType<Properties, any>) {
     const name = extensionName(this, 'autoCastAll');
     const props: Properties = {};
-    for (const [key, value] of Object.entries(this.props)) {
+    for (const [key, value] of this.propsArray) {
         props[key] = value.autoCastAll;
     }
     return createType(new InterfaceType(props, { ...this.options, name }).autoCast);
@@ -186,24 +188,18 @@ export function partial<Props extends Properties>(
     return createType(new InterfaceType(props, { ...options, partial: true }));
 }
 
-function toPropsInfo<Props extends Properties>(props: Props, partial = false): PropertiesInfo<Props> {
-    const result = {} as PropertiesInfo;
-    for (const [key, type] of Object.entries(props)) {
-        result[key] = { partial, type };
-    }
-    return result as PropertiesInfo<Props>;
+function toPropsInfoEntry([key, type]: [string, Type<unknown>], partial = false) {
+    return [key, { partial, type }];
 }
 
-function getPossibleDiscriminators(
-    props: Record<string, Type<unknown> | ObjectType<unknown>>,
-): Array<{ path: string[]; values: LiteralValue[] }> {
-    const result: BaseObjectLikeTypeImpl<unknown>['possibleDiscriminators'] = [];
-    for (const [key, prop] of Object.entries(props)) {
-        if ('possibleDiscriminators' in prop) {
-            result.push(...prop.possibleDiscriminators.map(({ path, values }) => ({ path: [key, ...path], values })));
-        } else if (prop.enumerableLiteralDomain) {
-            result.push({ path: [key], values: [...prop.enumerableLiteralDomain] });
-        }
+function getPossibleDiscriminators([key, type]: [string, Type<unknown> | ObjectType<unknown>], partial = false): PossibleDiscriminator[] {
+    if (!partial && 'possibleDiscriminators' in type) {
+        return type.possibleDiscriminators.map(({ path, values }) => ({ path: [key, ...path], values }));
     }
-    return result;
+    if (type.enumerableLiteralDomain) {
+        const values = [...type.enumerableLiteralDomain];
+        if (partial && !values.includes(undefined)) values.push(undefined);
+        return [{ path: [key], values }];
+    }
+    return [];
 }

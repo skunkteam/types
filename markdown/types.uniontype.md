@@ -29,7 +29,7 @@ export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, R
 | [enumerableLiteralDomain](./types.uniontype.enumerableliteraldomain.md) | <code>readonly</code> | Set&lt;[LiteralValue](./types.literalvalue.md)<!-- -->&gt; \| undefined                                | The set of valid literals if enumerable.                                    |
 | [isDefaultName](./types.uniontype.isdefaultname.md)                     | <code>readonly</code> | boolean                                                                                                |                                                                             |
 | [name](./types.uniontype.name.md)                                       | <code>readonly</code> | string                                                                                                 | The name of the Type.                                                       |
-| [possibleDiscriminators](./types.uniontype.possiblediscriminators.md)   | <code>readonly</code> | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\]                 |                                                                             |
+| [possibleDiscriminators](./types.uniontype.possiblediscriminators.md)   | <code>readonly</code> | readonly [PossibleDiscriminator](./types.possiblediscriminator.md)<!-- -->\[\]                         |                                                                             |
 | [props](./types.uniontype.props.md)                                     | <code>readonly</code> | [Properties](./types.properties.md)                                                                    |                                                                             |
 | [propsInfo](./types.uniontype.propsinfo.md)                             | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;[Properties](./types.properties.md)<!-- -->&gt; |                                                                             |
 | [typeConfig](./types.uniontype.typeconfig.md)                           | <code>readonly</code> | undefined                                                                                              | Extra information that is made available by this Type for runtime analysis. |
@@ -37,7 +37,8 @@ export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, R
 
 ## Methods
 
-| Method                                                              | Modifiers              | Description                         |
-| ------------------------------------------------------------------- | ---------------------- | ----------------------------------- |
-| [accept(visitor)](./types.uniontype.accept.md)                      |                        | Accept a visitor (visitor pattern). |
-| [typeValidator(input, options)](./types.uniontype.typevalidator.md) | <code>protected</code> | The actual validation-logic.        |
+| Method                                                                     | Modifiers              | Description                         |
+| -------------------------------------------------------------------------- | ---------------------- | ----------------------------------- |
+| [accept(visitor)](./types.uniontype.accept.md)                             |                        | Accept a visitor (visitor pattern). |
+| [findApplicableSubtype(input)](./types.uniontype.findapplicablesubtype.md) |                        |                                     |
+| [typeValidator(input, options)](./types.uniontype.typevalidator.md)        | <code>protected</code> | The actual validation-logic.        |

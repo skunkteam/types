@@ -6,14 +6,15 @@ import type {
     MergeIntersection,
     ObjectType,
     ParserOptions,
+    PossibleDiscriminator,
     Properties,
     PropertiesInfo,
     Result,
     Type,
-    TypeguardFor,
-    TypeguardResult,
     TypeImpl,
     TypeLink,
+    TypeguardFor,
+    TypeguardResult,
     ValidationOptions,
     ValidationResult,
     Validator,
@@ -514,8 +515,14 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
 export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> extends BaseTypeImpl<ResultType, TypeConfig> {
     abstract readonly props: Properties;
     abstract readonly propsInfo: PropertiesInfo;
-    abstract readonly possibleDiscriminators: Array<{ path: string[]; values: LiteralValue[] }>;
+    abstract readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     abstract readonly isDefaultName: boolean;
+
+    private _propsArray?: ReadonlyArray<[string, Type<unknown>]>;
+    /** Array of props tuples (`Object.entries(this.prop)`). */
+    protected get propsArray(): ReadonlyArray<[string, Type<unknown>]> {
+        return (this._propsArray ??= Object.entries(this.props));
+    }
 
     /**
      * Intersect this Type with another Type.
