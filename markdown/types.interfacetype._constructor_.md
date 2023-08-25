@@ -9,7 +9,8 @@ Constructs a new instance of the `InterfaceType` class
 **Signature:**
 
 ```typescript
-constructor(props: Props, options: InterfaceTypeOptions);
+constructor(
+    props: Props, options: InterfaceTypeOptions);
 ```
 
 ## Parameters

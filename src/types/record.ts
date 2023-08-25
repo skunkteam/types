@@ -13,9 +13,13 @@ export class RecordType<
     ValueType,
     ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>,
 > extends BaseTypeImpl<ResultType> {
+    /** {@inheritdoc BaseTypeImpl.basicType} */
     readonly basicType!: 'object';
+    /** {@inheritdoc BaseObjectLikeTypeImpl.isDefaultName} */
     readonly isDefaultName: boolean;
+    /** {@inheritdoc BaseTypeImpl.name} */
     readonly name: string;
+    /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
     constructor(readonly keyType: KeyTypeImpl, readonly valueType: ValueTypeImpl, name?: string, readonly strict = true) {
@@ -24,6 +28,7 @@ export class RecordType<
         this.name = name || `Record<${keyType.name}, ${valueType.name}>`;
     }
 
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         if (!unknownRecord.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
@@ -53,6 +58,7 @@ export class RecordType<
         return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitRecordType(this);
     }

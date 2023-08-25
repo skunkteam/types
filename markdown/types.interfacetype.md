@@ -24,23 +24,23 @@ export declare class InterfaceType<Props extends Properties, ResultType> extends
 
 ## Properties
 
-| Property                                                                  | Modifiers             | Type                                                                                   | Description                                          |
-| ------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| [basicType](./types.interfacetype.basictype.md)                           | <code>readonly</code> | 'object'                                                                               |                                                      |
-| [isDefaultName](./types.interfacetype.isdefaultname.md)                   | <code>readonly</code> | boolean                                                                                |                                                      |
-| [keys](./types.interfacetype.keys.md)                                     | <code>readonly</code> | (keyof Props)\[\]                                                                      | The keys (property-names) for this object-like type. |
-| [name](./types.interfacetype.name.md)                                     | <code>readonly</code> | string                                                                                 |                                                      |
-| [options](./types.interfacetype.options.md)                               | <code>readonly</code> | [InterfaceTypeOptions](./types.interfacetypeoptions.md)                                |                                                      |
-| [possibleDiscriminators](./types.interfacetype.possiblediscriminators.md) | <code>readonly</code> | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\] |                                                      |
-| [props](./types.interfacetype.props.md)                                   | <code>readonly</code> | Props                                                                                  |                                                      |
-| [propsInfo](./types.interfacetype.propsinfo.md)                           | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt;                       |                                                      |
-| [typeConfig](./types.interfacetype.typeconfig.md)                         | <code>readonly</code> | undefined                                                                              |                                                      |
+| Property                                                                  | Modifiers             | Type                                                                                   | Description                                                                 |
+| ------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [basicType](./types.interfacetype.basictype.md)                           | <code>readonly</code> | 'object'                                                                               | The kind of values this type validates.                                     |
+| [isDefaultName](./types.interfacetype.isdefaultname.md)                   | <code>readonly</code> | boolean                                                                                |                                                                             |
+| [keys](./types.interfacetype.keys.md)                                     | <code>readonly</code> | (keyof Props)\[\]                                                                      | The keys (property-names) for this object-like type.                        |
+| [name](./types.interfacetype.name.md)                                     | <code>readonly</code> | string                                                                                 | The name of the Type.                                                       |
+| [options](./types.interfacetype.options.md)                               | <code>readonly</code> | [InterfaceTypeOptions](./types.interfacetypeoptions.md)                                |                                                                             |
+| [possibleDiscriminators](./types.interfacetype.possiblediscriminators.md) | <code>readonly</code> | { path: string\[\]; values: [LiteralValue](./types.literalvalue.md)<!-- -->\[\]; }\[\] |                                                                             |
+| [props](./types.interfacetype.props.md)                                   | <code>readonly</code> | Props                                                                                  |                                                                             |
+| [propsInfo](./types.interfacetype.propsinfo.md)                           | <code>readonly</code> | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt;                       |                                                                             |
+| [typeConfig](./types.interfacetype.typeconfig.md)                         | <code>readonly</code> | undefined                                                                              | Extra information that is made available by this Type for runtime analysis. |
 
 ## Methods
 
 | Method                                                                  | Modifiers              | Description                                                                                |
 | ----------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------ |
-| [accept(visitor)](./types.interfacetype.accept.md)                      |                        |                                                                                            |
+| [accept(visitor)](./types.interfacetype.accept.md)                      |                        | Accept a visitor (visitor pattern).                                                        |
 | [toPartial(name)](./types.interfacetype.topartial.md)                   |                        | Clone this type with all properties marked optional.                                       |
-| [typeValidator(input, options)](./types.interfacetype.typevalidator.md) | <code>protected</code> |                                                                                            |
+| [typeValidator(input, options)](./types.interfacetype.typevalidator.md) | <code>protected</code> | The actual validation-logic.                                                               |
 | [withOptional(args)](./types.interfacetype.withoptional.md)             |                        | Create a type with all properties of the current type, plus the given optional properties. |

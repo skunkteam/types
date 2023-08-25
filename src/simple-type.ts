@@ -56,11 +56,14 @@ export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType,
         return createType(type);
     }
 
+    /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig!: TypeConfig;
     private readonly acceptVisitor?: SimpleAcceptVisitor<ResultType, TypeConfig>;
 
     private constructor(
+        /** {@inheritdoc BaseTypeImpl.name} */
         readonly name: string,
+        /** {@inheritdoc BaseTypeImpl.basicType} */
         readonly basicType: BasicType | 'mixed',
         private readonly simpleValidator: (
             input: unknown,
@@ -71,10 +74,12 @@ export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType,
         super();
     }
 
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         return this.createResult(input, input, this.simpleValidator(input, options, this));
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return this.acceptVisitor ? this.acceptVisitor(this, visitor) : visitor.visitCustomType(this);
     }

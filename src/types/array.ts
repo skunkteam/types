@@ -19,17 +19,26 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
     ResultType,
     ArrayTypeConfig
 > {
+    /** {@inheritdoc BaseTypeImpl.basicType} */
     readonly basicType!: 'array';
+    /** {@inheritdoc BaseObjectLikeTypeImpl.isDefaultName} */
     readonly isDefaultName: boolean;
+    /** {@inheritdoc BaseTypeImpl.name} */
     readonly name: string;
 
-    constructor(readonly elementType: ElementType, readonly typeConfig: ArrayTypeConfig, name?: string) {
+    constructor(
+        readonly elementType: ElementType,
+        /** {@inheritdoc BaseTypeImpl.typeConfig} */
+        readonly typeConfig: ArrayTypeConfig,
+        name?: string,
+    ) {
         super();
         this.isDefaultName = !name;
         this.name = name || defaultName(elementType);
     }
 
-    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
+    protected override typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         // Is input an array?
         if (!unknownArray.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'array' });
@@ -64,6 +73,7 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
         );
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitArrayType(this);
     }

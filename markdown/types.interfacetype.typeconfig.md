@@ -4,6 +4,8 @@
 
 ## InterfaceType.typeConfig property
 
+Extra information that is made available by this Type for runtime analysis.
+
 **Signature:**
 
 ```typescript

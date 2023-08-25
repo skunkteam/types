@@ -4,6 +4,8 @@
 
 ## LiteralType.typeValidator() method
 
+The actual validation-logic.
+
 **Signature:**
 
 ```typescript
@@ -12,9 +14,9 @@ protected typeValidator(input: unknown): Result<ResultType>;
 
 ## Parameters
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| input     | unknown |             |
+| Parameter | Type    | Description                     |
+| --------- | ------- | ------------------------------- |
+| input     | unknown | the input value to be validated |
 
 **Returns:**
 

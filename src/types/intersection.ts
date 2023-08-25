@@ -31,9 +31,13 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>, undefined>
     implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>>
 {
+    /** {@inheritdoc BaseTypeImpl.name} */
     readonly name: string;
+    /** {@inheritdoc BaseTypeImpl.basicType} */
     readonly basicType!: 'object';
+    /** {@inheritdoc BaseObjectLikeTypeImpl.isDefaultName} */
     readonly isDefaultName: boolean;
+    /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
     constructor(readonly types: Types, name?: string) {
@@ -45,11 +49,15 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     }
 
     // TODO: Support overlapping properties
+    /** {@inheritdoc BaseObjectLikeTypeImpl.props} */
     readonly props = Object.assign({}, ...this.types.map(type => type.props)) as PropertiesOfTypeTuple<Types>;
+    /** {@inheritdoc BaseObjectLikeTypeImpl.propsInfo} */
     readonly propsInfo = Object.assign({}, ...this.types.map(type => type.propsInfo)) as PropertiesInfo<PropertiesOfTypeTuple<Types>>;
     readonly combinedName = combinedName(this.types);
+    /** {@inheritdoc BaseObjectLikeTypeImpl.possibleDiscriminators} */
     readonly possibleDiscriminators: Array<{ path: string[]; values: LiteralValue[] }> = this.types.flatMap(t => t.possibleDiscriminators);
 
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>> {
         if (!unknownRecord.is(input)) {
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
@@ -68,6 +76,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
         );
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitObjectLikeType(this);
     }

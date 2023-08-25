@@ -9,20 +9,16 @@ export function array<Element>(...args: [name: string, elementType: BaseTypeImpl
 
 // @public
 export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType, ArrayTypeConfig> {
-    constructor(elementType: ElementType, typeConfig: ArrayTypeConfig, name?: string);
-    // (undocumented)
+    constructor(elementType: ElementType,
+    typeConfig: ArrayTypeConfig, name?: string);
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: 'array';
     // (undocumented)
     readonly elementType: ElementType;
     // (undocumented)
     readonly isDefaultName: boolean;
-    // (undocumented)
     readonly name: string;
-    // (undocumented)
     readonly typeConfig: ArrayTypeConfig;
-    // (undocumented)
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 }
 
@@ -135,15 +131,13 @@ export const int: Type<Branded<number, 'int'>, NumberTypeConfig>;
 
 // @public
 export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props> {
-    constructor(props: Props, options: InterfaceTypeOptions);
-    // (undocumented)
+    constructor(
+    props: Props, options: InterfaceTypeOptions);
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
     readonly keys: (keyof Props)[];
-    // (undocumented)
     readonly name: string;
     // (undocumented)
     readonly options: InterfaceTypeOptions;
@@ -157,9 +151,7 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     // (undocumented)
     readonly propsInfo: PropertiesInfo<Props>;
     toPartial(name?: string): PartialType<Props>;
-    // (undocumented)
     readonly typeConfig: undefined;
-    // (undocumented)
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
     withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<PartialProps>>>>>> & TypedPropertyInformation<Props & PartialProps>;
 }
@@ -185,15 +177,12 @@ export type IntersectionOfTypeTuple<Tuple> = Tuple extends [{
 // @public
 export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>> extends BaseObjectLikeTypeImpl<IntersectionOfTypeTuple<Types>, undefined> implements TypedPropertyInformation<PropertiesOfTypeTuple<Types>> {
     constructor(types: Types, name?: string);
-    // (undocumented)
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: 'object';
     // (undocumented)
     readonly combinedName: string;
     // (undocumented)
     readonly isDefaultName: boolean;
-    // (undocumented)
     readonly name: string;
     // (undocumented)
     readonly possibleDiscriminators: Array<{
@@ -204,11 +193,9 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly props: PropertiesOfTypeTuple<Types>;
     // (undocumented)
     readonly propsInfo: PropertiesInfo<PropertiesOfTypeTuple<Types>>;
-    // (undocumented)
     readonly typeConfig: undefined;
     // (undocumented)
     readonly types: Types;
-    // (undocumented)
     protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>>;
 }
 
@@ -220,22 +207,17 @@ export function keyof<T extends Record<string, unknown>>(...args: [name: string,
 
 // @public
 export class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType> {
-    constructor(keys: T, name?: string);
-    // (undocumented)
+    constructor(keys: T,
+    name?: string);
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: 'string';
-    // (undocumented)
     readonly enumerableLiteralDomain: string[];
     // (undocumented)
     readonly keys: T;
-    // (undocumented)
     readonly name: string;
     // (undocumented)
     translate(input: unknown): T[keyof T];
-    // (undocumented)
     readonly typeConfig: undefined;
-    // (undocumented)
     protected typeValidator(input: unknown): Result<ResultType>;
 }
 
@@ -256,17 +238,11 @@ export function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<
 // @public
 export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType> {
     constructor(value: ResultType);
-    // (undocumented)
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: BasicType;
-    // (undocumented)
     readonly enumerableLiteralDomain: ResultType[];
-    // (undocumented)
     readonly name: string;
-    // (undocumented)
     readonly typeConfig: undefined;
-    // (undocumented)
     protected typeValidator(input: unknown): Result<ResultType>;
     // (undocumented)
     readonly value: ResultType;
@@ -407,21 +383,16 @@ export function record<KeyType extends number | string, ValueType>(...args: [nam
 // @public
 export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType extends number | string, ValueTypeImpl extends BaseTypeImpl<ValueType>, ValueType, ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>> extends BaseTypeImpl<ResultType> {
     constructor(keyType: KeyTypeImpl, valueType: ValueTypeImpl, name?: string, strict?: boolean);
-    // (undocumented)
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
     // (undocumented)
     readonly keyType: KeyTypeImpl;
-    // (undocumented)
     readonly name: string;
     // (undocumented)
     readonly strict: boolean;
-    // (undocumented)
     readonly typeConfig: undefined;
-    // (undocumented)
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
     // (undocumented)
     readonly valueType: ValueTypeImpl;
@@ -436,17 +407,12 @@ export type Result<T> = Success<T> | Failure;
 
 // @public
 export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType, TypeConfig> {
-    // (undocumented)
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: BasicType | 'mixed';
     static create<ResultType, TypeConfig>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType, TypeConfig>) => ValidationResult, options: SimpleTypeOptions<ResultType, TypeConfig>): Type<ResultType, TypeConfig>;
     static create<ResultType>(name: string, basicType: BasicType | 'mixed', simpleValidator: (input: unknown, options: ValidationOptions, type: SimpleType<ResultType, undefined>) => ValidationResult, options?: Omit<SimpleTypeOptions<ResultType, undefined>, 'typeConfig'>): Type<ResultType, undefined>;
-    // (undocumented)
     readonly name: string;
-    // (undocumented)
     readonly typeConfig: TypeConfig;
-    // (undocumented)
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 }
 
@@ -537,17 +503,13 @@ export function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(...args: [
 // @public
 export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>> extends BaseObjectLikeTypeImpl<ResultType> {
     constructor(types: Types, name?: string);
-    // (undocumented)
     accept<R>(visitor: Visitor<R>): R;
-    // (undocumented)
     readonly basicType: BasicType | "mixed";
     // (undocumented)
     readonly collapsedTypes: Types;
-    // (undocumented)
     readonly enumerableLiteralDomain: Set<LiteralValue> | undefined;
     // (undocumented)
     readonly isDefaultName: boolean;
-    // (undocumented)
     readonly name: string;
     // (undocumented)
     readonly possibleDiscriminators: {
@@ -558,11 +520,9 @@ export class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultTyp
     readonly props: Properties;
     // (undocumented)
     readonly propsInfo: PropertiesInfo<Properties>;
-    // (undocumented)
     readonly typeConfig: undefined;
     // (undocumented)
     readonly types: Types;
-    // (undocumented)
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 }
 

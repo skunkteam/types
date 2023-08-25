@@ -55,12 +55,20 @@ export class InterfaceType<Props extends Properties, ResultType>
     extends BaseObjectLikeTypeImpl<ResultType>
     implements TypedPropertyInformation<Props>
 {
+    /** {@inheritdoc BaseTypeImpl.name} */
     readonly name: string;
+    /** {@inheritdoc BaseTypeImpl.basicType} */
     readonly basicType!: 'object';
+    /** {@inheritdoc BaseObjectLikeTypeImpl.isDefaultName} */
     readonly isDefaultName: boolean;
+    /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
-    constructor(readonly props: Props, readonly options: InterfaceTypeOptions) {
+    constructor(
+        /** {@inheritdoc BaseObjectLikeTypeImpl.props} */
+        readonly props: Props,
+        readonly options: InterfaceTypeOptions,
+    ) {
         super();
         this.isDefaultName = !options.name;
         this.name = options.name || defaultObjectRep(this.propsInfo);
@@ -68,9 +76,12 @@ export class InterfaceType<Props extends Properties, ResultType>
 
     /** The keys (property-names) for this object-like type. */
     readonly keys = Object.keys(this.props) as Array<keyof Props>;
+    /** {@inheritdoc BaseObjectLikeTypeImpl.propsInfo} */
     readonly propsInfo = toPropsInfo(this.props, this.options.partial);
+    /** {@inheritdoc BaseObjectLikeTypeImpl.possibleDiscriminators} */
     readonly possibleDiscriminators = this.options.partial ? [] : getPossibleDiscriminators(this.props);
 
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         if (this.options.checkOnly) {
             // can copy here, because this is done after adding the 'visitedMap'
@@ -119,6 +130,7 @@ export class InterfaceType<Props extends Properties, ResultType>
         return name ? newType.withName(name) : newType;
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitObjectLikeType(this);
     }

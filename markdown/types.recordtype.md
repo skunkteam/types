@@ -22,19 +22,19 @@ export declare class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyTy
 
 ## Properties
 
-| Property                                             | Modifiers             | Type          | Description |
-| ---------------------------------------------------- | --------------------- | ------------- | ----------- |
-| [basicType](./types.recordtype.basictype.md)         | <code>readonly</code> | 'object'      |             |
-| [isDefaultName](./types.recordtype.isdefaultname.md) | <code>readonly</code> | boolean       |             |
-| [keyType](./types.recordtype.keytype.md)             | <code>readonly</code> | KeyTypeImpl   |             |
-| [name](./types.recordtype.name.md)                   | <code>readonly</code> | string        |             |
-| [strict](./types.recordtype.strict.md)               | <code>readonly</code> | boolean       |             |
-| [typeConfig](./types.recordtype.typeconfig.md)       | <code>readonly</code> | undefined     |             |
-| [valueType](./types.recordtype.valuetype.md)         | <code>readonly</code> | ValueTypeImpl |             |
+| Property                                             | Modifiers             | Type          | Description                                                                 |
+| ---------------------------------------------------- | --------------------- | ------------- | --------------------------------------------------------------------------- |
+| [basicType](./types.recordtype.basictype.md)         | <code>readonly</code> | 'object'      | The kind of values this type validates.                                     |
+| [isDefaultName](./types.recordtype.isdefaultname.md) | <code>readonly</code> | boolean       |                                                                             |
+| [keyType](./types.recordtype.keytype.md)             | <code>readonly</code> | KeyTypeImpl   |                                                                             |
+| [name](./types.recordtype.name.md)                   | <code>readonly</code> | string        | The name of the Type.                                                       |
+| [strict](./types.recordtype.strict.md)               | <code>readonly</code> | boolean       |                                                                             |
+| [typeConfig](./types.recordtype.typeconfig.md)       | <code>readonly</code> | undefined     | Extra information that is made available by this Type for runtime analysis. |
+| [valueType](./types.recordtype.valuetype.md)         | <code>readonly</code> | ValueTypeImpl |                                                                             |
 
 ## Methods
 
-| Method                                                               | Modifiers              | Description |
-| -------------------------------------------------------------------- | ---------------------- | ----------- |
-| [accept(visitor)](./types.recordtype.accept.md)                      |                        |             |
-| [typeValidator(input, options)](./types.recordtype.typevalidator.md) | <code>protected</code> |             |
+| Method                                                               | Modifiers              | Description                         |
+| -------------------------------------------------------------------- | ---------------------- | ----------------------------------- |
+| [accept(visitor)](./types.recordtype.accept.md)                      |                        | Accept a visitor (visitor pattern). |
+| [typeValidator(input, options)](./types.recordtype.typevalidator.md) | <code>protected</code> | The actual validation-logic.        |

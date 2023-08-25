@@ -4,6 +4,8 @@
 
 ## InterfaceType.typeValidator() method
 
+The actual validation-logic.
+
 **Signature:**
 
 ```typescript
@@ -12,10 +14,10 @@ protected typeValidator(input: unknown, options: ValidationOptions): Result<Resu
 
 ## Parameters
 
-| Parameter | Type                                              | Description |
-| --------- | ------------------------------------------------- | ----------- |
-| input     | unknown                                           |             |
-| options   | [ValidationOptions](./types.validationoptions.md) |             |
+| Parameter | Type                                              | Description                     |
+| --------- | ------------------------------------------------- | ------------------------------- |
+| input     | unknown                                           | the input value to be validated |
+| options   | [ValidationOptions](./types.validationoptions.md) | the current validation context  |
 
 **Returns:**
 

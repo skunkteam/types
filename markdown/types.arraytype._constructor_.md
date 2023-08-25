@@ -9,7 +9,8 @@ Constructs a new instance of the `ArrayType` class
 **Signature:**
 
 ```typescript
-constructor(elementType: ElementType, typeConfig: ArrayTypeConfig, name?: string);
+constructor(elementType: ElementType,
+    typeConfig: ArrayTypeConfig, name?: string);
 ```
 
 ## Parameters

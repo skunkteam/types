@@ -20,9 +20,13 @@ export class UnionType<
     Types extends OneOrMore<BaseTypeImpl<unknown>>,
     ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>,
 > extends BaseObjectLikeTypeImpl<ResultType> {
+    /** {@inheritdoc BaseTypeImpl.name} */
     readonly name: string;
+    /** {@inheritdoc BaseObjectLikeTypeImpl.isDefaultName} */
     readonly isDefaultName: boolean;
+    /** {@inheritdoc BaseTypeImpl.basicType} */
     readonly basicType = analyzeBasicType(this.types);
+    /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
     constructor(readonly types: Types, name?: string) {
@@ -31,12 +35,17 @@ export class UnionType<
         this.name = name || types.map(type => bracketsIfNeeded(type.name, '|')).join(' | ');
     }
 
+    /** {@inheritdoc BaseObjectLikeTypeImpl.propsInfo} */
     readonly propsInfo = analyzePropsInfo(this.types);
+    /** {@inheritdoc BaseObjectLikeTypeImpl.props} */
     readonly props = propsInfoToProps(this.propsInfo);
+    /** {@inheritdoc BaseObjectLikeTypeImpl.possibleDiscriminators} */
     readonly possibleDiscriminators = analyzePossibleDiscriminators(this.types);
     readonly collapsedTypes = this.types.flatMap(type => (type instanceof UnionType ? (type.types as Types) : type)) as Types;
+    /** {@inheritdoc BaseTypeImpl.enumerableLiteralDomain} */
     override readonly enumerableLiteralDomain = analyzeEnumerableLiteralDomain(this.types);
 
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         const failures = [];
         for (const type of this.collapsedTypes) {
@@ -49,6 +58,7 @@ export class UnionType<
         return this.createResult(input, undefined, { kind: 'union', failures });
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitUnionType(this);
     }

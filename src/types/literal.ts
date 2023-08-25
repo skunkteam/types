@@ -9,7 +9,9 @@ import { numberAutoCaster } from './number.js';
  * The implementation behind types created with {@link literal} and {@link nullType}, {@link undefinedType} and {@link voidType}.
  */
 export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType> {
+    /** {@inheritdoc BaseTypeImpl.name} */
     readonly name: string;
+    /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
     constructor(readonly value: ResultType) {
@@ -17,9 +19,12 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
         this.name = printValue(value);
     }
 
+    /** {@inheritdoc BaseTypeImpl.basicType} */
     readonly basicType: BasicType = basicType(this.value);
+    /** {@inheritdoc BaseTypeImpl.enumerableLiteralDomain} */
     override readonly enumerableLiteralDomain = [this.value];
 
+    /** {@inheritdoc BaseTypeImpl.typeValidator} */
     protected typeValidator(input: unknown): Result<ResultType> {
         return this.createResult(
             input,
@@ -31,6 +36,7 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
         );
     }
 
+    /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitLiteralType(this);
     }

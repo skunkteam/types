@@ -4,8 +4,14 @@
 
 ## UnionType.enumerableLiteralDomain property
 
+The set of valid literals if enumerable.
+
 **Signature:**
 
 ```typescript
 readonly enumerableLiteralDomain: Set<LiteralValue> | undefined;
 ```
+
+## Remarks
+
+If a Type (only) accepts a known number of literal values, these should be enumerated in this set. A record with such a domain as key-type
