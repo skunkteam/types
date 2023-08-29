@@ -24,6 +24,16 @@ export interface TypeTestCase {
     invalidConversions?: [input: unknown, message: string | string[] | RegExp][];
 }
 
+/**
+ * Symbol to use to associate a "stripped" value with a test input-value.
+ *
+ * @remarks
+ *
+ * During testing objects often have more properties than are strictly needed for the type under test. However, all test-values are used to
+ * test value-stripping during `#stringify` operations (and in the future maybe a `#strip` operation). Using this Symbol, it is possible to
+ * associate a "stripped" version of a value, by assigning this stripped value to the input value, the test-framework will use those
+ * stripped values instead of the complete input value while testing `#stringify`.
+ */
 export const stripped = Symbol('stripped');
 
 export function testTypeImpl({
