@@ -232,6 +232,12 @@ testTypeImpl({
     ],
 });
 
+test('NetworkState should stringify using one of the valid union elements', () => {
+    const value = { state: 'loading', code: 500 } as const;
+    expect(NetworkState.is(value)).toBeTrue();
+    expect(NetworkState.stringify(value)).toBe('{"state":"loading"}');
+});
+
 testTypeImpl({
     name: 'NetworkStateWithParser',
     type: NetworkState.withParser(
@@ -424,6 +430,16 @@ testTypeImpl({
     validValues: [{ tag: 'a', a: 'string' }, { tag: 'b', b: 123 }, 'abc', 'def'],
 });
 testTypeImpl({ name: 'MixedUnion', type: MixedUnion.withName('MixedUnion'), basicType: 'mixed' });
+
+test('MixedUnion should stringify using only one of the union elements', () => {
+    const value = { tag: 'a', a: 'string', b: 123 } as const;
+    expect(MixedUnion.is(value)).toBeTrue();
+    expect(MixedUnion.stringify(value)).toBe('{"tag":"a","a":"string"}');
+});
+
+test('stringify with incorrect value', () => {
+    expect(() => MixedUnion.withName('MixedUnion').stringify({} as any)).toThrow('Error during stringify: value is not a MixedUnion');
+});
 
 const left = object('left', {
     nested: object({ boolean: literal(true) }),

@@ -1,9 +1,5 @@
 import type { BasicType, Failure, OneOrMore, Result, ValidationResult } from '../interfaces.js';
 
-export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-    return typeof value === 'object' && !!value;
-}
-
 export function isOneOrMore<T>(arr: T[]): arr is OneOrMore<T> {
     return arr.length > 0;
 }
@@ -20,7 +16,7 @@ export function isSingle<T>(arr: T[]): arr is [T] {
     return arr.length === 1;
 }
 
-export function hasOwnProperty<Key extends PropertyKey>(obj: Record<PropertyKey, unknown>, key: Key): obj is Record<Key, unknown> {
+export function hasOwnProperty<Key extends PropertyKey>(obj: object, key: Key): obj is Record<Key, unknown> {
     return Object.prototype.hasOwnProperty.call(obj, key);
 }
 

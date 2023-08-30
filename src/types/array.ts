@@ -77,6 +77,12 @@ export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, Resul
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitArrayType(this);
     }
+
+    /** {@inheritdoc BaseTypeImpl.maybeStringify} */
+    override maybeStringify(value: ResultType): string {
+        const { elementType } = this;
+        return `[${value.map(el => elementType.maybeStringify(el) ?? 'null').toString()}]`;
+    }
 }
 define(ArrayType, 'autoCaster', castArray);
 define(ArrayType, 'basicType', 'array');

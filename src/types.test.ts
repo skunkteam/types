@@ -6,6 +6,7 @@ import {
     createExample,
     defaultMessage,
     defaultUsualSuspects,
+    stripped,
     testTypeImpl,
     testTypes,
 } from './testutils.js';
@@ -160,7 +161,12 @@ testTypeImpl({
     basicType: 'object',
     validValues: [
         { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 },
-        { name: { first: 'a', last: 'b', middle: 'c' }, shoeSize: 0, other: 'props' },
+        {
+            name: { first: 'a', last: 'b', middle: 'c' },
+            shoeSize: 0,
+            other: 'props',
+            [stripped]: { name: { first: 'a', last: 'b' }, shoeSize: 0 },
+        },
     ],
     invalidValues: [
         ...defaultUsualSuspects(User),
@@ -224,9 +230,15 @@ testTypeImpl({
     basicType: 'object',
     validValues: [
         { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 },
-        { name: { first: 'a', last: 'b', middle: 'c' }, shoeSize: 0, other: 'props' },
+        {
+            name: { first: 'a', last: 'b', middle: 'c' },
+            shoeSize: 0,
+            other: 'props',
+            [stripped]: { name: { first: 'a', last: 'b' }, shoeSize: 0 },
+        },
         { name: { first: 'Pete', last: 'Johnson' } },
-        { shoeSize: 0, other: 'props' },
+        { shoeSize: 0, other: 'props', [stripped]: { shoeSize: 0 } },
+        { shoeSize: 0 },
         {},
     ],
     invalidValues: [
@@ -335,7 +347,7 @@ testTypeImpl({
     basicType: 'object',
     validValues: [
         { a: 1, b: 2 },
-        { a: 1, b: 2, additional: 'stuff' },
+        { a: 1, b: 2, additional: 'stuff', [stripped]: { a: 1, b: 2 } },
     ],
     invalidValues: [
         ...defaultUsualSuspects(NestedFromString),
@@ -553,7 +565,7 @@ testTypeImpl({
     name: 'GenericAugmentation<Partial<User>>',
     type: GenericAugmentation(User.toPartial()),
     basicType: 'object',
-    validValues: [{ id: 'abc' }, { id: 'abc', shoeSize: 4 }],
+    validValues: [{ id: 'abc' }, { shoeSize: 4, id: 'abc' }],
     invalidValues: [
         [{ id: 'abc', name: 123 }, 'error in [GenericAugmentation<Partial<User>>] at <name>: expected an object, got a number (123)'],
         [{ id: 123 }, 'error in [GenericAugmentation<Partial<User>>] at <id>: expected a string, got a number (123)'],

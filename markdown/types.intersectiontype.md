@@ -38,7 +38,8 @@ export declare class IntersectionType<Types extends OneOrMore<BaseObjectLikeType
 
 ## Methods
 
-| Method                                                                     | Modifiers              | Description                         |
-| -------------------------------------------------------------------------- | ---------------------- | ----------------------------------- |
-| [accept(visitor)](./types.intersectiontype.accept.md)                      |                        | Accept a visitor (visitor pattern). |
-| [typeValidator(input, options)](./types.intersectiontype.typevalidator.md) | <code>protected</code> | The actual validation-logic.        |
+| Method                                                                     | Modifiers              | Description                                                                                                                                |
+| -------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [accept(visitor)](./types.intersectiontype.accept.md)                      |                        | Accept a visitor (visitor pattern).                                                                                                        |
+| [maybeStringify(value)](./types.intersectiontype.maybestringify.md)        |                        | Create a JSON string of the given value, using the type information of the current type. Matches the specs of <code>JSON.stringify</code>. |
+| [typeValidator(input, options)](./types.intersectiontype.typevalidator.md) | <code>protected</code> | The actual validation-logic.                                                                                                               |

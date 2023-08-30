@@ -12,7 +12,7 @@ import type {
     ValidationOptions,
     Visitor,
 } from '../interfaces.js';
-import { bracketsIfNeeded, decodeOptionalName, define, extensionName, printPath } from '../utils/index.js';
+import { an, basicType, bracketsIfNeeded, decodeOptionalName, defaultStringify, define, extensionName, printPath } from '../utils/index.js';
 
 /**
  * The implementation behind types created with {@link union} and {@link BaseTypeImpl.or}.
@@ -85,6 +85,22 @@ export class UnionType<
         }
 
         return;
+    }
+
+    /** {@inheritdoc BaseTypeImpl.maybeStringify} */
+    override maybeStringify(value: ResultType): string | undefined {
+        const valueType = this.basicType === 'mixed' ? basicType(value) : this.basicType;
+        if (valueType !== 'array' && valueType !== 'object') return defaultStringify(valueType, value, this.name);
+
+        const type =
+            // Fast:
+            this.findApplicableSubtype(value) ??
+            // Slow:
+            this.types.find(type => type.is(value));
+
+        if (!type) throw new TypeError('Error during stringify: value is not ' + an(this.name));
+
+        return type.maybeStringify(value);
     }
 }
 

@@ -1,7 +1,6 @@
 import type { BaseTypeImpl } from './base-type.js';
 import { reportError } from './error-reporter.js';
 import type { Failure, FailureDetails, OneOrMore, Result } from './interfaces.js';
-import { hasOwnProperty, isObject } from './utils/index.js';
 
 /**
  * The error that is thrown on any validation- or parse-error within this library.
@@ -30,9 +29,10 @@ export class ValidationError extends Error implements Failure {
             return { ok: true, value: fn() };
         } catch (error: unknown) {
             if (error instanceof ValidationError) {
-                return { ...error, type, input };
+                const { ok, details } = error;
+                return { ok, details, type, input };
             }
-            const message = String(isObject(error) && hasOwnProperty(error, 'message') ? error.message : error);
+            const message = String(typeof error === 'object' && error && 'message' in error ? error.message : error);
             return { ok: false, type, input, details: [{ kind: 'custom message', message, type, input }] };
         }
     }

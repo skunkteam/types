@@ -1,5 +1,5 @@
 import type { The } from '../interfaces.js';
-import { assignableTo, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
+import { assignableTo, defaultUsualSuspects, stripped, testTypeImpl, testTypes } from '../testutils.js';
 import { boolean } from './boolean.js';
 import { PartialType, object, partial } from './interface.js';
 import { IntersectionType } from './intersection.js';
@@ -11,7 +11,7 @@ testTypeImpl({
     name: '{ force?: boolean }',
     type: partial({ force: boolean }),
     basicType: 'object',
-    validValues: [{ force: true }, { force: true, otherOpts: 'also valid' }, {}],
+    validValues: [{ force: true }, { force: true, otherOpts: 'also valid', [stripped]: { force: true } }, {}],
     invalidValues: [
         ...defaultUsualSuspects(partial({ force: boolean })),
         [{ force: 'field' }, 'error in [{ force?: boolean }] at <force>: expected a boolean, got a string ("field")'],

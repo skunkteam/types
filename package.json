@@ -17,7 +17,7 @@
         "tsc": "tsc --build && tsc --project tsconfig.lib.json --module CommonJs --outDir dist/cjs",
         "fix-esm": "echo '{ \"type\": \"module\" }' > dist/esm/package.json",
         "test": "jest",
-        "lint": "eslint . --ext .ts",
+        "lint": "eslint . --ext .ts --max-warnings 0",
         "pr": "npm-run-all api format",
         "api": "npm-run-all api:*",
         "api:extract": "api-extractor run --local --verbose --typescript-compiler-folder=node_modules/typescript",
