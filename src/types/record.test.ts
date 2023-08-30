@@ -1,5 +1,5 @@
 import type { MessageDetails, The } from '../interfaces.js';
-import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
+import { createExample, defaultUsualSuspects, stripped, testTypeImpl } from '../testutils.js';
 import { printKey, printValue } from '../utils/index.js';
 import { object } from './interface.js';
 import { keyof } from './keyof.js';
@@ -22,7 +22,10 @@ testTypeImpl({
     name: 'StringRecord',
     type: StringRecord,
     basicType: 'object',
-    validValues: [{ a: { nested: 'object', other: 'props', are: 'ok' } }, { another: { nested: 'object' } }],
+    validValues: [
+        { a: { nested: 'object', other: 'props', are: 'ok' }, [stripped]: { a: { nested: 'object' } } },
+        { another: { nested: 'object' } },
+    ],
     invalidValues: [
         [
             { an: { incorrect: 'nested object' } },
@@ -167,8 +170,8 @@ testTypeImpl({
     basicType: 'object',
     validValues: [
         { one: 'mississippi', two: 'mississippi' },
-        { one: 'mississippi', two: 'mississippi', three: 'mississippi' },
-        { one: 'mississippi', two: 'mississippi', three: 'amazon' },
+        { one: 'mississippi', two: 'mississippi', three: 'mississippi', [stripped]: { one: 'mississippi', two: 'mississippi' } },
+        { one: 'mississippi', two: 'mississippi', three: 'amazon', [stripped]: { one: 'mississippi', two: 'mississippi' } },
     ],
     invalidValues: [
         [{}, ['errors in [NonStrictKeyofRecord]:', '', '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}']],

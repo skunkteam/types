@@ -18,6 +18,7 @@ import {
     define,
     extensionName,
     humanList,
+    interfaceStringify,
     isFailure,
     partition,
 } from '../utils/index.js';
@@ -80,6 +81,11 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitObjectLikeType(this);
+    }
+
+    /** {@inheritdoc BaseTypeImpl.maybeStringify} */
+    override maybeStringify(value: IntersectionOfTypeTuple<Types>): string {
+        return interfaceStringify(this.propsArray, value as Record<string, unknown>);
     }
 }
 define(IntersectionType, 'basicType', 'object');

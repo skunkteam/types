@@ -29,5 +29,6 @@ const config = {
             },
         },
     ],
+    reportUnusedDisableDirectives: true,
 };
 module.exports = config;

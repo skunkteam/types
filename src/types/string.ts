@@ -1,6 +1,6 @@
 import type { Branded, StringTypeConfig, Type } from '../interfaces.js';
 import { SimpleType } from '../simple-type.js';
-import { evalAdditionalChecks } from '../utils/index.js';
+import { evalAdditionalChecks, stringStringify } from '../utils/index.js';
 
 /**
  * Built-in validator for string-values.
@@ -29,6 +29,7 @@ export const string: Type<string, StringTypeConfig> = SimpleType.create<string, 
         autoCaster: String,
         typeConfig: {},
         acceptVisitor: (type, visitor) => visitor.visitStringType(type),
+        maybeStringify: stringStringify,
     },
 );
 

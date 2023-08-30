@@ -1,4 +1,7 @@
+import type { The } from './interfaces.js';
 import { SimpleType } from './simple-type.js';
+import { createExample } from './testutils.js';
+import { object } from './types/interface.js';
 
 describe(SimpleType, () => {
     test('create simple types with ease', () => {
@@ -8,6 +11,21 @@ describe(SimpleType, () => {
         expect(BufferType(buffer)).toBe(buffer);
         expect(() => BufferType([])).toThrow(`expected a [Buffer], got: []`);
         expect(() => BufferType(Uint8Array.of(1, 2, 3))).toThrow(`expected a [Buffer], got: "1,2,3"`);
+
+        // Visitors also work with custom types:
+        const Combination = object({ buffer: BufferType });
+        Object.assign(BufferType, { example: Buffer.from('xx') });
+        expect(createExample(Combination)).toMatchInlineSnapshot(`
+            {
+              "buffer": {
+                "data": [
+                  120,
+                  120,
+                ],
+                "type": "Buffer",
+              },
+            }
+        `);
     });
 
     test('create simple types with ease with autoCast', () => {
@@ -20,5 +38,23 @@ describe(SimpleType, () => {
         expect(() => BufferType([])).toThrow(`expected a [Buffer], got: []`);
         expect(() => BufferType(Uint8Array.of(1, 2, 3))).toThrow(`expected a [Buffer], got: "1,2,3"`);
         expect(BufferType.autoCast(Uint8Array.of(1, 2, 3))).toEqual(Buffer.of(1, 2, 3));
+    });
+
+    test('has basic support for stringify', () => {
+        const DefaultBufferType = SimpleType.create<Buffer>('Buffer', 'object', v => Buffer.isBuffer(v));
+
+        const buffer = Buffer.from('some text', 'utf8');
+        expect(() => DefaultBufferType.stringify(buffer)).toThrow('stringify not supported on type Buffer');
+
+        const BufferTypeWithStringify = SimpleType.create<Buffer>('Buffer', 'object', v => Buffer.isBuffer(v), {
+            maybeStringify: buf => JSON.stringify(buf.toString()),
+        });
+        expect(BufferTypeWithStringify.stringify(buffer)).toBe('"some text"');
+
+        // Also works nested:
+        type NestedBuffer = The<typeof NestedBuffer>;
+        const NestedBuffer = object({ buffer: BufferTypeWithStringify });
+        const value: NestedBuffer = { buffer };
+        expect(NestedBuffer.stringify(value)).toBe('{"buffer":"some text"}');
     });
 });

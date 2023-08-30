@@ -24,6 +24,18 @@ export interface TypeTestCase {
     invalidConversions?: [input: unknown, message: string | string[] | RegExp][];
 }
 
+/**
+ * Symbol to use to associate a "stripped" value with a test input-value.
+ *
+ * @remarks
+ *
+ * During testing objects often have more properties than are strictly needed for the type under test. However, all test-values are used to
+ * test value-stripping during `#stringify` operations (and in the future maybe a `#strip` operation). Using this Symbol, it is possible to
+ * associate a "stripped" version of a value, by assigning this stripped value to the input value, the test-framework will use those
+ * stripped values instead of the complete input value while testing `#stringify`.
+ */
+export const stripped = Symbol('stripped');
+
 export function testTypeImpl({
     name,
     basicType: expectedBasicType,
@@ -55,6 +67,17 @@ export function testTypeImpl({
             test.each(validValues)('accepts: %p', value => {
                 expect(type.check(value)).toBe(value);
                 expect(type.is(value)).toBeTrue();
+            });
+
+        validValues &&
+            test.each(validValues)('correctly stringifies: %p', value => {
+                const jsonStr = JSON.stringify(typeof value === 'object' && value && stripped in value ? value[stripped] : value);
+                expect(type.maybeStringify(value)).toBe(jsonStr);
+                if (jsonStr) {
+                    expect(type.stringify(value)).toBe(jsonStr);
+                } else {
+                    expect(() => type.stringify(value)).toThrow('Do not know how to serialize a');
+                }
             });
 
         invalidValues &&

@@ -1,6 +1,6 @@
 import { BaseTypeImpl, createType } from '../base-type.js';
 import type { Result, Transposed, TypeImpl, Visitor } from '../interfaces.js';
-import { decodeOptionalName, define, hasOwnProperty, transpose } from '../utils/index.js';
+import { decodeOptionalName, define, hasOwnProperty, stringStringify, transpose } from '../utils/index.js';
 
 /**
  * The implementation behind types created with {@link keyof} and {@link valueof}.
@@ -14,9 +14,7 @@ export class KeyofType<T extends Record<string, unknown>, ResultType extends key
     constructor(
         readonly keys: T,
         /** {@inheritdoc BaseTypeImpl.name} */
-        readonly name = Object.keys(keys)
-            .map(key => JSON.stringify(key))
-            .join(' | '),
+        readonly name = Object.keys(keys).map(stringStringify).join(' | '),
     ) {
         super();
     }

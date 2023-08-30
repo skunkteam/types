@@ -23,10 +23,13 @@ import type {
 import { autoCastFailure, designType } from './symbols.js';
 import {
     addParserInputToResult,
+    an,
+    basicType,
     bracketsIfNeeded,
     castArray,
     checkOneOrMore,
     decodeOptionalOptions,
+    defaultStringify,
     prependContextToDetails,
     printValue,
 } from './utils/index.js';
@@ -460,6 +463,43 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
     or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other> {
         throw new Error('stub');
+    }
+
+    /**
+     * Create a JSON string of the given value, using the type information of the current type. Matches the specs of `JSON.stringify`.
+     *
+     * @remarks
+     * Only use this method on values that have been validated or constructed by this type. It will use the available type information to
+     * efficiently create a stringified version of the value. Unknown (extra) properties of object types are stripped.
+     *
+     * Note that this implementation matches the specs of `JSON.stringify` in that it will throw on a `BigInt` and will return `undefined`
+     * for other values that are not serializable into JSON.
+     *
+     * @param value - a previously validated or constructed value, must conform to this type
+     */
+    maybeStringify(value: ResultType): string | undefined {
+        return defaultStringify(this.basicType, value, this.name);
+    }
+
+    /**
+     * Create a JSON string of the given value, using the type information of the current type. Throws if the value is not serializable.
+     *
+     * @remarks
+     * Only use this method on values that have been validated or constructed by this type. It will use the available type information to
+     * efficiently create a stringified version of the value. Unknown (extra) properties of object types are stripped.
+     *
+     * Note that this implementation differs from the specs of `JSON.stringify` in that it will throw on all values that are not
+     * serializable into JSON.
+     *
+     * @param value - a previously validated or constructed value, must conform to this type
+     */
+    stringify(value: ResultType): string {
+        const s = this.maybeStringify(value);
+        if (s === undefined) {
+            // Match the built-in error message of `BigInt`s.
+            throw new TypeError(`Do not know how to serialize ${an(basicType(value))}`);
+        }
+        return s;
     }
 
     /**

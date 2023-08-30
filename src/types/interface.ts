@@ -21,6 +21,7 @@ import {
     define,
     extensionName,
     hasOwnProperty,
+    interfaceStringify,
     prependPathToDetails,
 } from '../utils/index.js';
 import { unknownRecord } from './unknown.js';
@@ -135,6 +136,11 @@ export class InterfaceType<Props extends Properties, ResultType>
     /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
         return visitor.visitObjectLikeType(this);
+    }
+
+    /** {@inheritdoc BaseTypeImpl.maybeStringify} */
+    override maybeStringify(value: ResultType): string {
+        return interfaceStringify(this.propsArray, value as Record<string, unknown>);
     }
 }
 define(InterfaceType, 'basicType', 'object');

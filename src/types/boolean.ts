@@ -1,7 +1,7 @@
 import type { Type } from '../interfaces.js';
 import { SimpleType } from '../simple-type.js';
 import { autoCastFailure } from '../symbols.js';
-import { basicTypeChecker } from '../utils/index.js';
+import { basicTypeChecker, booleanStringify } from '../utils/index.js';
 
 /**
  * Built-in validator for boolean-values.
@@ -10,6 +10,7 @@ export const boolean: Type<boolean> = SimpleType.create('boolean', 'boolean', ba
     autoCaster: booleanAutoCaster,
     enumerableLiteralDomain: [true, false],
     acceptVisitor: (type, visitor) => visitor.visitBooleanType(type),
+    maybeStringify: booleanStringify,
 });
 
 export function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure {

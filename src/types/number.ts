@@ -2,7 +2,7 @@ import big from 'big.js';
 import type { Branded, NumberTypeConfig, The, Type } from '../interfaces.js';
 import { SimpleType } from '../simple-type.js';
 import { autoCastFailure } from '../symbols.js';
-import { evalAdditionalChecks } from '../utils/index.js';
+import { evalAdditionalChecks, numberStringify } from '../utils/index.js';
 
 export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, NumberTypeConfig>(
     'number',
@@ -46,6 +46,7 @@ export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, 
             } as NumberTypeConfig;
         },
         acceptVisitor: (type, visitor) => visitor.visitNumberType(type),
+        maybeStringify: numberStringify,
     },
 );
 

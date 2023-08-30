@@ -7,7 +7,7 @@ testTypeImpl({
     name: 'string',
     type: string,
     basicType: 'string',
-    validValues: ['', 'a real string'],
+    validValues: ['', 'a real string', '\uD800', '\n\t'],
     invalidValues: [[123, basicTypeMessage(string, 123)], ...defaultUsualSuspects(string)],
 });
 

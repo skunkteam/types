@@ -1,6 +1,6 @@
 import type { Type } from '../interfaces.js';
 import { SimpleType } from '../simple-type.js';
-import { basicTypeChecker, castArray } from '../utils/index.js';
+import { basicTypeChecker, castArray, fallbackStringify } from '../utils/index.js';
 
 /**
  * Built-in validator that accepts all values.
@@ -10,6 +10,7 @@ import { basicTypeChecker, castArray } from '../utils/index.js';
  */
 export const unknown: Type<unknown> = SimpleType.create('unknown', 'mixed', () => true, {
     acceptVisitor: (type, visitor) => visitor.visitUnknownType(type),
+    maybeStringify: fallbackStringify,
 });
 
 /**
@@ -25,9 +26,15 @@ export type unknownRecord = Record<string, unknown>;
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknownRecord: Type<unknownRecord> = SimpleType.create('Record<string, unknown>', 'object', basicTypeChecker('object'), {
-    acceptVisitor: (type, visitor) => visitor.visitUnknownRecordType(type),
-});
+export const unknownRecord: Type<unknownRecord> = SimpleType.create<unknownRecord>(
+    'Record<string, unknown>',
+    'object',
+    basicTypeChecker('object'),
+    {
+        acceptVisitor: (type, visitor) => visitor.visitUnknownRecordType(type),
+        maybeStringify: fallbackStringify,
+    },
+);
 
 /**
  * Built-in validator that accepts all arrays.
@@ -42,7 +49,8 @@ export type unknownArray = unknown[];
  * @remarks
  * Can be sub-typed with {@link BaseTypeImpl.withConstraint}.
  */
-export const unknownArray: Type<unknownArray> = SimpleType.create('unknown[]', 'array', basicTypeChecker('array'), {
+export const unknownArray: Type<unknownArray> = SimpleType.create<unknownArray>('unknown[]', 'array', basicTypeChecker('array'), {
     autoCaster: castArray,
     acceptVisitor: (type, visitor) => visitor.visitUnknownArrayType(type),
+    maybeStringify: fallbackStringify,
 });

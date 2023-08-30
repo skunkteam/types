@@ -34,7 +34,8 @@ export declare class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyTy
 
 ## Methods
 
-| Method                                                               | Modifiers              | Description                         |
-| -------------------------------------------------------------------- | ---------------------- | ----------------------------------- |
-| [accept(visitor)](./types.recordtype.accept.md)                      |                        | Accept a visitor (visitor pattern). |
-| [typeValidator(input, options)](./types.recordtype.typevalidator.md) | <code>protected</code> | The actual validation-logic.        |
+| Method                                                               | Modifiers              | Description                                                                                                                                |
+| -------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [accept(visitor)](./types.recordtype.accept.md)                      |                        | Accept a visitor (visitor pattern).                                                                                                        |
+| [maybeStringify(value)](./types.recordtype.maybestringify.md)        |                        | Create a JSON string of the given value, using the type information of the current type. Matches the specs of <code>JSON.stringify</code>. |
+| [typeValidator(input, options)](./types.recordtype.typevalidator.md) | <code>protected</code> | The actual validation-logic.                                                                                                               |
