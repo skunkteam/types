@@ -9,7 +9,7 @@ Create a new type use the given constraint function to restrict the current type
 **Signature:**
 
 ```typescript
-withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
+withConstraint<const BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
 ```
 
 ## Parameters

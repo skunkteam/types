@@ -137,7 +137,7 @@ export function createExample<T>(type: Type<T>, seed?: number): T {
 class CreateExampleVisitor implements Visitor<unknown> {
     constructor(private seed = 1) {}
 
-    visitArrayType(type: ArrayType<BaseTypeImpl<unknown, unknown>, unknown, unknown[]>): unknown {
+    visitArrayType(type: ArrayType<BaseTypeImpl<unknown>, unknown, unknown[]>): unknown {
         if (hasExample(type)) return type.example;
         const { maxLength = Infinity, minLength = -Infinity } = type.typeConfig;
         const length = Math.min(Math.max(this.seed++ % 5 || 1, minLength), maxLength);
@@ -148,7 +148,7 @@ class CreateExampleVisitor implements Visitor<unknown> {
         return [true, false][this.seed++ % 2];
     }
 
-    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown, unknown>): unknown {
+    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): unknown {
         if (hasExample(type)) return type.example;
         return Object.fromEntries(Object.entries(type.props).map(([key, propType]) => [key, propType.accept(this)]));
     }
@@ -170,13 +170,7 @@ class CreateExampleVisitor implements Visitor<unknown> {
     }
 
     visitRecordType(
-        type: RecordType<
-            BaseTypeImpl<string | number, unknown>,
-            string | number,
-            BaseTypeImpl<unknown, unknown>,
-            unknown,
-            Record<string | number, unknown>
-        >,
+        type: RecordType<BaseTypeImpl<string | number>, string | number, BaseTypeImpl<unknown>, unknown, Record<string | number, unknown>>,
     ): unknown {
         if (hasExample(type)) return type.example;
         const keys = type.keyType.enumerableLiteralDomain || [type.keyType.accept(this)];
@@ -191,26 +185,26 @@ class CreateExampleVisitor implements Visitor<unknown> {
         return 'x'.repeat(length);
     }
 
-    visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown, unknown>>, unknown>): unknown {
+    visitUnionType(type: UnionType<OneOrMore<BaseTypeImpl<unknown>>, unknown>): unknown {
         return type.types[this.seed++ % type.types.length]?.accept(this);
     }
 
-    visitUnknownType(type: BaseTypeImpl<unknown, unknown>): unknown {
+    visitUnknownType(type: BaseTypeImpl<unknown>): unknown {
         if (hasExample(type)) return type.example;
         return 'UNKNOWN';
     }
 
-    visitUnknownRecordType(type: BaseTypeImpl<Record<string, unknown>, unknown>): unknown {
+    visitUnknownRecordType(type: BaseTypeImpl<Record<string, unknown>>): unknown {
         if (hasExample(type)) return type.example;
         return { unknown: 'record' };
     }
 
-    visitUnknownArrayType(type: BaseTypeImpl<unknown[], unknown>): unknown {
+    visitUnknownArrayType(type: BaseTypeImpl<unknown[]>): unknown {
         if (hasExample(type)) return type.example;
         return ['unknown', 'array'];
     }
 
-    visitCustomType(type: BaseTypeImpl<unknown, unknown>): unknown {
+    visitCustomType(type: BaseTypeImpl<unknown>): unknown {
         if (hasExample(type)) return type.example;
         throw new Error(`Please provide a manual example for type: ${type.name}`);
     }

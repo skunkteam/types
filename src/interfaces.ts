@@ -65,7 +65,7 @@ export interface TypeLink<AssociatedType> {
 export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
     // Constructor is needed to ensure TypeScript will emit this type as decorator-metadata
     new (input: unknown): TypeOf<Impl>;
-    (input: unknown): TypeOf<Impl>;
+    (this: void, input: unknown): TypeOf<Impl>;
 };
 
 /**
@@ -207,7 +207,7 @@ export type Branded<T, BrandName extends string> = T extends WithBrands<infer Ba
       WithBrands<Base, BrandName | ExistingBrands>
     : WithBrands<T, BrandName>;
 
-export type WithBrands<T, BrandNames extends string> = T & { [brands]: { [P in BrandNames]: true } };
+export type WithBrands<T, BrandNames extends string> = T & { readonly [brands]: { [P in BrandNames]: true } };
 
 /** Unbrand a given type (not recursive). */
 export type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
@@ -226,7 +226,7 @@ export type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
  * This is a mapping from string-keys to type-validators. During compilation this object is automatically converted into a proper TypeScript type for
  * static analysis by the compiler.
  */
-export type Properties = Record<string, Type<unknown>>;
+export type Properties = Record<string, Type<any>>;
 
 /**
  * Properties of an object type, including per-property optionality.

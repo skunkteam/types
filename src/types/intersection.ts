@@ -41,7 +41,10 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
-    constructor(readonly types: Types, name?: string) {
+    constructor(
+        readonly types: Types,
+        name?: string,
+    ) {
         super();
         this.isDefaultName = !name;
         this.name = name || defaultName(types);
@@ -56,7 +59,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly combinedName = combinedName(this.types);
     /** {@inheritdoc BaseObjectLikeTypeImpl.possibleDiscriminators} */
     readonly possibleDiscriminators: readonly PossibleDiscriminator[] = this.types
-        .flatMap(t => t.possibleDiscriminators || throwWrongBasicType(this.types))
+        .flatMap(t => t.possibleDiscriminators)
         .map(({ path, values }) => ({ path, values }));
 
     /** {@inheritdoc BaseTypeImpl.typeValidator} */
@@ -96,11 +99,6 @@ define(IntersectionType, 'createAutoCastAllType', function (this: IntersectionTy
     const types = this.types.map(t => t.autoCastAll) as OneOrMore<BaseObjectLikeTypeImpl<unknown>>;
     return createType(new IntersectionType(types, extensionName(this, 'autoCastAll')));
 });
-
-function throwWrongBasicType(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
-    const nonObjectTypes = types.filter(t => t.basicType !== 'object');
-    throw new Error(`can only create an intersection of objects, got: ${humanList(nonObjectTypes, 'and', t => t.name)}`);
-}
 
 function checkOverlap(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
     const keys = new Set<string>();
@@ -148,7 +146,7 @@ function defaultName(types: readonly BaseObjectLikeTypeImpl<unknown>[]): string 
 function combinedName(types: readonly BaseObjectLikeTypeImpl<unknown>[]) {
     const collectedProps: PropertiesInfo = {};
     for (const { propsInfo } of types) {
-        for (const [key, prop] of Object.entries(propsInfo ?? {})) {
+        for (const [key, prop] of Object.entries(propsInfo)) {
             if (!collectedProps[key] || (collectedProps[key]?.partial && !prop.partial)) {
                 collectedProps[key] = prop;
             }

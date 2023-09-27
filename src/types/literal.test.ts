@@ -1,4 +1,5 @@
-import { testTypeImpl } from '../testutils.js';
+import type { The } from '../interfaces.js';
+import { assignableTo, testTypeImpl, testTypes } from '../testutils.js';
 import { literal, nullType, undefinedType } from './literal.js';
 
 testTypeImpl({
@@ -121,4 +122,12 @@ testTypeImpl({
     validValues: [42],
     invalidValues: [['42', 'expected a number (42), got a string ("42")']],
     validConversions: [['42', 42]],
+});
+
+testTypes('literal', () => {
+    type MyLiteral = The<typeof MyLiteral>;
+    const MyLiteral = literal('some value');
+
+    assignableTo<'some value'>(MyLiteral('some value'));
+    assignableTo<MyLiteral>('some value');
 });

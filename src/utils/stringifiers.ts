@@ -43,7 +43,7 @@ export function numberStringify(value: number): string {
 }
 
 export function booleanStringify(value: boolean): string {
-    return value === true ? 'true' : 'false';
+    return value ? 'true' : 'false';
 }
 
 /**

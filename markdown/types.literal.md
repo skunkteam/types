@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export declare function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>>;
+export declare function literal<const T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>>;
 ```
 
 ## Parameters

@@ -64,7 +64,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     protected createAutoCastAllType(): this;
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
-    extendWith<E>(factory: (type: this) => E): this & E;
+    extendWith<const E>(factory: (type: this) => E): this & E;
     get is(): TypeguardFor<ResultType>;
     literal(input: DeepUnbranded<ResultType>): ResultType;
     maybeStringify(value: ResultType): string | undefined;
@@ -75,9 +75,9 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
     protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
     validate(input: unknown, options?: ValidationOptions): Result<ResultType>;
-    withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
-    withConfig<BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
-    withConstraint<BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
+    withBrand<const BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
+    withConfig<const BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
+    withConstraint<const BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withName(name: string): this;
     withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, newConstructor: (i: unknown) => unknown] | [options: ParserOptions, newConstructor: (i: unknown) => unknown]): this;
     withValidation(validation: Validator<ResultType>): this;
@@ -230,7 +230,7 @@ export interface LengthChecksConfig {
 export type LengthViolation = 'minLength' | 'maxLength';
 
 // @public (undocumented)
-export function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>>;
+export function literal<const T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>>;
 
 // @public
 export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType> {
@@ -494,7 +494,7 @@ Extract<Input, ResultType>
 // @public
 export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
     new (input: unknown): TypeOf<Impl>;
-    (input: unknown): TypeOf<Impl>;
+    (this: void, input: unknown): TypeOf<Impl>;
 };
 
 // @public
@@ -640,7 +640,7 @@ export const voidType: TypeImpl<LiteralType<void>>;
 
 // @public (undocumented)
 export type WithBrands<T, BrandNames extends string> = T & {
-    [brands]: {
+    readonly [brands]: {
         [P in BrandNames]: true;
     };
 };

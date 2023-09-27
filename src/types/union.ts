@@ -30,7 +30,10 @@ export class UnionType<
     /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
-    constructor(readonly types: Types, name?: string) {
+    constructor(
+        readonly types: Types,
+        name?: string,
+    ) {
         super();
         this.isDefaultName = !name;
         this.name = name || types.map(type => bracketsIfNeeded(type.name, '|')).join(' | ');
@@ -145,35 +148,36 @@ function analyzePropsInfo<Types extends OneOrMore<BaseTypeImpl<unknown> | BaseOb
 function analyzePossibleDiscriminators(
     types: ReadonlyArray<BaseTypeImpl<unknown> | BaseObjectLikeTypeImpl<unknown>>,
 ): PossibleDiscriminator[] {
-    let found: Record<string, Required<PossibleDiscriminator>> | undefined;
+    let found: Map<string, Required<PossibleDiscriminator>> | undefined;
     // Generate the intersection (based on path) of all 'possibleDiscriminators' in all object like types in `types`
     for (const type of types) {
         // All object-types have 'possibleDiscriminators' (even if it is empty)
         if ('possibleDiscriminators' in type) {
-            const pds: typeof found = {};
+            const pds: typeof found = new Map();
             for (const { path, values } of type.possibleDiscriminators) {
-                pds[printPath(path)] = { path, values, mapping: [{ type, values }] };
+                pds.set(printPath(path), { path, values, mapping: [{ type, values }] });
             }
             if (!found) {
                 found = pds;
             } else {
-                for (const [path, thisOne] of Object.entries(found)) {
-                    const otherOne = pds[path];
+                for (const [path, thisOne] of found) {
+                    const otherOne = pds.get(path);
                     if (otherOne && !otherOne.values.some(value => thisOne.values.includes(value))) {
-                        found[path] = {
+                        found.set(path, {
                             path: thisOne.path,
                             values: [...thisOne.values, ...otherOne.values],
                             mapping: [...thisOne.mapping, ...otherOne.mapping],
-                        };
+                        });
                     } else {
-                        delete found[path];
+                        found.delete(path);
                     }
                 }
             }
         }
     }
-    return found ? Object.values(found) : [];
+    return found ? [...found.values()] : [];
 }
+
 function propsInfoToProps(propsInfo: PropertiesInfo): Properties {
     const result: Properties = {};
     for (const [key, { type }] of Object.entries(propsInfo)) {

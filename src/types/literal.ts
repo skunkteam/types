@@ -63,7 +63,7 @@ define(LiteralType, 'autoCaster', function (this: LiteralType<LiteralValue>, inp
     }
 });
 
-export function literal<T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>> {
+export function literal<const T extends LiteralValue>(value: T): TypeImpl<LiteralType<T>> {
     return createType(new LiteralType(value));
 }
 

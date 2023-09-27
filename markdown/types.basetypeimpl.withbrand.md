@@ -9,7 +9,7 @@ Create a new instance of this Type with the given name.
 **Signature:**
 
 ```typescript
-withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
+withBrand<const BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
 ```
 
 ## Parameters
