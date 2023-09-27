@@ -64,8 +64,5 @@
         "@types/big.js": "^6.2.0",
         "big.js": "^6.2.1",
         "tslib": "^2.6.2"
-    },
-    "peerDependencies": {
-        "typescript": ">=5.1"
     }
 }
