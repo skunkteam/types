@@ -34,7 +34,7 @@ export function printValue(input: unknown, budget = 50, visited: Set<unknown> = 
                     ? `[${truncateArray(input, budget - 2, (element, remaining) => printValue(element, remaining, visited))}]`
                     : '[]';
             }
-            if (!input.toString || input.toString === Object.prototype.toString) {
+            if (typeof input.toString !== 'function' || input.toString === Object.prototype.toString) {
                 const entries = Object.entries(input);
                 return isOneOrMore(entries)
                     ? `{ ${truncateArray(entries, budget - 4, ([key, value], remaining) => {

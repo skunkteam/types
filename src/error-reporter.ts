@@ -325,7 +325,7 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
 }
 
 function isTopLevelFailure(fail: Failure): fail is Failure & { details: [FailureDetails] } {
-    return fail.details.length === 1 && !fail.details[0]?.path;
+    return fail.details.length === 1 && !fail.details[0].path;
 }
 
 function hasDiscriminatorMismatch(fail: Failure) {

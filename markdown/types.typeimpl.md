@@ -11,7 +11,7 @@ The Type with the given type implementation.
 ```typescript
 export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
     new (input: unknown): TypeOf<Impl>;
-    (input: unknown): TypeOf<Impl>;
+    (this: void, input: unknown): TypeOf<Impl>;
 };
 ```
 

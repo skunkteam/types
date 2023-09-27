@@ -22,7 +22,12 @@ export class RecordType<
     /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
-    constructor(readonly keyType: KeyTypeImpl, readonly valueType: ValueTypeImpl, name?: string, readonly strict = true) {
+    constructor(
+        readonly keyType: KeyTypeImpl,
+        readonly valueType: ValueTypeImpl,
+        name?: string,
+        readonly strict = true,
+    ) {
         super();
         this.isDefaultName = !name;
         this.name = name || `Record<${keyType.name}, ${valueType.name}>`;

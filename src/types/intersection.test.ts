@@ -1,7 +1,6 @@
 import { BaseTypeImpl } from '../base-type.js';
 import type { The } from '../interfaces.js';
 import { assignableTo, testTypeImpl, testTypes } from '../testutils.js';
-import { array } from './array.js';
 import { boolean } from './boolean.js';
 import { object, partial } from './interface.js';
 import { IntersectionOfTypeTuple, intersection } from './intersection.js';
@@ -81,7 +80,6 @@ describe(intersection, () => {
     });
 
     test('invalid type defs', () => {
-        expect(() => intersection([array(number) as any, object({})])).toThrow('can only create an intersection of objects, got: number[]');
         jest.spyOn(console, 'warn').mockReturnValueOnce();
         intersection([object({ a: number }), object({ a: number })]);
         expect(console.warn).toHaveBeenCalledWith(

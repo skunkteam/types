@@ -8,7 +8,7 @@
 
 ```typescript
 export type WithBrands<T, BrandNames extends string> = T & {
-    [brands]: {
+    readonly [brands]: {
         [P in BrandNames]: true;
     };
 };

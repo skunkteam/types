@@ -116,27 +116,23 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     get autoCast(): this {
         // eslint-disable-next-line @typescript-eslint/unbound-method
         const { autoCaster, typeParser } = this;
-        return (this._instanceCache.autoCast ??=
-            !autoCaster || typeParser
-                ? this
-                : createType(this, {
-                      name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
-                      typeParser: {
-                          configurable: true,
-                          value(this: BaseTypeImpl<ResultType, TypeConfig>, input: unknown) {
-                              const autoCastResult = autoCaster.call(this, input);
-                              return this.createResult(
-                                  input,
-                                  autoCastResult,
-                                  autoCastResult !== autoCastFailure || {
-                                      kind: 'custom message',
-                                      message: `could not autocast value: ${printValue(input)}`,
-                                      omitInput: true,
-                                  },
-                              );
-                          },
-                      },
-                  })) as this;
+        if (!autoCaster || typeParser) return this;
+        const autoCastParser = function (this: BaseTypeImpl<ResultType, TypeConfig>, input: unknown) {
+            const autoCastResult = autoCaster.call(this, input);
+            return this.createResult(
+                input,
+                autoCastResult,
+                autoCastResult !== autoCastFailure || {
+                    kind: 'custom message',
+                    message: `could not autocast value: ${printValue(input)}`,
+                    omitInput: true,
+                },
+            );
+        };
+        return (this._instanceCache.autoCast ??= createType(this, {
+            name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
+            typeParser: { configurable: true, value: autoCastParser },
+        })) as this;
     }
 
     /**
@@ -309,7 +305,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      *
      * @param name - the new name to use in error messages
      */
-    withBrand<BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig> {
+    withBrand<const BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig> {
         return createType(branded<ResultType, BrandName, TypeConfig>(this), { name: { configurable: true, value: name } });
     }
 
@@ -322,7 +318,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * @param name - the name to use in error messages
      * @param newConfig - the new type-specific config that further restricts the accepted values
      */
-    withConfig<BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig> {
+    withConfig<const BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig> {
         return createType(branded<ResultType, BrandName, TypeConfig>(this), {
             name: { configurable: true, value: name },
             typeConfig: { configurable: true, value: this.combineConfig(this.typeConfig, newConfig) },
@@ -414,7 +410,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * @param name - the new name to use in error messages
      * @param constraint - the additional validation to restrict the current type
      */
-    withConstraint<BrandName extends string>(
+    withConstraint<const BrandName extends string>(
         name: BrandName,
         constraint: Validator<ResultType>,
     ): Type<Branded<ResultType, BrandName>, TypeConfig> {
@@ -450,7 +446,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * const now = ISODate.fromJS(new Date());
      * ```
      */
-    extendWith<E>(factory: (type: this) => E): this & E {
+    extendWith<const E>(factory: (type: this) => E): this & E {
         return createType(this, Object.getOwnPropertyDescriptors(factory(this))) as unknown as this & E;
     }
 

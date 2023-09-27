@@ -9,7 +9,7 @@ Create a new instance of this Type with the additional type-specific config, suc
 **Signature:**
 
 ```typescript
-withConfig<BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
+withConfig<const BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
 ```
 
 ## Parameters

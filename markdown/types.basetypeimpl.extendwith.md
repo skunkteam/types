@@ -9,7 +9,7 @@ Extend the Type with additional static methods and properties.
 **Signature:**
 
 ```typescript
-extendWith<E>(factory: (type: this) => E): this & E;
+extendWith<const E>(factory: (type: this) => E): this & E;
 ```
 
 ## Parameters

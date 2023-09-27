@@ -94,7 +94,7 @@ export class InterfaceType<Props extends Properties, ResultType>
             return this.createResult(input, undefined, { kind: 'invalid basic type', expected: 'object' });
         }
         const { strictMissingKeys, partial } = this.options;
-        const constructResult = {} as Record<string, unknown>;
+        const constructResult: Record<string, unknown> = {};
         const details: MessageDetails[] = [];
         for (const [key, innerType] of this.propsArray) {
             const missingKey = !hasOwnProperty(input, key);
