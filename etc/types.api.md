@@ -370,7 +370,7 @@ export function printPath(path: ReadonlyArray<PropertyKey>): string;
 export function printValue(input: unknown, budget?: number, visited?: Set<unknown>): string;
 
 // @public
-export type Properties = Record<string, Type<unknown>>;
+export type Properties = Record<string, Type<any>>;
 
 // @public
 export type PropertiesInfo<Props extends Properties = Properties> = {
