@@ -345,7 +345,7 @@ export function partial<Props extends Properties>(...args: [props: Props] | [nam
 export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
 
 // @public (undocumented)
-export function pattern<BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: StringTypeConfig['customMessage']): Type<Branded<string, BrandName>, StringTypeConfig>;
+export function pattern<const BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: StringTypeConfig['customMessage']): Type<Branded<string, BrandName>, StringTypeConfig>;
 
 // @public
 export type PossibleDiscriminator = {

@@ -33,7 +33,7 @@ export const string: Type<string, StringTypeConfig> = SimpleType.create<string, 
     },
 );
 
-export function pattern<BrandName extends string>(
+export function pattern<const BrandName extends string>(
     name: BrandName,
     regExp: RegExp,
     customMessage?: StringTypeConfig['customMessage'],
