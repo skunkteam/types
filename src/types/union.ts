@@ -1,4 +1,4 @@
-import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType } from '../base-type.js';
+import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType } from '../base-type';
 import type {
     BasicType,
     LiteralValue,
@@ -11,8 +11,8 @@ import type {
     TypeOf,
     ValidationOptions,
     Visitor,
-} from '../interfaces.js';
-import { an, basicType, bracketsIfNeeded, decodeOptionalName, defaultStringify, define, extensionName, printPath } from '../utils/index.js';
+} from '../interfaces';
+import { an, basicType, bracketsIfNeeded, decodeOptionalName, defaultStringify, define, extensionName, printPath } from '../utils';
 
 /**
  * The implementation behind types created with {@link union} and {@link BaseTypeImpl.or}.

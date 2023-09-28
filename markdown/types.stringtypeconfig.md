@@ -9,7 +9,7 @@ Configuration of additional checks on string types.
 **Signature:**
 
 ```typescript
-export interface StringTypeConfig extends LengthChecksConfig
+interface StringTypeConfig extends LengthChecksConfig
 ```
 
 **Extends:** [LengthChecksConfig](./types.lengthchecksconfig.md)

@@ -9,7 +9,7 @@ Translates the type of a Properties-object into the proper TypeScript type to be
 **Signature:**
 
 ```typescript
-export type TypeOfProperties<T extends Properties> = {
+type TypeOfProperties<T extends Properties> = {
     [P in keyof T]: MergeIntersection<TypeOf<T[P]>>;
 };
 ```

@@ -9,7 +9,7 @@ Print a property-path in a "JavaScripty way".
 **Signature:**
 
 ```typescript
-export declare function printPath(path: ReadonlyArray<PropertyKey>): string;
+declare function printPath(path: ReadonlyArray<PropertyKey>): string;
 ```
 
 ## Parameters

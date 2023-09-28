@@ -9,7 +9,7 @@ Print an unknown value with a given character budget (default: 50).
 **Signature:**
 
 ```typescript
-export declare function printValue(input: unknown, budget?: number, visited?: Set<unknown>): string;
+declare function printValue(input: unknown, budget?: number, visited?: Set<unknown>): string;
 ```
 
 ## Parameters

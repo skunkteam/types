@@ -1,5 +1,5 @@
-import { BaseTypeImpl, createType } from '../base-type.js';
-import type { ArrayTypeConfig, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces.js';
+import { BaseTypeImpl, createType } from '../base-type';
+import type { ArrayTypeConfig, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces';
 import {
     castArray,
     decodeOptionalName,
@@ -9,8 +9,8 @@ import {
     isValidIdentifier,
     partition,
     prependPathToDetails,
-} from '../utils/index.js';
-import { unknownArray } from './unknown.js';
+} from '../utils';
+import { unknownArray } from './unknown';
 
 /**
  * The implementation behind types created with {@link array}.

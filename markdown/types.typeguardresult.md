@@ -9,7 +9,7 @@ The resulting type of a typeguard based on the `ResultType` of the Type and the 
 **Signature:**
 
 ```typescript
-export type TypeguardResult<ResultType, Input> = unknown extends Input
+type TypeguardResult<ResultType, Input> = unknown extends Input
     ? Input & ResultType
     : [Extract<Input, ResultType>] extends [never]
     ? Input & ResultType

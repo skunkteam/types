@@ -9,7 +9,7 @@ A failed validation result.
 **Signature:**
 
 ```typescript
-export interface Failure
+interface Failure
 ```
 
 ## Properties

@@ -9,7 +9,7 @@ The validation mode to use.
 **Signature:**
 
 ```typescript
-export type ValidationMode = 'check' | 'construct';
+type ValidationMode = 'check' | 'construct';
 ```
 
 ## Remarks

@@ -7,5 +7,5 @@
 **Signature:**
 
 ```typescript
-export type Transposed<T extends Record<string, string>> = Record<T[keyof T], keyof T>;
+type Transposed<T extends Record<string, string>> = Record<T[keyof T], keyof T>;
 ```

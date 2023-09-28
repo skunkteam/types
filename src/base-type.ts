@@ -19,8 +19,8 @@ import type {
     ValidationResult,
     Validator,
     Visitor,
-} from './interfaces.js';
-import { autoCastFailure, designType } from './symbols.js';
+} from './interfaces';
+import { autoCastFailure, designType } from './symbols';
 import {
     addParserInputToResult,
     an,
@@ -32,8 +32,8 @@ import {
     defaultStringify,
     prependContextToDetails,
     printValue,
-} from './utils/index.js';
-import { ValidationError } from './validation-error.js';
+} from './utils';
+import { ValidationError } from './validation-error';
 
 /**
  * The base-class of all type-implementations.

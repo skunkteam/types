@@ -9,7 +9,7 @@ Information about the performed validation for error-reporting.
 **Signature:**
 
 ```typescript
-export type ValidationDetails = {
+type ValidationDetails = {
     type: BaseTypeImpl<unknown>;
     input: unknown;
     parserInput?: unknown;

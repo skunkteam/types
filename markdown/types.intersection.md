@@ -9,7 +9,7 @@ Intersect the given types.
 **Signature:**
 
 ```typescript
-export declare function intersection<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>(
+declare function intersection<Types extends OneOrMore<BaseObjectLikeTypeImpl<unknown>>>(
     ...args: [name: string, types: Types] | [types: Types]
 ): TypeImpl<IntersectionType<Types>>;
 ```

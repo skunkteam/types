@@ -9,5 +9,5 @@ The supported types of literals.
 **Signature:**
 
 ```typescript
-export type LiteralValue = string | number | boolean | null | undefined | void;
+type LiteralValue = string | number | boolean | null | undefined | void;
 ```

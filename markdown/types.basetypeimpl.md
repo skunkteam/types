@@ -9,7 +9,7 @@ The base-class of all type-implementations.
 **Signature:**
 
 ```typescript
-export declare abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType>
+declare abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType>
 ```
 
 **Implements:** [TypeLink](./types.typelink.md)<!-- -->&lt;ResultType&gt;

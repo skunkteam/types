@@ -9,7 +9,7 @@ Create a Type from the given type-implementation.
 **Signature:**
 
 ```typescript
-export declare function createType<Impl extends BaseTypeImpl<any, any>>(
+declare function createType<Impl extends BaseTypeImpl<any, any>>(
     impl: Impl,
     override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
 ): TypeImpl<Impl>;

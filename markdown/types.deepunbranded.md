@@ -9,7 +9,7 @@ Unbrand a given type (recursive).
 **Signature:**
 
 ```typescript
-export type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
+type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
     ? {
           [P in keyof T & number]: DeepUnbranded<T[P]>;
       }

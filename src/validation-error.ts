@@ -1,6 +1,6 @@
-import type { BaseTypeImpl } from './base-type.js';
-import { reportError } from './error-reporter.js';
-import type { Failure, FailureDetails, OneOrMore, Result } from './interfaces.js';
+import type { BaseTypeImpl } from './base-type';
+import { reportError } from './error-reporter';
+import type { Failure, FailureDetails, OneOrMore, Result } from './interfaces';
 
 /**
  * The error that is thrown on any validation- or parse-error within this library.

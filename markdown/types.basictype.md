@@ -9,7 +9,7 @@ Basic categories of types.
 **Signature:**
 
 ```typescript
-export type BasicType = 'string' | 'number' | 'bigint' | 'boolean' | 'function' | 'object' | 'array' | 'symbol' | 'undefined' | 'null';
+type BasicType = 'string' | 'number' | 'bigint' | 'boolean' | 'function' | 'object' | 'array' | 'symbol' | 'undefined' | 'null';
 ```
 
 ## Remarks

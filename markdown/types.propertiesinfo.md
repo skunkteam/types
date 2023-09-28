@@ -9,7 +9,7 @@ Properties of an object type, including per-property optionality.
 **Signature:**
 
 ```typescript
-export type PropertiesInfo<Props extends Properties = Properties> = {
+type PropertiesInfo<Props extends Properties = Properties> = {
     [Key in keyof Props]: {
         partial: boolean;
         type: Props[Key];

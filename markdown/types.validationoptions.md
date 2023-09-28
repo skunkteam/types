@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export interface ValidationOptions
+interface ValidationOptions
 ```
 
 ## Properties

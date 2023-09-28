@@ -1,5 +1,5 @@
-import { USUAL_SUSPECTS, basicTypeMessage, createExample, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
-import { unknown, unknownArray, unknownRecord } from './unknown.js';
+import { USUAL_SUSPECTS, basicTypeMessage, createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
+import { unknown, unknownArray, unknownRecord } from './unknown';
 
 testTypeImpl({
     name: 'unknown',

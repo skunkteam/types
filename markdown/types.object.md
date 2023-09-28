@@ -9,7 +9,7 @@ Create a type-validator that validates (or parses) an object structure.
 **Signature:**
 
 ```typescript
-export declare function object<Props extends Properties>(
+declare function object<Props extends Properties>(
     ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
 ): FullType<Props>;
 ```

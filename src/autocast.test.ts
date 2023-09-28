@@ -1,4 +1,4 @@
-import { int, number, string } from './types/index.js';
+import { int, number, string } from './types';
 
 test('autoCast should not override existing parsers', () => {
     const HourOfDay = int.withConstraint('HourOfDay', n => 0 <= n && n < 24).withParser(number.andThen(n => n % 24));

@@ -9,7 +9,7 @@ Individual message with info about the performed validation for error-reporting.
 **Signature:**
 
 ```typescript
-export type FailureDetails = ValidationDetails & MessageDetails;
+type FailureDetails = ValidationDetails & MessageDetails;
 ```
 
 **References:** [ValidationDetails](./types.validationdetails.md)<!-- -->, [MessageDetails](./types.messagedetails.md)

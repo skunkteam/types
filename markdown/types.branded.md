@@ -9,7 +9,7 @@ Create a Branded type with a given `BrandName`<!-- -->.
 **Signature:**
 
 ```typescript
-export type Branded<T, BrandName extends string> = T extends WithBrands<infer Base, infer ExistingBrands>
+type Branded<T, BrandName extends string> = T extends WithBrands<infer Base, infer ExistingBrands>
     ? WithBrands<Base, BrandName | ExistingBrands>
     : WithBrands<T, BrandName>;
 ```

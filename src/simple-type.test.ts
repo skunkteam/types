@@ -1,7 +1,7 @@
-import type { The } from './interfaces.js';
-import { SimpleType } from './simple-type.js';
-import { createExample } from './testutils.js';
-import { object } from './types/interface.js';
+import type { The } from './interfaces';
+import { SimpleType } from './simple-type';
+import { createExample } from './testutils';
+import { object } from './types/interface';
 
 describe(SimpleType, () => {
     test('create simple types with ease', () => {

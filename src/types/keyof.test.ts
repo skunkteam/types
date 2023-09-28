@@ -1,8 +1,8 @@
-import type { The } from '../interfaces.js';
-import { ValidationErrorForTest, assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
-import { keyof, valueof } from './keyof.js';
-import { literal } from './literal.js';
-import { union } from './union.js';
+import type { The } from '../interfaces';
+import { ValidationErrorForTest, assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { keyof, valueof } from './keyof';
+import { literal } from './literal';
+import { union } from './union';
 
 testTypeImpl({
     name: '"yes" | "no"',

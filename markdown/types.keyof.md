@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export declare function keyof<T extends Record<string, unknown>>(...args: [name: string, keys: T] | [keys: T]): TypeImpl<KeyofType<T>>;
+declare function keyof<T extends Record<string, unknown>>(...args: [name: string, keys: T] | [keys: T]): TypeImpl<KeyofType<T>>;
 ```
 
 ## Parameters

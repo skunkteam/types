@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export declare function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(
+declare function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(
     ...args: [name: string, types: Types] | [types: Types]
 ): TypeImpl<UnionType<Types>>;
 ```

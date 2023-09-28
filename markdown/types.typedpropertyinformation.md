@@ -9,7 +9,7 @@ Interface that provides more detailed type-information about the `props` and `pr
 **Signature:**
 
 ```typescript
-export interface TypedPropertyInformation<Props extends Properties>
+interface TypedPropertyInformation<Props extends Properties>
 ```
 
 ## Properties

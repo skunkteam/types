@@ -9,7 +9,7 @@ Individual message details with optional info about the performed validation.
 **Signature:**
 
 ```typescript
-export type MessageDetails = Partial<ValidationDetails> & {
+type MessageDetails = Partial<ValidationDetails> & {
     path?: PropertyKey[];
     context?: string;
     omitInput?: boolean;

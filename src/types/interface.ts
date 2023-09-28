@@ -1,4 +1,4 @@
-import { BaseObjectLikeTypeImpl, BaseTypeImpl, TypedPropertyInformation, createType } from '../base-type.js';
+import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType, type TypedPropertyInformation } from '../base-type';
 import type {
     MergeIntersection,
     MessageDetails,
@@ -13,7 +13,7 @@ import type {
     ValidationOptions,
     Visitor,
     Writable,
-} from '../interfaces.js';
+} from '../interfaces';
 import {
     decodeOptionalName,
     decodeOptionalOptions,
@@ -23,8 +23,8 @@ import {
     hasOwnProperty,
     interfaceStringify,
     prependPathToDetails,
-} from '../utils/index.js';
-import { unknownRecord } from './unknown.js';
+} from '../utils';
+import { unknownRecord } from './unknown';
 
 /**
  * Options for {@link object}.

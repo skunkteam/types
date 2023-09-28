@@ -9,7 +9,7 @@ Type-guard that asserts that a given value is a Type.
 **Signature:**
 
 ```typescript
-export declare function isType(value: unknown): value is Type<unknown>;
+declare function isType(value: unknown): value is Type<unknown>;
 ```
 
 ## Parameters

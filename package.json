@@ -2,22 +2,22 @@
     "name": "@skunkteam/types",
     "version": "0.0.0-development",
     "description": "Runtime type-validation with TypeScript support",
-    "main": "dist/cjs/index.js",
-    "module": "dist/esm/index.js",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
     "exports": {
         ".": {
-            "require": "./dist/cjs/index.js",
-            "default": "./dist/esm/index.js"
+            "require": "./dist/index.js",
+            "default": "./dist/index.mjs"
         }
     },
-    "types": "dist/esm/index.d.ts",
+    "types": "dist/index.d.ts",
     "scripts": {
-        "build": "npm-run-all clean tsc fix-esm test lint",
-        "clean": "rm -rf dist temp coverage && tsc --build --clean",
-        "tsc": "tsc --build && tsc --project tsconfig.lib.json --module CommonJs --outDir dist/cjs",
-        "fix-esm": "echo '{ \"type\": \"module\" }' > dist/esm/package.json",
+        "build": "npm-run-all clean tsc test lint bundle",
+        "clean": "rm -rf build dist temp coverage && tsc --build --clean",
+        "tsc": "tsc --build",
         "test": "jest",
         "lint": "eslint . --ext .ts --max-warnings 0",
+        "bundle": "tsup",
         "pr": "npm-run-all api format",
         "api": "npm-run-all api:*",
         "api:extract": "api-extractor run --local --verbose --typescript-compiler-folder=node_modules/typescript",
@@ -58,6 +58,7 @@
         "reflect-metadata": "^0.1.13",
         "semantic-release": "^22.0.5",
         "ts-jest": "^29.1.1",
+        "tsup": "^7.2.0",
         "typescript": "^5.2.2"
     },
     "dependencies": {

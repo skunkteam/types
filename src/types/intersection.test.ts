@@ -1,12 +1,12 @@
-import { BaseTypeImpl } from '../base-type.js';
-import type { The } from '../interfaces.js';
-import { assignableTo, testTypeImpl, testTypes } from '../testutils.js';
-import { boolean } from './boolean.js';
-import { object, partial } from './interface.js';
-import { IntersectionOfTypeTuple, intersection } from './intersection.js';
-import { literal } from './literal.js';
-import { number } from './number.js';
-import { union } from './union.js';
+import { BaseTypeImpl } from '../base-type';
+import type { The } from '../interfaces';
+import { assignableTo, testTypeImpl, testTypes } from '../testutils';
+import { boolean } from './boolean';
+import { object, partial } from './interface';
+import { IntersectionOfTypeTuple, intersection } from './intersection';
+import { literal } from './literal';
+import { number } from './number';
+import { union } from './union';
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */

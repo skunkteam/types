@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export type WithBrands<T, BrandNames extends string> = T & {
+type WithBrands<T, BrandNames extends string> = T & {
     readonly [brands]: {
         [P in BrandNames]: true;
     };

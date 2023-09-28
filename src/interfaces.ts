@@ -1,6 +1,6 @@
-import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type.js';
-import type { brands, designType } from './symbols.js';
-import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types/index.js';
+import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
+import type { brands, designType } from './symbols';
+import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types';
 
 /**
  * A type-validator/-parser that validates or parses `ResultType`.

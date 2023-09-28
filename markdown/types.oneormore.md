@@ -9,5 +9,5 @@ An Array with at least one element.
 **Signature:**
 
 ```typescript
-export type OneOrMore<T> = [T, ...T[]];
+type OneOrMore<T> = [T, ...T[]];
 ```

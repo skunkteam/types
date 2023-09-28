@@ -9,7 +9,7 @@ The supported additional checks on array types.
 **Signature:**
 
 ```typescript
-export type ArrayViolation = LengthViolation;
+type ArrayViolation = LengthViolation;
 ```
 
 **References:** [LengthViolation](./types.lengthviolation.md)
