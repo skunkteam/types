@@ -9,19 +9,19 @@ Create a type that checks whether the input is an array and all elements conform
 **Signature:**
 
 ```typescript
-export declare function array<Element>(
+export declare function array<ElementType extends BaseTypeImpl<any>>(
     ...args:
-        | [name: string, elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig]
-        | [elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig]
-): TypeImpl<ArrayType<BaseTypeImpl<Element>, Element, Element[]>>;
+        | [name: string, elementType: ElementType, typeConfig?: ArrayTypeConfig]
+        | [elementType: ElementType, typeConfig?: ArrayTypeConfig]
+): TypeImpl<ArrayType<ElementType, TypeOf<ElementType>, Array<TypeOf<ElementType>>>>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                                                                                                                                                                     | Description                    |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
-| args      | \[name: string, elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] \| \[elementType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] | optional name and element-type |
+| Parameter | Type                                                                                                                                                                                                               | Description                    |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
+| args      | \[name: string, elementType: ElementType, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] \| \[elementType: ElementType, typeConfig?: [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->\] | optional name and element-type |
 
 **Returns:**
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[ArrayType](./types.arraytype.md)<!-- -->&lt;[BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Element&gt;, Element, Element\[\]&gt;&gt;
+[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[ArrayType](./types.arraytype.md)<!-- -->&lt;ElementType, [TypeOf](./types.typeof.md)<!-- -->&lt;ElementType&gt;, Array&lt;[TypeOf](./types.typeof.md)<!-- -->&lt;ElementType&gt;&gt;&gt;&gt;

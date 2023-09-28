@@ -146,3 +146,17 @@ testTypes(() => {
     // @ts-expect-error wrong element type
     assignableTo<MyArray>([1]);
 });
+
+testTypes('correct inference of arrays of branded types', () => {
+    type MyBrandedType = The<typeof MyBrandedType>;
+    const MyBrandedType = string.withConfig('MyBrandedType', { minLength: 2, maxLength: 2 });
+    type MyBrandedTypeArray = The<typeof MyBrandedTypeArray>;
+    const MyBrandedTypeArray = array(MyBrandedType);
+
+    const brandedArray = MyBrandedTypeArray.literal(['ab']);
+
+    assignableTo<MyBrandedType[]>(brandedArray);
+    assignableTo<MyBrandedTypeArray>([MyBrandedType.literal('ab')]);
+    // @ts-expect-error not a branded string
+    assignableTo<MyBrandedTypeArray>(['ab']);
+});
