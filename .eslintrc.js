@@ -11,12 +11,11 @@ const config = {
     rules: {
         'no-fallthrough': 'off', // checked by TS compiler
         'object-shorthand': ['error', 'always'],
-        'sort-imports': ['error', { ignoreDeclarationSort: true }],
+        'sort-imports': ['off'],
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-invalid-void-type': 'off',
         '@typescript-eslint/no-throw-literal': 'off',
-        'import/extensions': ['error', 'ignorePackages'],
     },
     overrides: [
         {

@@ -1,6 +1,6 @@
-import type { Failure } from './interfaces.js';
-import { unknown } from './types/index.js';
-import { ValidationError } from './validation-error.js';
+import type { Failure } from './interfaces';
+import { unknown } from './types';
+import { ValidationError } from './validation-error';
 
 describe(ValidationError, () => {
     const type = unknown.withName('GreatType');

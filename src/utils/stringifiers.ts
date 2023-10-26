@@ -1,4 +1,4 @@
-import type { BasicType, Type } from '../interfaces.js';
+import type { BasicType, Type } from '../interfaces';
 
 /**
  * Default stringifier for all primitive values.

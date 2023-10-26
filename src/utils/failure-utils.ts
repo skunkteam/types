@@ -1,6 +1,6 @@
-import type { CustomMessage, Failure, FailureDetails, MessageDetails, OneOrMore, Result } from '../interfaces.js';
-import { printValue } from './print-utils.js';
-import { checkOneOrMore } from './type-utils.js';
+import type { CustomMessage, Failure, FailureDetails, MessageDetails, OneOrMore, Result } from '../interfaces';
+import { printValue } from './print-utils';
+import { checkOneOrMore } from './type-utils';
 
 export function prependPathToDetails(failure: Failure, key: PropertyKey): OneOrMore<FailureDetails> {
     return checkOneOrMore(failure.details.map(d => ({ ...d, path: d.path ? [key, ...d.path] : [key] })));

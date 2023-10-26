@@ -1,13 +1,13 @@
-import type { MessageDetails, The } from '../interfaces.js';
-import { createExample, defaultUsualSuspects, stripped, testTypeImpl } from '../testutils.js';
-import { printKey, printValue } from '../utils/index.js';
-import { object } from './interface.js';
-import { keyof } from './keyof.js';
-import { literal } from './literal.js';
-import { int, number } from './number.js';
-import { record } from './record.js';
-import { string } from './string.js';
-import { union } from './union.js';
+import type { MessageDetails, The } from '../interfaces';
+import { createExample, defaultUsualSuspects, stripped, testTypeImpl } from '../testutils';
+import { printKey, printValue } from '../utils';
+import { object } from './interface';
+import { keyof } from './keyof';
+import { literal } from './literal';
+import { int, number } from './number';
+import { record } from './record';
+import { string } from './string';
+import { union } from './union';
 
 testTypeImpl({ name: 'Record<string, { nested: "object" }>', type: record(string, object({ nested: literal('object') })) });
 testTypeImpl({ name: 'Record<number, { nested: "object" }>', type: record(number, object({ nested: literal('object') }), false) });

@@ -1,6 +1,6 @@
-import type { Branded, StringTypeConfig, Type } from '../interfaces.js';
-import { SimpleType } from '../simple-type.js';
-import { evalAdditionalChecks, stringStringify } from '../utils/index.js';
+import type { Branded, StringTypeConfig, Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
+import { evalAdditionalChecks, stringStringify } from '../utils';
 
 /**
  * Built-in validator for string-values.

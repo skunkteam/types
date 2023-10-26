@@ -9,7 +9,7 @@ Print a property-key in a JavaScript compatible way.
 **Signature:**
 
 ```typescript
-export declare function printKey(key: string): string;
+declare function printKey(key: string): string;
 ```
 
 ## Parameters

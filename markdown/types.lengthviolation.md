@@ -7,5 +7,5 @@
 **Signature:**
 
 ```typescript
-export type LengthViolation = 'minLength' | 'maxLength';
+type LengthViolation = 'minLength' | 'maxLength';
 ```

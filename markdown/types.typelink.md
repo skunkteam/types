@@ -9,7 +9,7 @@ An object that has an associated TypeScript type.
 **Signature:**
 
 ```typescript
-export interface TypeLink<AssociatedType>
+interface TypeLink<AssociatedType>
 ```
 
 ## Properties

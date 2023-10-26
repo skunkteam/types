@@ -1,6 +1,6 @@
-import type { OneOrMore, PropertiesInfo } from '../interfaces.js';
-import { castArray } from './collection-utils.js';
-import { isOneOrMore, isValidIdentifier } from './type-utils.js';
+import type { OneOrMore, PropertiesInfo } from '../interfaces';
+import { castArray } from './collection-utils';
+import { isOneOrMore, isValidIdentifier } from './type-utils';
 
 /**
  * Print an unknown value with a given character budget (default: 50).

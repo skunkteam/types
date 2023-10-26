@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export declare function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure;
+declare function booleanAutoCaster(input: unknown): boolean | typeof autoCastFailure;
 ```
 
 ## Parameters

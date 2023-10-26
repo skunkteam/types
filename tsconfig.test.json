@@ -3,9 +3,11 @@
     "compilerOptions": {
         "noEmit": true,
         "module": "CommonJS",
+        "moduleResolution": "Node",
         "types": ["jest", "jest-extended", "node"],
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "verbatimModuleSyntax": false
     },
     "include": ["src/**/*.test.ts", "src/testutils.ts"],
     "references": [{ "path": "./tsconfig.lib.json" }]

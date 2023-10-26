@@ -9,7 +9,7 @@ A type-validator/-parser that validates or parses object-like type `ResultType`<
 **Signature:**
 
 ```typescript
-export type ObjectType<ResultType, TypeConfig = unknown> = TypeImpl<BaseObjectLikeTypeImpl<ResultType, TypeConfig>>;
+type ObjectType<ResultType, TypeConfig = unknown> = TypeImpl<BaseObjectLikeTypeImpl<ResultType, TypeConfig>>;
 ```
 
 **References:** [TypeImpl](./types.typeimpl.md)<!-- -->, [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)

@@ -9,7 +9,7 @@ Obtains the TypeScript type of the given runtime Type-checker. Aka [TypeOf](./ty
 **Signature:**
 
 ```typescript
-export type The<T> = TypeOf<T>;
+type The<T> = TypeOf<T>;
 ```
 
 **References:** [TypeOf](./types.typeof.md)

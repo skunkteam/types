@@ -1,5 +1,5 @@
-import { basicTypeMessage, testTypeImpl } from '../testutils.js';
-import { boolean } from './boolean.js';
+import { basicTypeMessage, testTypeImpl } from '../testutils';
+import { boolean } from './boolean';
 
 testTypeImpl({
     name: 'boolean',

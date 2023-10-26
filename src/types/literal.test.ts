@@ -1,6 +1,6 @@
-import type { The } from '../interfaces.js';
-import { assignableTo, testTypeImpl, testTypes } from '../testutils.js';
-import { literal, nullType, undefinedType } from './literal.js';
+import type { The } from '../interfaces';
+import { assignableTo, testTypeImpl, testTypes } from '../testutils';
+import { literal, nullType, undefinedType } from './literal';
 
 testTypeImpl({
     name: 'false',

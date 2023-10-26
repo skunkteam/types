@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export declare function pattern<const BrandName extends string>(
+declare function pattern<const BrandName extends string>(
     name: BrandName,
     regExp: RegExp,
     customMessage?: StringTypeConfig['customMessage'],

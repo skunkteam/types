@@ -9,7 +9,7 @@ Create a type that checks whether the input is an array and all elements conform
 **Signature:**
 
 ```typescript
-export declare function array<ElementType extends BaseTypeImpl<any>>(
+declare function array<ElementType extends BaseTypeImpl<any>>(
     ...args:
         | [name: string, elementType: ElementType, typeConfig?: ArrayTypeConfig]
         | [elementType: ElementType, typeConfig?: ArrayTypeConfig]

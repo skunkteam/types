@@ -9,7 +9,7 @@ The supported additional checks on string types.
 **Signature:**
 
 ```typescript
-export type StringViolation = 'pattern' | LengthViolation;
+type StringViolation = 'pattern' | LengthViolation;
 ```
 
 **References:** [LengthViolation](./types.lengthviolation.md)

@@ -9,7 +9,7 @@ The opposite of the built-in `Readonly<...>` type.
 **Signature:**
 
 ```typescript
-export type Writable<T> = {
+type Writable<T> = {
     -readonly [P in keyof T]: T[P];
 };
 ```

@@ -9,7 +9,7 @@ Unbrand a given type (not recursive).
 **Signature:**
 
 ```typescript
-export type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
+type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
 ```
 
 **References:** [WithBrands](./types.withbrands.md)

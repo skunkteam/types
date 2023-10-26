@@ -9,7 +9,7 @@ Options for [object()](./types.object.md)<!-- -->.
 **Signature:**
 
 ```typescript
-export interface InterfaceTypeOptions
+interface InterfaceTypeOptions
 ```
 
 ## Properties

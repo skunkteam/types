@@ -9,7 +9,7 @@ The validation-logic as needed by [BaseTypeImpl.withConstraint()](./types.basety
 **Signature:**
 
 ```typescript
-export type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;
+type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;
 ```
 
 **References:** [ValidationOptions](./types.validationoptions.md)<!-- -->, [ValidationResult](./types.validationresult.md)

@@ -9,7 +9,7 @@ Interface for a visitor that is accepted by all types (classic visitor-pattern).
 **Signature:**
 
 ```typescript
-export interface Visitor<R>
+interface Visitor<R>
 ```
 
 ## Methods

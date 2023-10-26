@@ -9,7 +9,7 @@ The implementation behind types created with [array()](./types.array.md)<!-- -->
 **Signature:**
 
 ```typescript
-export declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType, ArrayTypeConfig>
+declare class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType, ArrayTypeConfig>
 ```
 
 **Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, [ArrayTypeConfig](./types.arraytypeconfig.md)<!-- -->&gt;

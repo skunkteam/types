@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export type Primitive = LiteralValue | bigint | symbol;
+type Primitive = LiteralValue | bigint | symbol;
 ```
 
 **References:** [LiteralValue](./types.literalvalue.md)

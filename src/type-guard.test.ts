@@ -1,6 +1,6 @@
-import { BaseTypeImpl } from './base-type.js';
-import { isType } from './type-guard.js';
-import { InterfaceType, object, string } from './types/index.js';
+import { BaseTypeImpl } from './base-type';
+import { isType } from './type-guard';
+import { InterfaceType, object, string } from './types';
 
 describe(isType, () => {
     test('correctly identify types', () => {

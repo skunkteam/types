@@ -1,7 +1,7 @@
-import type { Type } from '../interfaces.js';
-import { SimpleType } from '../simple-type.js';
-import { autoCastFailure } from '../symbols.js';
-import { basicTypeChecker, booleanStringify } from '../utils/index.js';
+import type { Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
+import { autoCastFailure } from '../symbols';
+import { basicTypeChecker, booleanStringify } from '../utils';
 
 /**
  * Built-in validator for boolean-values.

@@ -1,4 +1,6 @@
-node_modules
-dist
-coverage
-**/*.js
+/node_modules
+/build
+/dist
+/coverage
+/*.js
+/*.ts

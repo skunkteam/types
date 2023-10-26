@@ -1,10 +1,10 @@
-import type { The } from '../interfaces.js';
-import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils.js';
-import { array } from './array.js';
-import { object } from './interface.js';
-import { undefinedType } from './literal.js';
-import { number } from './number.js';
-import { string } from './string.js';
+import type { The } from '../interfaces';
+import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { array } from './array';
+import { object } from './interface';
+import { undefinedType } from './literal';
+import { number } from './number';
+import { string } from './string';
 
 testTypeImpl({
     name: 'string[]',

@@ -9,7 +9,7 @@ The type of the type-guard that comes with each Type (the \#is method).
 **Signature:**
 
 ```typescript
-export type TypeguardFor<ResultType> = <Input>(this: void, input: Input) => input is TypeguardResult<ResultType, Input>;
+type TypeguardFor<ResultType> = <Input>(this: void, input: Input) => input is TypeguardResult<ResultType, Input>;
 ```
 
 **References:** [TypeguardResult](./types.typeguardresult.md)

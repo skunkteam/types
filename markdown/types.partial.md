@@ -9,7 +9,7 @@ Create a type-validator that validates (or parses) an object structure with only
 **Signature:**
 
 ```typescript
-export declare function partial<Props extends Properties>(
+declare function partial<Props extends Properties>(
     ...args: [props: Props] | [name: string, props: Props] | [options: Omit<InterfaceTypeOptions, 'partial'>, props: Props]
 ): PartialType<Props>;
 ```

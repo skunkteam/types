@@ -1,11 +1,11 @@
-import type { The } from '../interfaces.js';
-import { assignableTo, defaultUsualSuspects, stripped, testTypeImpl, testTypes } from '../testutils.js';
-import { boolean } from './boolean.js';
-import { PartialType, object, partial } from './interface.js';
-import { IntersectionType } from './intersection.js';
-import { undefinedType } from './literal.js';
-import { number } from './number.js';
-import { string } from './string.js';
+import type { The } from '../interfaces';
+import { assignableTo, defaultUsualSuspects, stripped, testTypeImpl, testTypes } from '../testutils';
+import { boolean } from './boolean';
+import { PartialType, object, partial } from './interface';
+import { IntersectionType } from './intersection';
+import { undefinedType } from './literal';
+import { number } from './number';
+import { string } from './string';
 
 testTypeImpl({
     name: '{ force?: boolean }',

@@ -9,7 +9,7 @@ Implementation for simple types such as primitive types.
 **Signature:**
 
 ```typescript
-export declare class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType, TypeConfig>
+declare class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType, TypeConfig>
 ```
 
 **Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;

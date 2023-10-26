@@ -9,7 +9,7 @@ The implementation behind types created with [literal()](./types.literal.md) and
 **Signature:**
 
 ```typescript
-export declare class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType>
+declare class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<ResultType>
 ```
 
 **Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;
