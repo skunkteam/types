@@ -1,5 +1,5 @@
 import { BaseTypeImpl, createType } from '../base-type';
-import type { ArrayTypeConfig, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces';
+import type { ArrayTypeConfig, Result, TypeImpl, TypeOf, ValidationOptions, Visitor } from '../interfaces';
 import {
     castArray,
     decodeOptionalName,
@@ -98,11 +98,11 @@ define(ArrayType, 'createAutoCastAllType', function (this: ArrayType<BaseTypeImp
  *
  * @param args - optional name and element-type
  */
-export function array<Element>(
+export function array<ElementType extends BaseTypeImpl<any>>(
     ...args:
-        | [name: string, elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig]
-        | [elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig]
-): TypeImpl<ArrayType<BaseTypeImpl<Element>, Element, Element[]>> {
+        | [name: string, elementType: ElementType, typeConfig?: ArrayTypeConfig]
+        | [elementType: ElementType, typeConfig?: ArrayTypeConfig]
+): TypeImpl<ArrayType<ElementType, TypeOf<ElementType>, Array<TypeOf<ElementType>>>> {
     const [name, elementType, typeConfig] = decodeOptionalName(args);
     return createType(new ArrayType(elementType, typeConfig ?? {}, name));
 }

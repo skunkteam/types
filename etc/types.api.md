@@ -5,7 +5,7 @@
 ```ts
 
 // @public
-export function array<Element>(...args: [name: string, elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig] | [elementType: BaseTypeImpl<Element>, typeConfig?: ArrayTypeConfig]): TypeImpl<ArrayType<BaseTypeImpl<Element>, Element, Element[]>>;
+export function array<ElementType extends BaseTypeImpl<any>>(...args: [name: string, elementType: ElementType, typeConfig?: ArrayTypeConfig] | [elementType: ElementType, typeConfig?: ArrayTypeConfig]): TypeImpl<ArrayType<ElementType, TypeOf<ElementType>, Array<TypeOf<ElementType>>>>;
 
 // @public
 export class ArrayType<ElementType extends BaseTypeImpl<Element>, Element, ResultType extends Element[]> extends BaseTypeImpl<ResultType, ArrayTypeConfig> {
