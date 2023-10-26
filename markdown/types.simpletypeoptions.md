@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export interface SimpleTypeOptions<ResultType, TypeConfig>
+interface SimpleTypeOptions<ResultType, TypeConfig>
 ```
 
 ## Properties

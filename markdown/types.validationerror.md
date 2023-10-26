@@ -9,7 +9,7 @@ The error that is thrown on any validation- or parse-error within this library.
 **Signature:**
 
 ```typescript
-export declare class ValidationError extends Error implements Failure
+declare class ValidationError extends Error implements Failure
 ```
 
 **Extends:** Error

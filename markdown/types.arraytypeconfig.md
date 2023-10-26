@@ -9,7 +9,7 @@ Configuration of additional checks on array types.
 **Signature:**
 
 ```typescript
-export interface ArrayTypeConfig extends LengthChecksConfig
+interface ArrayTypeConfig extends LengthChecksConfig
 ```
 
 **Extends:** [LengthChecksConfig](./types.lengthchecksconfig.md)

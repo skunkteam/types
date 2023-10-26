@@ -1,9 +1,9 @@
-import { BaseTypeImpl, createType } from '../base-type.js';
-import type { BasicType, LiteralValue, Result, TypeImpl, Visitor } from '../interfaces.js';
-import { autoCastFailure } from '../symbols.js';
-import { basicType, defaultStringify, define, printValue } from '../utils/index.js';
-import { booleanAutoCaster } from './boolean.js';
-import { numberAutoCaster } from './number.js';
+import { BaseTypeImpl, createType } from '../base-type';
+import type { BasicType, LiteralValue, Result, TypeImpl, Visitor } from '../interfaces';
+import { autoCastFailure } from '../symbols';
+import { basicType, defaultStringify, define, printValue } from '../utils';
+import { booleanAutoCaster } from './boolean';
+import { numberAutoCaster } from './number';
 
 /**
  * The implementation behind types created with {@link literal} and {@link nullType}, {@link undefinedType} and {@link voidType}.

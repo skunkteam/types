@@ -1,4 +1,4 @@
-import type { BasicType, Failure, OneOrMore, Result, ValidationResult } from '../interfaces.js';
+import type { BasicType, Failure, OneOrMore, Result, ValidationResult } from '../interfaces';
 
 export function isOneOrMore<T>(arr: T[]): arr is OneOrMore<T> {
     return arr.length > 0;

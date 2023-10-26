@@ -1,8 +1,8 @@
 import big from 'big.js';
-import type { Branded, NumberTypeConfig, The, Type } from '../interfaces.js';
-import { SimpleType } from '../simple-type.js';
-import { autoCastFailure } from '../symbols.js';
-import { evalAdditionalChecks, numberStringify } from '../utils/index.js';
+import type { Branded, NumberTypeConfig, The, Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
+import { autoCastFailure } from '../symbols';
+import { evalAdditionalChecks, numberStringify } from '../utils';
 
 export const number: Type<number, NumberTypeConfig> = SimpleType.create<number, NumberTypeConfig>(
     'number',

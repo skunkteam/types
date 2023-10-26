@@ -1,13 +1,13 @@
-import type { DeepUnbranded, The } from '../interfaces.js';
-import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
-import { boolean } from './boolean.js';
-import { object, partial } from './interface.js';
-import { keyof } from './keyof.js';
-import { literal, nullType, undefinedType } from './literal.js';
-import { number } from './number.js';
-import { string } from './string.js';
-import { union } from './union.js';
-import { unknownRecord } from './unknown.js';
+import type { DeepUnbranded, The } from '../interfaces';
+import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
+import { boolean } from './boolean';
+import { object, partial } from './interface';
+import { keyof } from './keyof';
+import { literal, nullType, undefinedType } from './literal';
+import { number } from './number';
+import { string } from './string';
+import { union } from './union';
+import { unknownRecord } from './unknown';
 
 testTypeImpl({
     name: 'number | null',

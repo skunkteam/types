@@ -7,9 +7,7 @@
 **Signature:**
 
 ```typescript
-export declare function valueof<T extends Record<string, string>>(
-    ...args: [name: string, obj: T] | [obj: T]
-): TypeImpl<KeyofType<Transposed<T>>>;
+declare function valueof<T extends Record<string, string>>(...args: [name: string, obj: T] | [obj: T]): TypeImpl<KeyofType<Transposed<T>>>;
 ```
 
 ## Parameters

@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export declare function numberAutoCaster(input: unknown): number | typeof autoCastFailure;
+declare function numberAutoCaster(input: unknown): number | typeof autoCastFailure;
 ```
 
 ## Parameters

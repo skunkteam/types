@@ -9,7 +9,7 @@ The implementation behind types created with [record()](./types.record.md)<!-- -
 **Signature:**
 
 ```typescript
-export declare class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType extends number | string, ValueTypeImpl extends BaseTypeImpl<ValueType>, ValueType, ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>> extends BaseTypeImpl<ResultType>
+declare class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType extends number | string, ValueTypeImpl extends BaseTypeImpl<ValueType>, ValueType, ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>> extends BaseTypeImpl<ResultType>
 ```
 
 **Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;

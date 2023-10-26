@@ -9,7 +9,7 @@ The implementation behind types created with [keyof()](./types.keyof.md) and [va
 **Signature:**
 
 ```typescript
-export declare class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType>
+declare class KeyofType<T extends Record<string, unknown>, ResultType extends keyof T = keyof T> extends BaseTypeImpl<ResultType>
 ```
 
 **Extends:** [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType&gt;

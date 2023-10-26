@@ -9,7 +9,7 @@ Note: record has strict validation by default, while type does not have strict v
 **Signature:**
 
 ```typescript
-export declare function record<KeyType extends number | string, ValueType>(
+declare function record<KeyType extends number | string, ValueType>(
     ...args:
         | [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]
         | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]

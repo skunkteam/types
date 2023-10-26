@@ -9,7 +9,7 @@ Obtains the TypeScript type of the given runtime Type-checker. Aka [The](./types
 **Signature:**
 
 ```typescript
-export type TypeOf<T> = T extends {
+type TypeOf<T> = T extends {
     readonly [designType]: infer Q;
 }
     ? Q

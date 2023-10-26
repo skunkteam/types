@@ -1,4 +1,4 @@
-import { bracketsIfNeeded, printValue } from './print-utils.js';
+import { bracketsIfNeeded, printValue } from './print-utils';
 
 describe(printValue, () => {
     const circular = { nested: { prop: { value: 123, circular: 0 as unknown } } };

@@ -9,7 +9,7 @@ The Type with the given type implementation.
 **Signature:**
 
 ```typescript
-export type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
+type TypeImpl<Impl extends BaseTypeImpl<any, any>> = Impl & {
     new (input: unknown): TypeOf<Impl>;
     (this: void, input: unknown): TypeOf<Impl>;
 };

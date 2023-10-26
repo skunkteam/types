@@ -1,6 +1,6 @@
-import type { Type } from '../interfaces.js';
-import { SimpleType } from '../simple-type.js';
-import { basicTypeChecker, castArray, fallbackStringify } from '../utils/index.js';
+import type { Type } from '../interfaces';
+import { SimpleType } from '../simple-type';
+import { basicTypeChecker, castArray, fallbackStringify } from '../utils';
 
 /**
  * Built-in validator that accepts all values.

@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
         "target": "ES2019",
-        "module": "ES2015",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-        "outDir": "dist/esm",
+        "outDir": "build",
         "rootDir": "src",
-        "moduleResolution": "node",
         "importHelpers": true,
         "strict": true,
         "noUnusedLocals": true,
@@ -20,9 +20,9 @@
         "forceConsistentCasingInFileNames": true,
         "pretty": true,
         "composite": true,
-        "importsNotUsedAsValues": "error",
+        "verbatimModuleSyntax": true,
         "extendedDiagnostics": true,
-        "ignoreDeprecations": "5.0"
+        "useDefineForClassFields": false
     },
     "include": [],
     "files": [],

@@ -9,7 +9,7 @@ A description of the property-paths and possible values that might be used to id
 **Signature:**
 
 ```typescript
-export type PossibleDiscriminator = {
+type PossibleDiscriminator = {
     readonly path: readonly string[];
     readonly values: readonly LiteralValue[];
     readonly mapping?: ReadonlyArray<{

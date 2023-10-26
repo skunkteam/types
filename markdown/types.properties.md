@@ -9,7 +9,7 @@ The properties of an object type.
 **Signature:**
 
 ```typescript
-export type Properties = Record<string, Type<any>>;
+type Properties = Record<string, Type<any>>;
 ```
 
 **References:** [Type](./types.type.md)

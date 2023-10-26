@@ -9,7 +9,7 @@ A type-validator/-parser that validates or parses `ResultType`<!-- -->.
 **Signature:**
 
 ```typescript
-export type Type<ResultType, TypeConfig = unknown> = TypeImpl<BaseTypeImpl<ResultType, TypeConfig>>;
+type Type<ResultType, TypeConfig = unknown> = TypeImpl<BaseTypeImpl<ResultType, TypeConfig>>;
 ```
 
 **References:** [TypeImpl](./types.typeimpl.md)<!-- -->, [BaseTypeImpl](./types.basetypeimpl.md)

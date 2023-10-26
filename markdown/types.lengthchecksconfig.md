@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export interface LengthChecksConfig
+interface LengthChecksConfig
 ```
 
 ## Properties

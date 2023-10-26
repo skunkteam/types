@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
-import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type.js';
-import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, StringTypeConfig, Type, Visitor } from './interfaces.js';
-import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types/index.js';
-import { an, basicType, printValue } from './utils/index.js';
-import { ValidationError } from './validation-error.js';
+import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
+import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, StringTypeConfig, Type, Visitor } from './interfaces';
+import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types';
+import { an, basicType, printValue } from './utils';
+import { ValidationError } from './validation-error';
 
 export function assignableTo<T>(_value: T): void {
     // intentionally left blank

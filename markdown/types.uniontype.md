@@ -9,7 +9,7 @@ The implementation behind types created with [union()](./types.union.md) and [Ba
 **Signature:**
 
 ```typescript
-export declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>> extends BaseObjectLikeTypeImpl<ResultType>
+declare class UnionType<Types extends OneOrMore<BaseTypeImpl<unknown>>, ResultType extends TypeOf<Types[number]> = TypeOf<Types[number]>> extends BaseObjectLikeTypeImpl<ResultType>
 ```
 
 **Extends:** [BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;ResultType&gt;

@@ -9,7 +9,7 @@ Configuration of additional checks on numeric types.
 **Signature:**
 
 ```typescript
-export type NumberTypeConfig = {
+type NumberTypeConfig = {
     multipleOf?: number;
     customMessage?: CustomMessage<number, NumberViolation[]> | Partial<Record<NumberViolation, CustomMessage<number, NumberViolation>>>;
 } & (

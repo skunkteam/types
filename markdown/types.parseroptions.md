@@ -9,7 +9,7 @@ Options that can be passed to [BaseTypeImpl.withParser()](./types.basetypeimpl.w
 **Signature:**
 
 ```typescript
-export interface ParserOptions
+interface ParserOptions
 ```
 
 ## Properties

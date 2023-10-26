@@ -9,7 +9,7 @@ A successful validation result.
 **Signature:**
 
 ```typescript
-export interface Success<T>
+interface Success<T>
 ```
 
 ## Properties

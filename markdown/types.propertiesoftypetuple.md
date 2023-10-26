@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export type PropertiesOfTypeTuple<Tuple> = Tuple extends [
+type PropertiesOfTypeTuple<Tuple> = Tuple extends [
     {
         readonly props: infer A;
     },

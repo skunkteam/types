@@ -1,6 +1,6 @@
-import { basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl } from '../testutils.js';
-import { humanList } from '../utils/print-utils.js';
-import { int, number } from './number.js';
+import { basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl } from '../testutils';
+import { humanList } from '../utils/print-utils';
+import { int, number } from './number';
 
 testTypeImpl({
     name: 'number',

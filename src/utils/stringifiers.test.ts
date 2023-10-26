@@ -1,4 +1,4 @@
-import { NEEDS_ESCAPE, defaultStringify, stringStringify } from './stringifiers.js';
+import { NEEDS_ESCAPE, defaultStringify, stringStringify } from './stringifiers';
 
 describe(stringStringify, () => {
     test('NEEDS_ESCAPE', () => {

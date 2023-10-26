@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-export type IntersectionOfTypeTuple<Tuple> = Tuple extends [
+type IntersectionOfTypeTuple<Tuple> = Tuple extends [
     {
         readonly [designType]: infer A;
     },

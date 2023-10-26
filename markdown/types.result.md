@@ -9,7 +9,7 @@ The result of a type validation.
 **Signature:**
 
 ```typescript
-export type Result<T> = Success<T> | Failure;
+type Result<T> = Success<T> | Failure;
 ```
 
 **References:** [Success](./types.success.md)<!-- -->, [Failure](./types.failure.md)

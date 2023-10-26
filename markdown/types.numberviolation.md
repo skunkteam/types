@@ -9,5 +9,5 @@ The supported additional checks on numeric types.
 **Signature:**
 
 ```typescript
-export type NumberViolation = 'min' | 'max' | 'multipleOf';
+type NumberViolation = 'min' | 'max' | 'multipleOf';
 ```
