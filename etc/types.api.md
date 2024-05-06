@@ -69,7 +69,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     literal(input: DeepUnbranded<ResultType>): ResultType;
     maybeStringify(value: ResultType): string | undefined;
     abstract readonly name: string;
-    or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other>;
+    or<Other extends BaseTypeImpl<unknown>>(_other: Other): Type<ResultType | TypeOf<Other>>;
     stringify(value: ResultType): string;
     abstract readonly typeConfig: TypeConfig;
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;

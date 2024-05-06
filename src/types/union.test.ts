@@ -1,5 +1,5 @@
 import type { DeepUnbranded, The } from '../interfaces';
-import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
+import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 import { object, partial } from './interface';
 import { keyof } from './keyof';
@@ -492,4 +492,25 @@ testTypeImpl({
             ],
         ],
     ],
+});
+
+const BrandedA = literal('A').withBrand('BrandA');
+const BrandedB = literal('B').withBrand('BrandB');
+
+type BrandedUnion = The<typeof BrandedUnion>;
+const BrandedUnion = union('BrandedUnion', [BrandedA, BrandedB]);
+
+type BrandedOr1 = The<typeof BrandedOr1>;
+const BrandedOr1 = BrandedA.or(BrandedB);
+
+type BrandedOr2 = The<typeof BrandedOr2>;
+const BrandedOr2 = BrandedB.or(BrandedA);
+test('equivalence between `union()` and `.or()`', () => {
+    // Validating issue #87
+    assignableTo<BrandedUnion>(BrandedOr1.literal('A'));
+    assignableTo<BrandedUnion>(BrandedOr2.literal('A'));
+    assignableTo<BrandedOr1>(BrandedUnion.literal('A'));
+    assignableTo<BrandedOr2>(BrandedUnion.literal('A'));
+    // @ts-expect-error Unbranded literal not assignable to branded literal union type
+    assignableTo<BrandedOr1>('B');
 });
