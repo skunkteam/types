@@ -13,6 +13,7 @@ import type {
     Type,
     TypeImpl,
     TypeLink,
+    TypeOf,
     TypeguardFor,
     TypeguardResult,
     ValidationOptions,
@@ -457,7 +458,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * See {@link UnionType} for more information about unions.
      */
     // istanbul ignore next: using ordinary stub instead of module augmentation to lighten the load on the TypeScript compiler
-    or<Other>(_other: BaseTypeImpl<Other, any>): Type<ResultType | Other> {
+    or<Other extends BaseTypeImpl<unknown>>(_other: Other): Type<ResultType | TypeOf<Other>> {
         throw new Error('stub');
     }
 
