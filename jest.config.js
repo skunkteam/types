@@ -19,6 +19,8 @@ const config = {
         },
     },
     moduleNameMapper: { '^(.*)\\.js$': ['$1.js', '$1.ts'] },
+    // Until we upgrade Jest to v30, which supports prettier v3
+    prettierPath: require.resolve('prettier-2'),
 };
 
 module.exports = config;
