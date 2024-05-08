@@ -169,7 +169,15 @@ describe(BaseTypeImpl, () => {
         const NumericString = pattern('NumericString', /^\d+$/);
 
         type Obj = The<typeof Obj>;
-        const Obj = object('Obj', { a: NumericString, b: int });
+        const Obj = object('Obj', { a: NumericString, b: int }).withParser(
+            unknownRecord.andThen(r => {
+                // Trim the contents of `a` to demo that parsers are still run with `.literal`.
+                if ('a' in r && typeof r.a === 'string') {
+                    return { ...r, a: r.a.trim() };
+                }
+                return r;
+            }),
+        );
 
         assignableTo<Obj>({ a: NumericString('123'), b: int(123) });
         // @ts-expect-error because values are not checked
@@ -177,14 +185,25 @@ describe(BaseTypeImpl, () => {
 
         expect(Obj.literal({ a: '123', b: 123 })).toEqual({ a: '123', b: 123 });
 
+        // Parsers are still run
+        expect(Obj.literal({ a: '   123    ', b: 123 })).toEqual({ a: '123', b: 123 });
+
         assignableTo<Obj>(Obj.literal({ a: '123', b: 123 }));
 
         expect(() => Obj.literal({ a: 'abc', b: 1.2 })).toThrowErrorMatchingInlineSnapshot(`
             "errors in [Obj]:
+            (got: { a: "abc", b: 1.2 })
 
             - at <a>: expected a string matching pattern /^\\d+$/, got: "abc"
 
             - at <b>: expected a whole number, got: 1.2"
+        `);
+
+        expect(() => Obj.literal({ a: '    abc    ', b: 1 })).toThrowErrorMatchingInlineSnapshot(`
+            "errors in [Obj]:
+            (got: { a: "abc", b: 1 }, parsed from: { a: "    abc    ", b: 1 })
+
+            - at <a>: expected a string matching pattern /^\\d+$/, got: "abc""
         `);
     });
 });
