@@ -178,7 +178,7 @@ function analyzePossibleDiscriminators(
     return found ? [...found.values()] : [];
 }
 
-function propsInfoToProps(propsInfo: PropertiesInfo): Properties {
+export function propsInfoToProps(propsInfo: PropertiesInfo): Properties {
     const result: Properties = {};
     for (const [key, { type }] of Object.entries(propsInfo)) {
         result[key] = type;
