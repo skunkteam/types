@@ -1,47 +1,46 @@
-import { BaseObjectLikeTypeImpl, createType } from '../base-type.js';
+import { BaseObjectLikeTypeImpl, createType } from '../base-type';
 import type {
     BasicType,
     MessageDetails,
+    ObjectType,
     OneOrMore,
     PossibleDiscriminator,
     Properties,
     PropertiesInfo,
     Result,
-    Type,
-    TypeImpl,
     TypeOf,
     ValidationOptions,
     Visitor,
-} from '../interfaces.js';
-import { decodeOptionalName } from '../utils/collection-utils.js';
-import { define } from '../utils/define.js';
-import { unknownRecord } from './unknown.js';
-import { hasOwnProperty } from '../utils/type-utils.js';
-import { prependPathToDetails } from '../utils/failure-utils.js';
-import { interfaceStringify } from '../utils/stringifiers.js';
-import { propsInfoToProps } from './union.js';
+} from '../interfaces';
+import { checkOneOrMore, decodeOptionalName, define, hasOwnProperty, interfaceStringify, prependPathToDetails } from '../utils';
+import { UnionType, propsInfoToProps, union } from './union';
+import { unknownRecord } from './unknown';
 
-export class PickType<Type extends BaseObjectLikeTypeImpl<unknown>, ResultType> extends BaseObjectLikeTypeImpl<ResultType> {
+type PickableImpl = BaseObjectLikeTypeImpl<unknown>;
+type PickableKeys<Type> = Type extends unknown ? keyof Type & string : never;
+type DistributedPick<Type, Keys extends PickableKeys<Type>> = Type extends unknown ? Pick<Type, Keys & keyof Type> : never;
+
+export class PickType<Type extends PickableImpl, ResultType> extends BaseObjectLikeTypeImpl<ResultType> {
     readonly name: string;
     readonly isDefaultName: boolean;
     readonly props: Properties;
-    override propsInfo: PropertiesInfo;
+    override propsInfo: PropertiesInfo = pickPropertiesInfo(this.type.propsInfo, this.keys);
+    override basicType!: BasicType;
+    override typeConfig: unknown;
+    override possibleDiscriminators: readonly PossibleDiscriminator[] = this.type.possibleDiscriminators.filter(disc =>
+        (this.keys as (string | undefined)[]).includes(disc.path[0]),
+    );
+
     constructor(
         readonly type: Type,
-        readonly keys: OneOrMore<keyof TypeOf<Type>>,
+        readonly keys: OneOrMore<PickableKeys<TypeOf<Type>>>,
         name?: string,
     ) {
         super();
         this.isDefaultName = !name;
-        this.name = name || `Pick<${type.name}, ${keys.map(k => `'${k.toString()}'`).join(' | ')}>`;
-        const stringKeys = this.keys.map(k => k.toString()) as [string, ...string[]];
-        this.propsInfo = pickPropertiesInfo(this.type.propsInfo, stringKeys);
+        this.name = name || `Pick<${type.name}, ${keys.map(k => `'${k}'`).join(' | ')}>`;
         this.props = propsInfoToProps(this.propsInfo);
-        this.possibleDiscriminators = this.type.possibleDiscriminators;
     }
-    override possibleDiscriminators: readonly PossibleDiscriminator[] = this.type.possibleDiscriminators; // TODO: Filter
-    override basicType!: BasicType;
-    override typeConfig: unknown;
 
     protected override typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
         if (!unknownRecord.is(input)) {
@@ -69,7 +68,6 @@ export class PickType<Type extends BaseObjectLikeTypeImpl<unknown>, ResultType> 
         return this.createResult(input, options.mode === 'construct' ? constructResult : input, details);
     }
     override accept<R>(visitor: Visitor<R>): R {
-        // TODO: Should be fine, right?
         return visitor.visitObjectLikeType(this);
     }
     /** {@inheritdoc BaseTypeImpl.maybeStringify} */
@@ -79,25 +77,22 @@ export class PickType<Type extends BaseObjectLikeTypeImpl<unknown>, ResultType> 
 }
 define(PickType, 'basicType', 'object');
 
-export function pick<Type extends BaseObjectLikeTypeImpl<unknown>, Keys extends OneOrMore<keyof TypeOf<Type>>>(
-    ...args: [name: string, baseType: Type, keys: Keys] | [baseType: Type, keys: Keys]
-): TypeImpl<PickType<Type, Pick<TypeOf<Type>, Keys[number]>>> {
+export function pick<TypeImpl extends PickableImpl, Keys extends PickableKeys<TypeOf<TypeImpl>>>(
+    ...args: [name: string, baseType: TypeImpl, keys: OneOrMore<Keys>] | [baseType: TypeImpl, keys: OneOrMore<Keys>]
+): ObjectType<DistributedPick<TypeOf<TypeImpl>, Keys>> {
     const [name, baseType, keys] = decodeOptionalName(args);
+    if (baseType instanceof UnionType) {
+        const unionType: UnionType<OneOrMore<BaseObjectLikeTypeImpl<TypeOf<TypeImpl>>>, TypeOf<TypeImpl>> = baseType;
+        return union(checkOneOrMore(unionType.types.map(type => new PickType(type, keys)))) as unknown as ObjectType<
+            DistributedPick<TypeOf<TypeImpl>, Keys>
+        >;
+    }
     return createType(new PickType(baseType, keys, name));
 }
 
-export function pickProperties(props: Properties, keys: OneOrMore<keyof Properties>) {
-    const properties = keys
-        .map(property => [property, props[property]] as const)
-        .filter<[string, Type<any>]>((v): v is [string, Type<any>] => v[1] !== undefined);
-    return Object.fromEntries(properties);
-}
-
-export function pickPropertiesInfo(propsInfo: PropertiesInfo, keys: OneOrMore<keyof Properties>) {
-    const properties = keys
-        .map(property => [property, propsInfo[property]] as const)
-        .filter<[string, PropertiesInfo[keyof PropertiesInfo]]>(
-            (v): v is [string, PropertiesInfo[keyof PropertiesInfo]] => v[1] !== undefined,
-        );
-    return Object.fromEntries(properties);
-}
+export const pickPropertiesInfo = (propsInfo: PropertiesInfo, keys: OneOrMore<keyof Properties>) =>
+    Object.fromEntries(
+        keys
+            .map(property => [property, propsInfo[property]])
+            .filter((v): v is [string, PropertiesInfo[keyof PropertiesInfo]] => v[1] !== undefined),
+    );
