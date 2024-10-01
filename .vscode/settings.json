@@ -3,13 +3,14 @@
     "editor.detectIndentation": false,
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
         "source.fixAll": "explicit"
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "files.associations": { "*.json": "jsonc" },
-    "javascript.preferences.importModuleSpecifierEnding": "js",
-    "typescript.preferences.importModuleSpecifierEnding": "js",
+    "javascript.preferences.importModuleSpecifierEnding": "minimal",
+    "typescript.preferences.importModuleSpecifierEnding": "minimal",
     "files.readonlyInclude": {
         "etc/**/*": true,
         "markdown/**/*": true,
