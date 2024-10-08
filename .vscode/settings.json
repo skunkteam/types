@@ -3,17 +3,17 @@
     "editor.detectIndentation": false,
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
         "source.fixAll": "explicit"
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "files.associations": { "*.json": "jsonc" },
-    "javascript.preferences.importModuleSpecifierEnding": "js",
-    "typescript.preferences.importModuleSpecifierEnding": "js",
     "files.readonlyInclude": {
         "etc/**/*": true,
         "markdown/**/*": true,
         "node_modules/**/*": true
     },
-    "task.allowAutomaticTasks": "on"
+    "task.allowAutomaticTasks": "on",
+    "editor.wordWrapColumn": 140
 }

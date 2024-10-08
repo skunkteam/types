@@ -15,3 +15,5 @@ type TypeOf<T> = T extends {
     ? Q
     : never;
 ```
+
+**References:** [designType](./types.designtype.md)

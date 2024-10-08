@@ -10,15 +10,15 @@ Create a type-validator that validates (or parses) an object structure with only
 
 ```typescript
 declare function partial<Props extends Properties>(
-    ...args: [props: Props] | [name: string, props: Props] | [options: Omit<InterfaceTypeOptions, 'partial'>, props: Props]
+    ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
 ): PartialType<Props>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                    | Description                                                 |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| args      | \[props: Props\] \| \[name: string, props: Props\] \| \[options: Omit&lt;[InterfaceTypeOptions](./types.interfacetypeoptions.md)<!-- -->, 'partial'&gt;, props: Props\] | the optional name and (required) properties of the new type |
+| Parameter | Type                                                                                                                                             | Description                                                 |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| args      | \[props: Props\] \| \[name: string, props: Props\] \| \[options: [InterfaceTypeOptions](./types.interfacetypeoptions.md)<!-- -->, props: Props\] | the optional name and (required) properties of the new type |
 
 **Returns:**
 

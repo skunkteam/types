@@ -10,11 +10,8 @@ Properties of an object type, including per-property optionality.
 
 ```typescript
 type PropertiesInfo<Props extends Properties = Properties> = {
-    [Key in keyof Props]: {
-        partial: boolean;
-        type: Props[Key];
-    };
+    [Key in keyof Props]: PropertyInfo<Props[Key]>;
 };
 ```
 
-**References:** [Properties](./types.properties.md)
+**References:** [Properties](./types.properties.md)<!-- -->, [PropertyInfo](./types.propertyinfo.md)

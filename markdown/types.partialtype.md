@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
+type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Simplify<Props>, Simplify<Partial<TypeOfProperties<Writable<Props>>>>>>;
 ```
 
-**References:** [Properties](./types.properties.md)<!-- -->, [TypeImpl](./types.typeimpl.md)<!-- -->, [InterfaceType](./types.interfacetype.md)<!-- -->, [TypeOfProperties](./types.typeofproperties.md)<!-- -->, [Writable](./types.writable.md)
+**References:** [Properties](./types.properties.md)<!-- -->, [TypeImpl](./types.typeimpl.md)<!-- -->, [InterfaceType](./types.interfacetype.md)<!-- -->, [Simplify](./types.simplify.md)<!-- -->, [TypeOfProperties](./types.typeofproperties.md)<!-- -->, [Writable](./types.writable.md)

@@ -9,5 +9,5 @@ Array of props tuples (`Object.entries(this.prop)`<!-- -->).
 **Signature:**
 
 ```typescript
-protected get propsArray(): ReadonlyArray<[string, Type<unknown>]>;
+protected get propsArray(): ReadonlyArray<[string, PropertyInfo]>;
 ```
