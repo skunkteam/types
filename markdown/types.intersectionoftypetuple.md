@@ -23,4 +23,4 @@ type IntersectionOfTypeTuple<Tuple> = Tuple extends [
     : Record<string, unknown>;
 ```
 
-**References:** [MergeIntersection](./types.mergeintersection.md)<!-- -->, [IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)
+**References:** [designType](./types.designtype.md)<!-- -->, [MergeIntersection](./types.mergeintersection.md)<!-- -->, [IntersectionOfTypeTuple](./types.intersectionoftypetuple.md)

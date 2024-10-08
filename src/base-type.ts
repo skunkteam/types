@@ -9,6 +9,7 @@ import type {
     PossibleDiscriminator,
     Properties,
     PropertiesInfo,
+    PropertyInfo,
     Result,
     Type,
     TypeImpl,
@@ -83,6 +84,18 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     protected abstract typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
 
     /**
+     * Additional custom validation added using {@link BaseTypeImpl.withValidation | withValidation} or
+     * {@link BaseTypeImpl.withConstraint | withConstraint}.
+     */
+    // It says `input: unknown` here, but it should only contain closures with `input: ResultType` parameters. However, that would mean that
+    // this type is no longer assignable to `Type<unknown>` which is technically correct, but very inconvenient. We want to be able to write
+    // functions that ask for a type that validates anything, we don't care what. If we are not able to use the type `Type<unknown>` in
+    // those cases, then we are left with `Type<any>` which leads to `any`-contamination of our consumer code.
+    protected readonly customValidators: ReadonlyArray<
+        <T extends ResultType>(this: void, input: T, options: ValidationOptions) => Result<T>
+    > = [];
+
+    /**
      * Optional pre-processing parser.
      *
      * @param input - the input value to be validated
@@ -118,21 +131,9 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         // eslint-disable-next-line @typescript-eslint/unbound-method
         const { autoCaster, typeParser } = this;
         if (!autoCaster || typeParser) return this;
-        const autoCastParser = function (this: BaseTypeImpl<ResultType, TypeConfig>, input: unknown) {
-            const autoCastResult = autoCaster.call(this, input);
-            return this.createResult(
-                input,
-                autoCastResult,
-                autoCastResult !== autoCastFailure || {
-                    kind: 'custom message',
-                    message: `could not autocast value: ${printValue(input)}`,
-                    omitInput: true,
-                },
-            );
-        };
         return (this._instanceCache.autoCast ??= createType(this, {
             name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
-            typeParser: { configurable: true, value: autoCastParser },
+            typeParser: { configurable: true, value: createAutoCastParser(autoCaster) },
         })) as this;
     }
 
@@ -270,6 +271,10 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
             value = constructorResult.value;
         }
         let result = this.typeValidator(value, options);
+        for (const customValidator of this.customValidators) {
+            if (!result.ok) break;
+            result = customValidator(result.value, options);
+        }
         if (this.typeParser && options.mode === 'construct') {
             result = addParserInputToResult(result, input);
         }
@@ -362,14 +367,15 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
             | [options: ParserOptions, newConstructor: (i: unknown) => unknown]
     ): this {
         const [{ name, chain }, constructor] = decodeOptionalOptions<ParserOptions, (i: unknown) => unknown>(args);
+        const parentParser = chain && this.typeParser?.bind(this);
         const type = createType(this, {
             ...(name && { name: { configurable: true, value: name } }),
             typeParser: {
                 configurable: true,
                 value: (input: unknown, options: ValidationOptions) => {
                     const result = ValidationError.try({ type, input }, () => constructor(input));
-                    if (!result.ok || !chain || !this.typeParser) return result;
-                    return addParserInputToResult(this.typeParser(result.value, options), input);
+                    if (!result.ok || !parentParser) return result;
+                    return addParserInputToResult(parentParser(result.value, options), input);
                 },
             },
         });
@@ -385,25 +391,20 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * @param validation - the additional validation to restrict the current type
      */
     withValidation(validation: Validator<ResultType>): this {
-        // Ignoring Brand here, because that is a typings-only feature.
-        const fn: BaseTypeImpl<ResultType, TypeConfig>['typeValidator'] = (input, options) => {
-            const baseResult = this.typeValidator(input, options);
-            if (!baseResult.ok) {
-                return type.createResult(input, undefined, baseResult.details);
-            }
+        const typeValidator = (input: ResultType, options: ValidationOptions): Result<ResultType> => {
             const tryResult = ValidationError.try<ValidationResult>(
                 { type, input },
                 // if no name is given, then default to the message "additional validation failed"
-                () => validation(baseResult.value, options) || 'additional validation failed',
+                () => validation(input, options) || 'additional validation failed',
             );
-            return tryResult.ok ? type.createResult(baseResult.value, baseResult.value, tryResult.value) : tryResult;
+            return tryResult.ok ? type.createResult(input, input, tryResult.value) : tryResult;
         };
-        const type = createType(this, { typeValidator: { configurable: true, value: fn } });
+        const type = createType(this, { customValidators: { configurable: true, value: [...this.customValidators, typeValidator] } });
         return type;
     }
 
     /**
-     * Create a new type use the given constraint function to restrict the current type.
+     * Create a new type based on the current type and use the given constraint function as validation.
      *
      * @remarks
      * Creates a brand. By creating a branded type, we ensure that TypeScript will consider this a separate type, see {@link Branded} for more information.
@@ -415,20 +416,15 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         name: BrandName,
         constraint: Validator<ResultType>,
     ): Type<Branded<ResultType, BrandName>, TypeConfig> {
-        // Ignoring Brand here, because that is a typings-only feature.
-        const fn: BaseTypeImpl<Branded<ResultType, BrandName>, TypeConfig>['typeValidator'] = (input, options) => {
-            const baseResult = this.typeValidator(input, options);
-            if (!baseResult.ok) {
-                return newType.createResult(input, undefined, baseResult.details);
-            }
-            const tryResult = ValidationError.try({ type: newType, input }, () => constraint(baseResult.value, options));
-            return tryResult.ok ? newType.createResult(baseResult.value, baseResult.value, tryResult.value) : tryResult;
+        const typeValidator = (input: ResultType, options: ValidationOptions): Result<Branded<ResultType, BrandName>> => {
+            const tryResult = ValidationError.try({ type, input }, () => constraint(input, options));
+            return tryResult.ok ? type.createResult(input, input, tryResult.value) : tryResult;
         };
-        const newType = createType(branded<ResultType, BrandName, TypeConfig>(this), {
+        const type = createType(branded<ResultType, BrandName, TypeConfig>(this), {
             name: { configurable: true, value: name },
-            typeValidator: { configurable: true, value: fn },
+            customValidators: { configurable: true, value: [...this.customValidators, typeValidator] },
         });
-        return newType;
+        return type;
     }
 
     /**
@@ -541,6 +537,10 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         return { ...oldConfig, ...newConfig };
     }
 }
+Object.defineProperties(BaseTypeImpl.prototype, {
+    ...Object.getOwnPropertyDescriptors(Function.prototype),
+    name: { value: BaseTypeImpl.name, configurable: true, writable: true },
+});
 
 /**
  * The base implementation for all object-like Types.
@@ -555,10 +555,10 @@ export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> e
     abstract readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     abstract readonly isDefaultName: boolean;
 
-    private _propsArray?: ReadonlyArray<[string, Type<unknown>]>;
+    private _propsArray?: ReadonlyArray<[string, PropertyInfo]>;
     /** Array of props tuples (`Object.entries(this.prop)`). */
-    protected get propsArray(): ReadonlyArray<[string, Type<unknown>]> {
-        return (this._propsArray ??= Object.entries(this.props));
+    protected get propsArray(): ReadonlyArray<[string, PropertyInfo]> {
+        return (this._propsArray ??= Object.entries(this.propsInfo));
     }
 
     /**
@@ -583,8 +583,6 @@ export interface TypedPropertyInformation<Props extends Properties> {
     readonly propsInfo: PropertiesInfo<Props>;
 }
 
-const FUNCTION_PROTOTYPE_DESCRIPTORS = Object.getOwnPropertyDescriptors(Function.prototype);
-
 /**
  * Create a Type from the given type-implementation.
  *
@@ -598,13 +596,12 @@ const FUNCTION_PROTOTYPE_DESCRIPTORS = Object.getOwnPropertyDescriptors(Function
  */
 export function createType<Impl extends BaseTypeImpl<any, any>>(
     impl: Impl,
-    override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
+    override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser' | 'customValidators', PropertyDescriptor>>,
 ): TypeImpl<Impl> {
     // Replace the complete `impl` onto the `construct` function.
     const type = Object.defineProperties(
         Object.setPrototypeOf((input: unknown) => type.construct(input) as unknown, Object.getPrototypeOf(impl) as object),
         {
-            ...FUNCTION_PROTOTYPE_DESCRIPTORS,
             ...Object.getOwnPropertyDescriptors(impl),
             ...override,
             _instanceCache: { configurable: true, value: {} },
@@ -631,4 +628,21 @@ function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType, any>, options: V
 
 function isOk(validatorResult: ValidationResult): validatorResult is true | [] {
     return validatorResult === true || (Array.isArray(validatorResult) && !validatorResult.length);
+}
+
+function createAutoCastParser<ResultType, TypeConfig>(
+    autoCaster: (this: BaseTypeImpl<ResultType, TypeConfig>, value: unknown) => unknown,
+): BaseTypeImpl<ResultType, TypeConfig>['typeParser'] {
+    return function (this: BaseTypeImpl<ResultType, TypeConfig>, input) {
+        const autoCastResult = autoCaster.call(this, input);
+        return this.createResult(
+            input,
+            autoCastResult,
+            autoCastResult !== autoCastFailure || {
+                kind: 'custom message',
+                message: `could not autocast value: ${printValue(input)}`,
+                omitInput: true,
+            },
+        );
+    };
 }

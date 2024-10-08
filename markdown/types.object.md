@@ -10,15 +10,15 @@ Create a type-validator that validates (or parses) an object structure.
 
 ```typescript
 declare function object<Props extends Properties>(
-    ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
+    ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptionsWithPartial, props: Props]
 ): FullType<Props>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                             | Description                                |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
-| args      | \[props: Props\] \| \[name: string, props: Props\] \| \[options: [InterfaceTypeOptions](./types.interfacetypeoptions.md)<!-- -->, props: Props\] | the options and properties of the new type |
+| Parameter | Type                                                                                                                                                                   | Description                                |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| args      | \[props: Props\] \| \[name: string, props: Props\] \| \[options: [InterfaceTypeOptionsWithPartial](./types.interfacetypeoptionswithpartial.md)<!-- -->, props: Props\] | the options and properties of the new type |
 
 **Returns:**
 

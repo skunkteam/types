@@ -4,7 +4,7 @@
 
 ## BaseTypeImpl.withConstraint() method
 
-Create a new type use the given constraint function to restrict the current type.
+Create a new type based on the current type and use the given constraint function as validation.
 
 **Signature:**
 

@@ -1,4 +1,4 @@
-import type { BasicType, Type } from '../interfaces';
+import type { BasicType, PropertyInfo } from '../interfaces';
 
 /**
  * Default stringifier for all primitive values.
@@ -62,14 +62,14 @@ export function fallbackStringify(value: unknown): string {
     return JSON.stringify(value);
 }
 
-export function interfaceStringify(propsArray: ReadonlyArray<[string, Type<unknown>]>, value: Record<string, unknown>): string {
+export function interfaceStringify(propsArray: ReadonlyArray<[string, PropertyInfo]>, value: Record<string, unknown>): string {
     return (
         '{' +
         propsArray
-            .map(([key, prop]) => {
+            .map(([key, { type }]) => {
                 const propValue = value[key];
                 if (propValue === undefined) return;
-                const propString = prop.maybeStringify(propValue);
+                const propString = type.maybeStringify(propValue);
                 return propString && `${stringStringify(key)}:${propString}`;
             })
             .filter(Boolean)

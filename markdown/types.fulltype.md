@@ -7,7 +7,7 @@
 **Signature:**
 
 ```typescript
-type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
+type FullType<Props extends Properties> = TypeImpl<InterfaceType<Simplify<Props>, Simplify<TypeOfProperties<Writable<Props>>>>>;
 ```
 
-**References:** [Properties](./types.properties.md)<!-- -->, [TypeImpl](./types.typeimpl.md)<!-- -->, [InterfaceType](./types.interfacetype.md)<!-- -->, [TypeOfProperties](./types.typeofproperties.md)<!-- -->, [Writable](./types.writable.md)
+**References:** [Properties](./types.properties.md)<!-- -->, [TypeImpl](./types.typeimpl.md)<!-- -->, [InterfaceType](./types.interfacetype.md)<!-- -->, [Simplify](./types.simplify.md)<!-- -->, [TypeOfProperties](./types.typeofproperties.md)<!-- -->, [Writable](./types.writable.md)

@@ -9,15 +9,21 @@ Create a type with all properties of the current type, plus the given optional p
 **Signature:**
 
 ```typescript
-withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<PartialProps>>>>>> & TypedPropertyInformation<Props & PartialProps>;
+withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps] | [options: InterfaceMergeOptions, props: PartialProps]): MergeType<Props, ResultType, PartialProps, Partial<TypeOfProperties<Writable<PartialProps>>>>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                             | Description |
-| --------- | ---------------------------------------------------------------- | ----------- |
-| args      | \[props: PartialProps\] \| \[name: string, props: PartialProps\] |             |
+| Parameter | Type                                                                                                                                                                    | Description |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| args      | \[props: PartialProps\] \| \[name: string, props: PartialProps\] \| \[options: [InterfaceMergeOptions](./types.interfacemergeoptions.md)<!-- -->, props: PartialProps\] |             |
 
 **Returns:**
 
-[TypeImpl](./types.typeimpl.md)<!-- -->&lt;[BaseObjectLikeTypeImpl](./types.baseobjectliketypeimpl.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Partial&lt;[TypeOfProperties](./types.typeofproperties.md)<!-- -->&lt;[Writable](./types.writable.md)<!-- -->&lt;PartialProps&gt;&gt;&gt;&gt;&gt;&gt; &amp; [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;Props &amp; PartialProps&gt;
+[MergeType](./types.mergetype.md)<!-- -->&lt;Props, ResultType, PartialProps, Partial&lt;[TypeOfProperties](./types.typeofproperties.md)<!-- -->&lt;[Writable](./types.writable.md)<!-- -->&lt;PartialProps&gt;&gt;&gt;&gt;
+
+## Remarks
+
+Note that any property that conflicts with an existing property is overwritten, so this can also be used to selectively mark certain properties as optional or change their type.
+
+Any options such as `strictMissingKeys` and custom names (unless provided in this call) will be inherited by this new type, but custom parsers and validators are dropped.
