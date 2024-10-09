@@ -18,4 +18,4 @@ declare function booleanAutoCaster(input: unknown): boolean | typeof autoCastFai
 
 **Returns:**
 
-boolean \| typeof autoCastFailure
+boolean \| typeof [autoCastFailure](./types.autocastfailure.md)

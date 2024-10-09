@@ -33,6 +33,9 @@ export interface ArrayTypeConfig extends LengthChecksConfig {
 export type ArrayViolation = LengthViolation;
 
 // @public
+export const autoCastFailure: unique symbol;
+
+// @public
 export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> extends BaseTypeImpl<ResultType, TypeConfig> {
     and<Other extends BaseObjectLikeTypeImpl<any, any>>(_other: Other): ObjectType<MergeIntersection<ResultType & Other[typeof designType]>> & TypedPropertyInformation<this['props'] & Other['props']>;
     // (undocumented)
@@ -41,7 +44,7 @@ export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> e
     abstract readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
     abstract readonly props: Properties;
-    protected get propsArray(): ReadonlyArray<[string, Type<unknown>]>;
+    protected get propsArray(): ReadonlyArray<[string, PropertyInfo]>;
     // (undocumented)
     abstract readonly propsInfo: PropertiesInfo;
 }
@@ -63,6 +66,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     // (undocumented)
     protected createAutoCastAllType(): this;
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
+    protected readonly customValidators: ReadonlyArray<(<T extends ResultType>(this: void, input: T, options: ValidationOptions) => Result<T>)>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
     extendWith<const E>(factory: (type: this) => E): this & E;
     get is(): TypeguardFor<ResultType>;
@@ -96,7 +100,10 @@ export function booleanAutoCaster(input: unknown): boolean | typeof autoCastFail
 export type Branded<T, BrandName extends string> = T extends WithBrands<infer Base, infer ExistingBrands> ? WithBrands<Base, BrandName | ExistingBrands> : WithBrands<T, BrandName>;
 
 // @public
-export function createType<Impl extends BaseTypeImpl<any, any>>(impl: Impl, override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>): TypeImpl<Impl>;
+export const brands: unique symbol;
+
+// @public
+export function createType<Impl extends BaseTypeImpl<any, any>>(impl: Impl, override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser' | 'customValidators', PropertyDescriptor>>): TypeImpl<Impl>;
 
 // @public
 export type CustomMessage<T, E = void> = undefined | string | ((got: string, input: T, explanation: E) => string);
@@ -107,6 +114,9 @@ export type DeepUnbranded<T> = T extends ReadonlyArray<unknown> ? {
 } : T extends Record<string, unknown> ? Omit<{
     [P in keyof T]: DeepUnbranded<T[P]>;
 }, typeof brands> : Unbranded<T>;
+
+// @public
+export const designType: unique symbol;
 
 // @public
 export interface Failure {
@@ -122,7 +132,7 @@ export interface Failure {
 export type FailureDetails = ValidationDetails & MessageDetails;
 
 // @public (undocumented)
-export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Props, TypeOfProperties<Writable<Props>>>>;
+export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Simplify<Props>, Simplify<TypeOfProperties<Writable<Props>>>>>;
 
 // @public (undocumented)
 export type int = The<typeof int>;
@@ -130,16 +140,24 @@ export type int = The<typeof int>;
 // @public (undocumented)
 export const int: Type<Branded<number, 'int'>, NumberTypeConfig>;
 
+// @public (undocumented)
+export interface InterfaceMergeOptions {
+    name?: string;
+    omitParsers?: true;
+    omitValidations?: true;
+}
+
 // @public
 export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props> {
     constructor(
-    props: Props, options: InterfaceTypeOptions);
+    propsInfo: PropertiesInfo<Props>, options: InterfaceTypeOptions);
     accept<R>(visitor: Visitor<R>): R;
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
     readonly keys: readonly (keyof Props)[];
     maybeStringify(value: ResultType): string;
+    mergeWith<OtherProps extends Properties, OtherType>(...args: [type: InterfaceType<OtherProps, OtherType>] | [name: string, type: InterfaceType<OtherProps, OtherType>] | [options: InterfaceMergeOptions, type: InterfaceType<OtherProps, OtherType>]): MergeType<Props, ResultType, OtherProps, OtherType>;
     readonly name: string;
     // (undocumented)
     readonly options: InterfaceTypeOptions;
@@ -152,15 +170,20 @@ export class InterfaceType<Props extends Properties, ResultType> extends BaseObj
     toPartial(name?: string): PartialType<Props>;
     readonly typeConfig: undefined;
     protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
-    withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps]): TypeImpl<BaseObjectLikeTypeImpl<MergeIntersection<ResultType & Partial<TypeOfProperties<Writable<PartialProps>>>>>> & TypedPropertyInformation<Props & PartialProps>;
+    withOptional<PartialProps extends Properties>(...args: [props: PartialProps] | [name: string, props: PartialProps] | [options: InterfaceMergeOptions, props: PartialProps]): MergeType<Props, ResultType, PartialProps, Partial<TypeOfProperties<Writable<PartialProps>>>>;
+    withRequired<OtherProps extends Properties>(...args: [props: OtherProps] | [name: string, props: OtherProps] | [options: InterfaceMergeOptions, props: OtherProps]): MergeType<Props, ResultType, OtherProps, TypeOfProperties<Writable<OtherProps>>>;
 }
 
 // @public
 export interface InterfaceTypeOptions {
     checkOnly?: boolean;
     name?: string;
-    partial?: boolean;
     strictMissingKeys?: boolean;
+}
+
+// @public (undocumented)
+export interface InterfaceTypeOptionsWithPartial extends InterfaceTypeOptions {
+    partial?: boolean;
 }
 
 // @public
@@ -249,9 +272,10 @@ export class LiteralType<ResultType extends LiteralValue> extends BaseTypeImpl<R
 export type LiteralValue = string | number | boolean | null | undefined | void;
 
 // @public
-export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? {
-    [P in keyof T]: T[P];
-} & {} : T;
+export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? Simplify<T> : T;
+
+// @public (undocumented)
+export type MergeType<Props extends Properties, ResultType, OtherProps extends Properties, OtherResultType> = TypeImpl<InterfaceType<Simplify<Omit<Props, keyof OtherProps> & OtherProps>, Simplify<Omit<ResultType, keyof OtherResultType> & OtherResultType>>>;
 
 // @public
 export type MessageDetails = Partial<ValidationDetails> & {
@@ -324,7 +348,7 @@ export type NumberTypeConfig = {
 export type NumberViolation = 'min' | 'max' | 'multipleOf';
 
 // @public
-export function object<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]): FullType<Props>;
+export function object<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptionsWithPartial, props: Props]): FullType<Props>;
 
 // @public
 export type ObjectType<ResultType, TypeConfig = unknown> = TypeImpl<BaseObjectLikeTypeImpl<ResultType, TypeConfig>>;
@@ -339,10 +363,10 @@ export interface ParserOptions {
 }
 
 // @public
-export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: Omit<InterfaceTypeOptions, 'partial'>, props: Props]): PartialType<Props>;
+export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]): PartialType<Props>;
 
 // @public (undocumented)
-export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>>;
+export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Simplify<Props>, Simplify<Partial<TypeOfProperties<Writable<Props>>>>>>;
 
 // @public (undocumented)
 export function pattern<const BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: StringTypeConfig['customMessage']): Type<Branded<string, BrandName>, StringTypeConfig>;
@@ -374,10 +398,7 @@ export type Properties = Record<string, Type<any>>;
 
 // @public
 export type PropertiesInfo<Props extends Properties = Properties> = {
-    [Key in keyof Props]: {
-        partial: boolean;
-        type: Props[Key];
-    };
+    [Key in keyof Props]: PropertyInfo<Props[Key]>;
 };
 
 // @public (undocumented)
@@ -386,6 +407,12 @@ export type PropertiesOfTypeTuple<Tuple> = Tuple extends [{
 }] ? MergeIntersection<A> : Tuple extends [{
     readonly props: infer A;
 }, ...infer Rest] ? MergeIntersection<A & PropertiesOfTypeTuple<Rest>> : Properties;
+
+// @public
+export type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
+    optional: boolean;
+    type: T;
+};
 
 // @public
 export function record<KeyType extends number | string, ValueType>(...args: [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean] | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
@@ -444,6 +471,11 @@ export interface SimpleTypeOptions<ResultType, TypeConfig> {
     // (undocumented)
     typeConfig: BaseTypeImpl<ResultType, TypeConfig>['typeConfig'];
 }
+
+// @public
+export type Simplify<T> = {
+    [P in keyof T]: T[P];
+} & {};
 
 // @public
 export const string: Type<string, StringTypeConfig>;

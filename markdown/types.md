@@ -52,35 +52,40 @@ Runtime type-validation with derived TypeScript types.
 
 ## Interfaces
 
-| Interface                                                       | Description                                                                                                                                 |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| [ArrayTypeConfig](./types.arraytypeconfig.md)                   | Configuration of additional checks on array types.                                                                                          |
-| [Failure](./types.failure.md)                                   | A failed validation result.                                                                                                                 |
-| [InterfaceTypeOptions](./types.interfacetypeoptions.md)         | Options for [object()](./types.object.md)<!-- -->.                                                                                          |
-| [LengthChecksConfig](./types.lengthchecksconfig.md)             |                                                                                                                                             |
-| [ParserOptions](./types.parseroptions.md)                       | Options that can be passed to [BaseTypeImpl.withParser()](./types.basetypeimpl.withparser.md)<!-- -->.                                      |
-| [SimpleTypeOptions](./types.simpletypeoptions.md)               |                                                                                                                                             |
-| [StringTypeConfig](./types.stringtypeconfig.md)                 | Configuration of additional checks on string types.                                                                                         |
-| [Success](./types.success.md)                                   | A successful validation result.                                                                                                             |
-| [TypedPropertyInformation](./types.typedpropertyinformation.md) | Interface that provides more detailed type-information about the <code>props</code> and <code>propsInfo</code> properties of the validator. |
-| [TypeLink](./types.typelink.md)                                 | An object that has an associated TypeScript type.                                                                                           |
-| [ValidationOptions](./types.validationoptions.md)               |                                                                                                                                             |
-| [Visitor](./types.visitor.md)                                   | Interface for a visitor that is accepted by all types (classic visitor-pattern).                                                            |
+| Interface                                                                     | Description                                                                                                                                 |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ArrayTypeConfig](./types.arraytypeconfig.md)                                 | Configuration of additional checks on array types.                                                                                          |
+| [Failure](./types.failure.md)                                                 | A failed validation result.                                                                                                                 |
+| [InterfaceMergeOptions](./types.interfacemergeoptions.md)                     |                                                                                                                                             |
+| [InterfaceTypeOptions](./types.interfacetypeoptions.md)                       | Options for [object()](./types.object.md)<!-- -->.                                                                                          |
+| [InterfaceTypeOptionsWithPartial](./types.interfacetypeoptionswithpartial.md) |                                                                                                                                             |
+| [LengthChecksConfig](./types.lengthchecksconfig.md)                           |                                                                                                                                             |
+| [ParserOptions](./types.parseroptions.md)                                     | Options that can be passed to [BaseTypeImpl.withParser()](./types.basetypeimpl.withparser.md)<!-- -->.                                      |
+| [SimpleTypeOptions](./types.simpletypeoptions.md)                             |                                                                                                                                             |
+| [StringTypeConfig](./types.stringtypeconfig.md)                               | Configuration of additional checks on string types.                                                                                         |
+| [Success](./types.success.md)                                                 | A successful validation result.                                                                                                             |
+| [TypedPropertyInformation](./types.typedpropertyinformation.md)               | Interface that provides more detailed type-information about the <code>props</code> and <code>propsInfo</code> properties of the validator. |
+| [TypeLink](./types.typelink.md)                                               | An object that has an associated TypeScript type.                                                                                           |
+| [ValidationOptions](./types.validationoptions.md)                             |                                                                                                                                             |
+| [Visitor](./types.visitor.md)                                                 | Interface for a visitor that is accepted by all types (classic visitor-pattern).                                                            |
 
 ## Variables
 
-| Variable                                  | Description                                                                      |
-| ----------------------------------------- | -------------------------------------------------------------------------------- |
-| [boolean](./types.boolean.md)             | Built-in validator for boolean-values.                                           |
-| [int](./types.int.md)                     |                                                                                  |
-| [nullType](./types.nulltype.md)           |                                                                                  |
-| [number](./types.number.md)               |                                                                                  |
-| [string](./types.string.md)               | Built-in validator for string-values.                                            |
-| [undefinedType](./types.undefinedtype.md) |                                                                                  |
-| [unknown](./types.unknown.md)             | Built-in validator that accepts all values.                                      |
-| [unknownArray](./types.unknownarray.md)   | Built-in validator that accepts all arrays.                                      |
-| [unknownRecord](./types.unknownrecord.md) | Built-in validator that accepts all objects (<code>null</code> is not accepted). |
-| [voidType](./types.voidtype.md)           |                                                                                  |
+| Variable                                      | Description                                                                                  |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [autoCastFailure](./types.autocastfailure.md) | Returned by an autocaster to indicate that it is not able to auto-cast the given input.      |
+| [boolean](./types.boolean.md)                 | Built-in validator for boolean-values.                                                       |
+| [brands](./types.brands.md)                   | The symbol that gives access to the (design-time-only) brands of a Type.                     |
+| [designType](./types.designtype.md)           | The symbol that gives access to the (design-time-only) associated TypeScript type of a Type. |
+| [int](./types.int.md)                         |                                                                                              |
+| [nullType](./types.nulltype.md)               |                                                                                              |
+| [number](./types.number.md)                   |                                                                                              |
+| [string](./types.string.md)                   | Built-in validator for string-values.                                                        |
+| [undefinedType](./types.undefinedtype.md)     |                                                                                              |
+| [unknown](./types.unknown.md)                 | Built-in validator that accepts all values.                                                  |
+| [unknownArray](./types.unknownarray.md)       | Built-in validator that accepts all arrays.                                                  |
+| [unknownRecord](./types.unknownrecord.md)     | Built-in validator that accepts all objects (<code>null</code> is not accepted).             |
+| [voidType](./types.voidtype.md)               |                                                                                              |
 
 ## Type Aliases
 
@@ -98,6 +103,7 @@ Runtime type-validation with derived TypeScript types.
 | [LengthViolation](./types.lengthviolation.md)                 |                                                                                                                                                                                                |
 | [LiteralValue](./types.literalvalue.md)                       | The supported types of literals.                                                                                                                                                               |
 | [MergeIntersection](./types.mergeintersection.md)             | Merge an intersection of types into one type, mostly for tooltip-readability in IDEs.                                                                                                          |
+| [MergeType](./types.mergetype.md)                             |                                                                                                                                                                                                |
 | [MessageDetails](./types.messagedetails.md)                   | Individual message details with optional info about the performed validation.                                                                                                                  |
 | [NumberTypeConfig](./types.numbertypeconfig.md)               | Configuration of additional checks on numeric types.                                                                                                                                           |
 | [NumberViolation](./types.numberviolation.md)                 | The supported additional checks on numeric types.                                                                                                                                              |
@@ -109,7 +115,9 @@ Runtime type-validation with derived TypeScript types.
 | [Properties](./types.properties.md)                           | The properties of an object type.                                                                                                                                                              |
 | [PropertiesInfo](./types.propertiesinfo.md)                   | Properties of an object type, including per-property optionality.                                                                                                                              |
 | [PropertiesOfTypeTuple](./types.propertiesoftypetuple.md)     |                                                                                                                                                                                                |
+| [PropertyInfo](./types.propertyinfo.md)                       | Information about a single property of an object-like type including its optionality.                                                                                                          |
 | [Result](./types.result.md)                                   | The result of a type validation.                                                                                                                                                               |
+| [Simplify](./types.simplify.md)                               | Flatten the type output to improve type hints as shown in editors.                                                                                                                             |
 | [StringViolation](./types.stringviolation.md)                 | The supported additional checks on string types.                                                                                                                                               |
 | [The](./types.the.md)                                         | Obtains the TypeScript type of the given runtime Type-checker. Aka [TypeOf](./types.typeof.md)<!-- -->.                                                                                        |
 | [Transposed](./types.transposed.md)                           |                                                                                                                                                                                                |

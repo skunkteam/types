@@ -10,12 +10,12 @@ Constructs a new instance of the `InterfaceType` class
 
 ```typescript
 constructor(
-    props: Props, options: InterfaceTypeOptions);
+    propsInfo: PropertiesInfo<Props>, options: InterfaceTypeOptions);
 ```
 
 ## Parameters
 
-| Parameter | Type                                                    | Description |
-| --------- | ------------------------------------------------------- | ----------- |
-| props     | Props                                                   |             |
-| options   | [InterfaceTypeOptions](./types.interfacetypeoptions.md) |             |
+| Parameter | Type                                                             | Description |
+| --------- | ---------------------------------------------------------------- | ----------- |
+| propsInfo | [PropertiesInfo](./types.propertiesinfo.md)<!-- -->&lt;Props&gt; |             |
+| options   | [InterfaceTypeOptions](./types.interfacetypeoptions.md)          |             |

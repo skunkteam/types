@@ -52,3 +52,7 @@ export function transpose<T extends Record<string, string>>(obj: T): Transposed<
     }
     return result;
 }
+
+export function mapValues<T extends Record<string, unknown>, R>(obj: T, mapper: (value: T[keyof T]) => R): Record<keyof T, R> {
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, mapper(value as T[keyof T])])) as Record<keyof T, R>;
+}

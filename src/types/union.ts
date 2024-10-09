@@ -132,11 +132,11 @@ function analyzePropsInfo<Types extends OneOrMore<BaseTypeImpl<unknown> | BaseOb
     for (const nextType of rest) {
         if ('propsInfo' in nextType) {
             for (const [missingKey, propInfo] of Object.entries(result).filter(([key]) => !(key in nextType.propsInfo))) {
-                propInfo.partial || (result[missingKey] = { ...propInfo, partial: true });
+                propInfo.optional || (result[missingKey] = { ...propInfo, optional: true });
             }
             for (const [key, { type }] of Object.entries(nextType.propsInfo)) {
                 const existing = result[key];
-                result[key] = { partial: existing?.partial ?? true, type: existing?.type.or(type) ?? type };
+                result[key] = { optional: existing?.optional ?? true, type: existing?.type.or(type) ?? type };
             }
         } else {
             return {};

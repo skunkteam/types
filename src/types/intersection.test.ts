@@ -134,14 +134,14 @@ describe(intersection, () => {
         assignableTo<{ a: typeof number; b: typeof number; c: typeof boolean }>(props);
         assignableTo<typeof props>({ a: number, b: number, c: boolean });
         assignableTo<{
-            a: { partial: boolean; type: typeof number };
-            b: { partial: boolean; type: typeof number };
-            c: { partial: boolean; type: typeof boolean };
+            a: { optional: boolean; type: typeof number };
+            b: { optional: boolean; type: typeof number };
+            c: { optional: boolean; type: typeof boolean };
         }>(propsInfo);
         assignableTo<typeof propsInfo>({
-            a: { partial: false, type: number },
-            b: { partial: false, type: number },
-            c: { partial: false, type: boolean },
+            a: { optional: false, type: number },
+            b: { optional: false, type: number },
+            c: { optional: false, type: boolean },
         });
     });
 });

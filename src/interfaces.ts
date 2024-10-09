@@ -229,9 +229,17 @@ export type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
 export type Properties = Record<string, Type<any>>;
 
 /**
+ * Information about a single property of an object-like type including its optionality.
+ */
+export type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
+    optional: boolean;
+    type: T;
+};
+
+/**
  * Properties of an object type, including per-property optionality.
  */
-export type PropertiesInfo<Props extends Properties = Properties> = { [Key in keyof Props]: { partial: boolean; type: Props[Key] } };
+export type PropertiesInfo<Props extends Properties = Properties> = { [Key in keyof Props]: PropertyInfo<Props[Key]> };
 
 /**
  * Translates the type of a Properties-object into the proper TypeScript type to be used in user-code.
@@ -295,8 +303,13 @@ export type BasicType = 'string' | 'number' | 'bigint' | 'boolean' | 'function' 
 /**
  * Merge an intersection of types into one type, mostly for tooltip-readability in IDEs.
  */
+export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? Simplify<T> : T;
+
+/**
+ * Flatten the type output to improve type hints as shown in editors.
+ */
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? { [P in keyof T]: T[P] } & {} : T;
+export type Simplify<T> = { [P in keyof T]: T[P] } & {};
 
 /**
  * The type of the type-guard that comes with each Type (the #is method).

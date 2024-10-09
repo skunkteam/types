@@ -9,9 +9,7 @@ Merge an intersection of types into one type, mostly for tooltip-readability in 
 **Signature:**
 
 ```typescript
-type MergeIntersection<T> = T extends Record<PropertyKey, unknown>
-    ? {
-          [P in keyof T]: T[P];
-      } & {}
-    : T;
+type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? Simplify<T> : T;
 ```
+
+**References:** [Simplify](./types.simplify.md)

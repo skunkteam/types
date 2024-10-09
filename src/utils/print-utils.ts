@@ -157,7 +157,7 @@ export function defaultObjectRep(propsInfo: PropertiesInfo): string {
         return '{}';
     }
 
-    return `{ ${props.map(([key, { partial, type }]) => `${printKey(key)}${partial ? '?' : ''}: ${type.name}`).join(', ')} }`;
+    return `{ ${props.map(([key, { optional: partial, type }]) => `${printKey(key)}${partial ? '?' : ''}: ${type.name}`).join(', ')} }`;
 }
 
 export function bracketsIfNeeded(name: string, allowedSeparator?: '|' | '&'): string {

@@ -13,3 +13,5 @@ type WithBrands<T, BrandNames extends string> = T & {
     };
 };
 ```
+
+**References:** [brands](./types.brands.md)

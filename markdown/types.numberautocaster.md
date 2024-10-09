@@ -18,4 +18,4 @@ declare function numberAutoCaster(input: unknown): number | typeof autoCastFailu
 
 **Returns:**
 
-number \| typeof autoCastFailure
+number \| typeof [autoCastFailure](./types.autocastfailure.md)
