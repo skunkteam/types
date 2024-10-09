@@ -86,14 +86,14 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     /**
      * Additional custom validation added using {@link BaseTypeImpl.withValidation | withValidation} or
      * {@link BaseTypeImpl.withConstraint | withConstraint}.
+     *
+     * @remarks
+     * It says `Validator<unknown>` here, but it should only contain closures with `Validator<ResultType>` parameters. However, that would
+     * mean that this type is no longer assignable to `Type<unknown>` which is technically correct, but very inconvenient. We want to be
+     * able to write functions that ask for a type that validates anything, we don't care what. If we are not able to use the type
+     * `Type<unknown>` in those cases, then we are left with `Type<any>` which leads to `any`-contamination of our consumer code.
      */
-    // It says `input: unknown` here, but it should only contain closures with `input: ResultType` parameters. However, that would mean that
-    // this type is no longer assignable to `Type<unknown>` which is technically correct, but very inconvenient. We want to be able to write
-    // functions that ask for a type that validates anything, we don't care what. If we are not able to use the type `Type<unknown>` in
-    // those cases, then we are left with `Type<any>` which leads to `any`-contamination of our consumer code.
-    protected readonly customValidators: ReadonlyArray<
-        <T extends ResultType>(this: void, input: T, options: ValidationOptions) => Result<T>
-    > = [];
+    protected readonly customValidators: ReadonlyArray<Validator<unknown>> = [];
 
     /**
      * Optional pre-processing parser.
@@ -273,7 +273,9 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         let result = this.typeValidator(value, options);
         for (const customValidator of this.customValidators) {
             if (!result.ok) break;
-            result = customValidator(result.value, options);
+            const resultValue = result.value;
+            const tryResult = ValidationError.try({ type: this, input }, () => customValidator(resultValue, options));
+            result = tryResult.ok ? this.createResult(resultValue, resultValue, tryResult.value) : tryResult;
         }
         if (this.typeParser && options.mode === 'construct') {
             result = addParserInputToResult(result, input);
@@ -391,16 +393,11 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * @param validation - the additional validation to restrict the current type
      */
     withValidation(validation: Validator<ResultType>): this {
-        const typeValidator = (input: ResultType, options: ValidationOptions): Result<ResultType> => {
-            const tryResult = ValidationError.try<ValidationResult>(
-                { type, input },
-                // if no name is given, then default to the message "additional validation failed"
-                () => validation(input, options) || 'additional validation failed',
-            );
-            return tryResult.ok ? type.createResult(input, input, tryResult.value) : tryResult;
-        };
-        const type = createType(this, { customValidators: { configurable: true, value: [...this.customValidators, typeValidator] } });
-        return type;
+        // default to the message "additional validation failed", this differs from `withConstraint` where we don't fall back to a default
+        // message. This results in subtly different error messages. Using `withValidation` the error message will be something like:
+        // "[BaseType]: additional validation failed", while `withConstraint` will result in "expected a [NewTypeName], got: ...".
+        const validator: Validator<ResultType> = (input, options) => validation(input, options) || 'additional validation failed';
+        return createType(this, { customValidators: { configurable: true, value: [...this.customValidators, validator] } });
     }
 
     /**
@@ -416,15 +413,10 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         name: BrandName,
         constraint: Validator<ResultType>,
     ): Type<Branded<ResultType, BrandName>, TypeConfig> {
-        const typeValidator = (input: ResultType, options: ValidationOptions): Result<Branded<ResultType, BrandName>> => {
-            const tryResult = ValidationError.try({ type, input }, () => constraint(input, options));
-            return tryResult.ok ? type.createResult(input, input, tryResult.value) : tryResult;
-        };
-        const type = createType(branded<ResultType, BrandName, TypeConfig>(this), {
+        return createType(branded<ResultType, BrandName, TypeConfig>(this), {
             name: { configurable: true, value: name },
-            customValidators: { configurable: true, value: [...this.customValidators, typeValidator] },
+            customValidators: { configurable: true, value: [...this.customValidators, constraint] },
         });
-        return type;
     }
 
     /**

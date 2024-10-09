@@ -66,7 +66,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     // (undocumented)
     protected createAutoCastAllType(): this;
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
-    protected readonly customValidators: ReadonlyArray<(<T extends ResultType>(this: void, input: T, options: ValidationOptions) => Result<T>)>;
+    protected readonly customValidators: ReadonlyArray<Validator<unknown>>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
     extendWith<const E>(factory: (type: this) => E): this & E;
     get is(): TypeguardFor<ResultType>;

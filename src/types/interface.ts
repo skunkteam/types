@@ -12,6 +12,7 @@ import type {
     TypeImpl,
     TypeOfProperties,
     ValidationOptions,
+    Validator,
     Visitor,
     Writable,
 } from '../interfaces';
@@ -228,9 +229,7 @@ export class InterfaceType<Props extends Properties, ResultType>
     private _mergeWith<OtherProps extends Properties, OtherType>(
         { name = this.isDefaultName ? undefined : this.name, omitParsers, omitValidations }: Partial<InterfaceMergeOptions>,
         otherPropsInfo: PropertiesInfo<OtherProps>,
-        otherCustomValidators: ReadonlyArray<
-            <T extends ResultType & OtherType>(this: void, input: T, options: ValidationOptions) => Result<T>
-        >,
+        otherCustomValidators: ReadonlyArray<Validator<unknown>>,
         otherHasCustomParser: boolean,
         method: string,
     ): MergeType<Props, ResultType, OtherProps, OtherType> {
