@@ -675,7 +675,7 @@ testTypeImpl({
     invalidConversions: [
         [100, 'error in parser precondition of [ChainedParserParser]: outer parser failed, got: 100'],
         [10, 'error in parser precondition of [Inner]: inner parser failed, got: 110, parsed from: 10'],
-        [5, 'error in [number]: inner validation failed, got: 115, parsed from: 5'],
+        [5, 'error in [ChainedParserParser]: inner validation failed, got: 115, parsed from: 5'],
     ],
 });
 

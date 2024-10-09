@@ -9,5 +9,9 @@ Additional custom validation added using [withValidation](./types.basetypeimpl.w
 **Signature:**
 
 ```typescript
-protected readonly customValidators: ReadonlyArray<(<T extends ResultType>(this: void, input: T, options: ValidationOptions) => Result<T>)>;
+protected readonly customValidators: ReadonlyArray<Validator<unknown>>;
 ```
+
+## Remarks
+
+It says `Validator<unknown>` here, but it should only contain closures with `Validator<ResultType>` parameters. However, that would mean that this type is no longer assignable to `Type<unknown>` which is technically correct, but very inconvenient. We want to be able to write functions that ask for a type that validates anything, we don't care what. If we are not able to use the type `Type<unknown>` in those cases, then we are left with `Type<any>` which leads to `any`<!-- -->-contamination of our consumer code.
