@@ -12,8 +12,8 @@ interface InterfaceMergeOptions
 
 ## Properties
 
-| Property                                                                 | Modifiers | Type   | Description                                                                                                 |
-| ------------------------------------------------------------------------ | --------- | ------ | ----------------------------------------------------------------------------------------------------------- |
-| [ignoreParsers?](./types.interfacemergeoptions.ignoreparsers.md)         |           | true   | _(Optional)_ Suppress the error about existing custom parsers on one of the types that is being merged.     |
-| [ignoreValidations?](./types.interfacemergeoptions.ignorevalidations.md) |           | true   | _(Optional)_ Suppress the error about existing custom validations on one of the types that is being merged. |
-| [name?](./types.interfacemergeoptions.name.md)                           |           | string | _(Optional)_ The optional name for the type, uses a default TypeScript-like name if no name is given.       |
+| Property                                                             | Modifiers | Type   | Description                                                                                              |
+| -------------------------------------------------------------------- | --------- | ------ | -------------------------------------------------------------------------------------------------------- |
+| [name?](./types.interfacemergeoptions.name.md)                       |           | string | _(Optional)_ The optional name for the type, uses a default TypeScript-like name if no name is given.    |
+| [omitParsers?](./types.interfacemergeoptions.omitparsers.md)         |           | true   | _(Optional)_ Suppress the error about existing custom parsers on one of the types that is being merged.  |
+| [omitValidations?](./types.interfacemergeoptions.omitvalidations.md) |           | true   | _(Optional)_ When set, do not apply the custom validations from the base types onto the new merged type. |

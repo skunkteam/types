@@ -168,7 +168,7 @@ describe(object, () => {
             const TypeA = object('TypeA', { prop: string }).withValidation(v => v.prop === 'the value');
             expect(() => TypeA.withRequired({ prop: number })).toThrowErrorMatchingInlineSnapshot(
                 '"Error in TypeA.withRequired(): Merge operation not allowed because one of the types has custom validations applied ' +
-                    'and the following property is defined on both sides: <prop>, use `omitValidations` to suppress this error or ' +
+                    'and the following property is defined on both sides: <prop>, use `omitValidations` to prevent this error or ' +
                     'remove the conflicting property."',
             );
 

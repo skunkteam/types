@@ -142,9 +142,9 @@ export const int: Type<Branded<number, 'int'>, NumberTypeConfig>;
 
 // @public (undocumented)
 export interface InterfaceMergeOptions {
-    ignoreParsers?: true;
-    ignoreValidations?: true;
     name?: string;
+    omitParsers?: true;
+    omitValidations?: true;
 }
 
 // @public
@@ -410,7 +410,7 @@ export type PropertiesOfTypeTuple<Tuple> = Tuple extends [{
 
 // @public
 export type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
-    partial: boolean;
+    optional: boolean;
     type: T;
 };
 
