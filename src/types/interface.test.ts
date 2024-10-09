@@ -114,7 +114,7 @@ describe(object, () => {
     testTypes('type of keys and props', () => {
         const { keys, props, propsInfo } = MyType;
         assignableTo<{ s: typeof string; n: typeof number }>(props);
-        assignableTo<{ s: { partial: boolean; type: typeof string }; n: { partial: boolean; type: typeof number } }>(propsInfo);
+        assignableTo<{ s: { optional: boolean; type: typeof string }; n: { optional: boolean; type: typeof number } }>(propsInfo);
         assignableTo<typeof props>({ n: number, s: string });
         assignableTo<ReadonlyArray<'s' | 'n'>>(keys);
         assignableTo<typeof keys>(['s', 'n']);
@@ -139,9 +139,9 @@ describe(object, () => {
             expect(MyTypeWithOptional.name).toBe('{ s: string, n?: number, b?: boolean }');
             expect(MyTypeWithOptional.props).toStrictEqual({ s: string, n: number, b: boolean });
             expect(MyTypeWithOptional.propsInfo).toStrictEqual({
-                s: { type: string, partial: false },
-                n: { type: number, partial: true },
-                b: { type: boolean, partial: true },
+                s: { type: string, optional: false },
+                n: { type: number, optional: true },
+                b: { type: boolean, optional: true },
             });
 
             const Alternative = MyType.mergeWith(partial({ n: number, b: boolean }));
@@ -188,14 +188,14 @@ describe(object, () => {
             assignableTo<{ s: typeof string; n: typeof number }>(props);
             assignableTo<typeof props>({ n: number, s: string, b: boolean });
             assignableTo<{
-                s: { partial: boolean; type: typeof string };
-                n: { partial: boolean; type: typeof number };
-                b: { partial: boolean; type: typeof boolean };
+                s: { optional: boolean; type: typeof string };
+                n: { optional: boolean; type: typeof number };
+                b: { optional: boolean; type: typeof boolean };
             }>(propsInfo);
             assignableTo<typeof propsInfo>({
-                s: { partial: false, type: string },
-                n: { partial: false, type: number },
-                b: { partial: true, type: boolean },
+                s: { optional: false, type: string },
+                n: { optional: false, type: number },
+                b: { optional: true, type: boolean },
             });
             assignableTo<MyTypeWithOptional>({ s: 'asdf' });
             assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf' });

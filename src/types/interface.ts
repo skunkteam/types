@@ -147,7 +147,7 @@ export class InterfaceType<Props extends Properties, ResultType>
         const { strictMissingKeys } = this.options;
         const constructResult: Record<string, unknown> = {};
         const details: MessageDetails[] = [];
-        for (const [key, { type: innerType, partial }] of this.propsArray) {
+        for (const [key, { type: innerType, optional: partial }] of this.propsArray) {
             const missingKey = !hasOwnProperty(input, key);
             if (partial) {
                 if (missingKey || (!strictMissingKeys && input[key] === undefined)) {
@@ -282,8 +282,8 @@ define(InterfaceType, 'basicType', 'object');
 define(InterfaceType, 'createAutoCastAllType', function (this: InterfaceType<Properties, any>) {
     const name = extensionName(this, 'autoCastAll');
     const props: PropertiesInfo = {};
-    for (const [key, { type, partial }] of this.propsArray) {
-        props[key] = { type: type.autoCastAll, partial };
+    for (const [key, { type, optional: partial }] of this.propsArray) {
+        props[key] = { type: type.autoCastAll, optional: partial };
     }
     return createType(new InterfaceType(props, { ...this.options, name }).autoCast);
 });
@@ -322,21 +322,21 @@ export function partial<Props extends Properties>(
     return createType(new InterfaceType(toPropsInfo(props, true), options));
 }
 
-function toPropsInfo<Props extends Properties>(props: Props, partial: boolean): PropertiesInfo<Props> {
-    const genericPropsInfo: PropertiesInfo = mapValues(props, type => ({ type, partial }));
+function toPropsInfo<Props extends Properties>(props: Props, optional: boolean): PropertiesInfo<Props> {
+    const genericPropsInfo: PropertiesInfo = mapValues(props, type => ({ type, optional }));
     return genericPropsInfo as PropertiesInfo<Props>;
 }
 
-function getPossibleDiscriminators([key, { type, partial }]: [
+function getPossibleDiscriminators([key, { type, optional }]: [
     string,
     PropertyInfo<Type<unknown> | ObjectType<unknown>>,
 ]): PossibleDiscriminator[] {
-    if (!partial && 'possibleDiscriminators' in type) {
+    if (!optional && 'possibleDiscriminators' in type) {
         return type.possibleDiscriminators.map(({ path, values }) => ({ path: [key, ...path], values }));
     }
     if (type.enumerableLiteralDomain) {
         const values = [...type.enumerableLiteralDomain];
-        if (partial && !values.includes(undefined)) values.push(undefined);
+        if (optional && !values.includes(undefined)) values.push(undefined);
         return [{ path: [key], values }];
     }
     return [];
