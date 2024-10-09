@@ -245,7 +245,7 @@ export class InterfaceType<Props extends Properties, ResultType>
                 throw new Error(
                     `Error in ${this.name}.${method}(): Merge operation not allowed because one of the types has custom ` +
                         `validations applied and the following ${propertiesAre} defined on both sides: ${conflicts}, ` +
-                        'use `omitValidations` to suppress this error or remove the conflicting property.',
+                        'use `omitValidations` to prevent this error or remove the conflicting property.',
                 );
             }
         }

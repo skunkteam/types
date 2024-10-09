@@ -10,7 +10,7 @@ Information about a single property of an object-like type including its optiona
 
 ```typescript
 type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
-    partial: boolean;
+    optional: boolean;
     type: T;
 };
 ```
