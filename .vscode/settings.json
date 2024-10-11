@@ -9,12 +9,11 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "files.associations": { "*.json": "jsonc" },
-    "javascript.preferences.importModuleSpecifierEnding": "minimal",
-    "typescript.preferences.importModuleSpecifierEnding": "minimal",
     "files.readonlyInclude": {
         "etc/**/*": true,
         "markdown/**/*": true,
         "node_modules/**/*": true
     },
-    "task.allowAutomaticTasks": "on"
+    "task.allowAutomaticTasks": "on",
+    "editor.wordWrapColumn": 140
 }

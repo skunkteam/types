@@ -20,7 +20,7 @@ and<Other extends BaseObjectLikeTypeImpl<any, any>>(_other: Other): ObjectType<M
 
 **Returns:**
 
-[ObjectType](./types.objecttype.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Other\[typeof designType\]&gt;&gt; &amp; [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;this\['props'\] &amp; Other\['props'\]&gt;
+[ObjectType](./types.objecttype.md)<!-- -->&lt;[MergeIntersection](./types.mergeintersection.md)<!-- -->&lt;ResultType &amp; Other\[typeof [designType](./types.designtype.md)<!-- -->\]&gt;&gt; &amp; [TypedPropertyInformation](./types.typedpropertyinformation.md)<!-- -->&lt;this\['props'\] &amp; Other\['props'\]&gt;
 
 ## Remarks
 

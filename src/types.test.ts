@@ -496,6 +496,7 @@ testTypeImpl({
     name: '{ a: number, b?: Partial<User> }',
     type: [
         object({ a: number }).withOptional({ b: User.toPartial() }),
+        object({ a: number }).mergeWith(partial({ b: User.toPartial() })),
         intersection([object({ a: number }), partial({ b: partial('Partial<User>', User.props) })]),
     ],
     basicType: 'object',
@@ -528,6 +529,21 @@ testTypeImpl({
     validValues: [{ msg: 'a!' }, { msg: '!' }],
     invalidValues: [[{ msg: 'a' }, 'error in [ShoutMessage]: speak up']],
     validConversions: [[{ msg: 'a' }, { msg: 'a!' }]],
+});
+
+// Multiple calls to withValidation should be possible
+const Question = object('Question', { msg: string })
+    .withValidation(({ msg }) => msg.endsWith('?') || 'should end with "?"')
+    .withValidation(({ msg }) => msg.startsWith('¿') || 'should start with "¿"')
+    .extendWith(() => ({ example: { msg: '¿Una pregunta?' } }));
+testTypeImpl({
+    name: 'Question',
+    type: Question,
+    validValues: [{ msg: '¿Una pregunta?' }],
+    invalidValues: [
+        [{ msg: 'No questions.' }, 'error in [Question]: should end with "?", got: { msg: "No questions." }'],
+        [{ msg: 'Any questions?' }, 'error in [Question]: should start with "¿", got: { msg: "Any questions?" }'],
+    ],
 });
 
 type MyGenericWrapper<T> = { ok: boolean; inner: T };
@@ -648,21 +664,19 @@ const ChainedParserParser = number
 // inner parser: input < 10 (because outer parser adds 100)
 // validation:   input < 5 (because the parsers add 110 in total)
 
-describe('test now', () => {
-    testTypeImpl({
-        name: 'ChainedParserParser',
-        type: ChainedParserParser,
-        validValues: [-1, 0, 1, 100],
-        validConversions: [
-            [1, 111],
-            [-110, 0],
-        ],
-        invalidConversions: [
-            [100, 'error in parser precondition of [ChainedParserParser]: outer parser failed, got: 100'],
-            [10, 'error in parser precondition of [Inner]: inner parser failed, got: 110, parsed from: 10'],
-            [5, 'error in [number]: inner validation failed, got: 115, parsed from: 5'],
-        ],
-    });
+testTypeImpl({
+    name: 'ChainedParserParser',
+    type: ChainedParserParser,
+    validValues: [-1, 0, 1, 100],
+    validConversions: [
+        [1, 111],
+        [-110, 0],
+    ],
+    invalidConversions: [
+        [100, 'error in parser precondition of [ChainedParserParser]: outer parser failed, got: 100'],
+        [10, 'error in parser precondition of [Inner]: inner parser failed, got: 110, parsed from: 10'],
+        [5, 'error in [ChainedParserParser]: inner validation failed, got: 115, parsed from: 5'],
+    ],
 });
 
 testTypeImpl({

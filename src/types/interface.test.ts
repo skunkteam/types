@@ -1,11 +1,12 @@
 import type { The } from '../interfaces';
 import { assignableTo, defaultUsualSuspects, stripped, testTypeImpl, testTypes } from '../testutils';
 import { boolean } from './boolean';
-import { PartialType, object, partial } from './interface';
-import { IntersectionType } from './intersection';
+import { InterfaceType, object, partial } from './interface';
 import { undefinedType } from './literal';
 import { number } from './number';
 import { string } from './string';
+import './union';
+import { unknownRecord } from './unknown';
 
 testTypeImpl({
     name: '{ force?: boolean }',
@@ -100,7 +101,10 @@ describe(object, () => {
         name                            | impl
         ${'{ a: number, b: string }'}   | ${object({ a: number, b: string })}
         ${'{ a?: number, b?: string }'} | ${partial({ a: number, b: string })}
+        ${'{ a?: number, b: string }'}  | ${partial({ a: number, b: string }).withRequired({ b: string })}
+        ${'{ a: number, b: string }'}   | ${object({ a: number }).withRequired({ b: string })}
         ${'{ a: number, b?: string }'}  | ${object({ a: number }).withOptional({ b: string })}
+        ${'{ a: number, b?: string }'}  | ${object({ a: number, b: boolean }).withOptional({ b: string })}
         ${'MyObject'}                   | ${object('MyObject', { a: number }).withOptional({ b: string })}
         ${'MyPartial'}                  | ${object('MyObject', { a: number }).withOptional('MyPartial', { b: string })}
     `('default name: $name', ({ impl, name }) => {
@@ -110,7 +114,7 @@ describe(object, () => {
     testTypes('type of keys and props', () => {
         const { keys, props, propsInfo } = MyType;
         assignableTo<{ s: typeof string; n: typeof number }>(props);
-        assignableTo<{ s: { partial: boolean; type: typeof string }; n: { partial: boolean; type: typeof number } }>(propsInfo);
+        assignableTo<{ s: { optional: boolean; type: typeof string }; n: { optional: boolean; type: typeof number } }>(propsInfo);
         assignableTo<typeof props>({ n: number, s: string });
         assignableTo<ReadonlyArray<'s' | 'n'>>(keys);
         assignableTo<typeof keys>(['s', 'n']);
@@ -123,17 +127,60 @@ describe(object, () => {
     });
 
     describe('withOptional', () => {
-        const partialProps = { b: boolean };
         type MyTypeWithOptional = The<typeof MyTypeWithOptional>;
-        const MyTypeWithOptional = MyType.withOptional(partialProps);
+        const MyTypeWithOptional = MyType.withOptional({
+            // `n` becomes optional now:
+            n: number,
+            b: boolean,
+        });
 
         test('construction', () => {
-            expect(MyTypeWithOptional).toBeInstanceOf(IntersectionType);
-            const intersection = MyTypeWithOptional as unknown as IntersectionType<[typeof MyType, PartialType<typeof partialProps>]>;
-            expect(intersection.types).toHaveLength(2);
-            expect(intersection.types[0]).toBe(MyType);
-            expect(intersection.types[1].options.partial).toBeTrue();
-            expect(intersection.types[1].props).toBe(partialProps);
+            expect(MyTypeWithOptional).toBeInstanceOf(InterfaceType);
+            expect(MyTypeWithOptional.name).toBe('{ s: string, n?: number, b?: boolean }');
+            expect(MyTypeWithOptional.props).toStrictEqual({ s: string, n: number, b: boolean });
+            expect(MyTypeWithOptional.propsInfo).toStrictEqual({
+                s: { type: string, optional: false },
+                n: { type: number, optional: true },
+                b: { type: boolean, optional: true },
+            });
+
+            const Alternative = MyType.mergeWith(partial({ n: number, b: boolean }));
+            expect(MyTypeWithOptional.name).toBe(Alternative.name);
+            expect(MyTypeWithOptional.props).toEqual(Alternative.props);
+            expect(MyTypeWithOptional.propsInfo).toEqual(Alternative.propsInfo);
+        });
+
+        test('check for accidental dropping of parsers', () => {
+            const TypeA = object('TypeA', { prop: string }).withParser(unknownRecord.andThen(({ prop, old }) => ({ prop: prop ?? old })));
+            expect(() => TypeA.withOptional({ other: string })).toThrowErrorMatchingInlineSnapshot(
+                '"Error in TypeA.withOptional(): Merge operation not allowed because one of the types has custom parsers applied, use ' +
+                    '`omitParsers` to suppress this error."',
+            );
+
+            // Resulting in erased parsers:
+            expect(TypeA({ old: 'whatever' })).toEqual({ prop: 'whatever' });
+            const Combined = TypeA.withOptional({ omitParsers: true }, { other: string });
+            expect(() => Combined({ old: 'whatever' })).toThrow('missing property <prop>');
+            expect(() => Combined.literal({ prop: 'whatever' })).not.toThrow();
+        });
+
+        test('support reuse of validators, but only when non-conflicting', () => {
+            const TypeA = object('TypeA', { prop: string }).withValidation(v => v.prop === 'the value');
+            expect(() => TypeA.withRequired({ prop: number })).toThrowErrorMatchingInlineSnapshot(
+                '"Error in TypeA.withRequired(): Merge operation not allowed because one of the types has custom validations applied ' +
+                    'and the following property is defined on both sides: <prop>, use `omitValidations` to prevent this error or ' +
+                    'remove the conflicting property."',
+            );
+
+            // Validations erased, because that is the only way to overwrite the type of `prop`.
+            const ValidationsIgnored = TypeA.withRequired({ omitValidations: true }, { prop: number });
+            expect(ValidationsIgnored.literal({ prop: 123 })).toEqual({ prop: 123 });
+            expect(() => ValidationsIgnored({ prop: 'string' })).toThrow('expected a number, got a string');
+
+            // Validations reused, because no properties are conflicting.
+            const ValidationsReused = TypeA.withRequired({ other: string });
+            expect(ValidationsReused.literal({ prop: 'the value', other: 'correct' })).toEqual({ prop: 'the value', other: 'correct' });
+            expect(() => ValidationsReused.literal({ prop: 'wrong value', other: 'correct' })).toThrow('additional validation failed');
         });
 
         testTypes('type of props and the resulting type', () => {
@@ -141,22 +188,23 @@ describe(object, () => {
             assignableTo<{ s: typeof string; n: typeof number }>(props);
             assignableTo<typeof props>({ n: number, s: string, b: boolean });
             assignableTo<{
-                s: { partial: boolean; type: typeof string };
-                n: { partial: boolean; type: typeof number };
-                b: { partial: boolean; type: typeof boolean };
+                s: { optional: boolean; type: typeof string };
+                n: { optional: boolean; type: typeof number };
+                b: { optional: boolean; type: typeof boolean };
             }>(propsInfo);
             assignableTo<typeof propsInfo>({
-                s: { partial: false, type: string },
-                n: { partial: false, type: number },
-                b: { partial: true, type: boolean },
+                s: { optional: false, type: string },
+                n: { optional: false, type: number },
+                b: { optional: true, type: boolean },
             });
+            assignableTo<MyTypeWithOptional>({ s: 'asdf' });
             assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf' });
             assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf', b: true });
             // @ts-expect-error because q is not included in the type
             assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf', q: true });
+            assignableTo<{ n?: number; s: string; b?: boolean }>(MyTypeWithOptional(0));
+            // @ts-expect-error because n is optional now
             assignableTo<{ n: number; s: string; b?: boolean }>(MyTypeWithOptional(0));
-            // @ts-expect-error because b is optional
-            assignableTo<{ n: number; s: string; b: boolean }>(MyTypeWithOptional(0));
         });
     });
 });

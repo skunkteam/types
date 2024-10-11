@@ -147,7 +147,7 @@ function combinedName(types: readonly BaseObjectLikeTypeImpl<unknown>[]) {
     const collectedProps: PropertiesInfo = {};
     for (const { propsInfo } of types) {
         for (const [key, prop] of Object.entries(propsInfo)) {
-            if (!collectedProps[key] || (collectedProps[key]?.partial && !prop.partial)) {
+            if (!collectedProps[key] || (collectedProps[key]?.optional && !prop.optional)) {
                 collectedProps[key] = prop;
             }
         }

@@ -23,4 +23,4 @@ type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
     : Unbranded<T>;
 ```
 
-**References:** [DeepUnbranded](./types.deepunbranded.md)<!-- -->, [Unbranded](./types.unbranded.md)
+**References:** [DeepUnbranded](./types.deepunbranded.md)<!-- -->, [brands](./types.brands.md)<!-- -->, [Unbranded](./types.unbranded.md)

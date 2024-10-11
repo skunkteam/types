@@ -11,16 +11,16 @@ Create a Type from the given type-implementation.
 ```typescript
 declare function createType<Impl extends BaseTypeImpl<any, any>>(
     impl: Impl,
-    override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser', PropertyDescriptor>>,
+    override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser' | 'customValidators', PropertyDescriptor>>,
 ): TypeImpl<Impl>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                      | Description                                                |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| impl      | Impl                                                                                                                                                      | the type-implementation                                    |
-| override  | Partial&lt;Record&lt;keyof [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;any, any&gt; \| 'typeValidator' \| 'typeParser', PropertyDescriptor&gt;&gt; | _(Optional)_ override certain settings of the created type |
+| Parameter | Type                                                                                                                                                                            | Description                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| impl      | Impl                                                                                                                                                                            | the type-implementation                                    |
+| override  | Partial&lt;Record&lt;keyof [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;any, any&gt; \| 'typeValidator' \| 'typeParser' \| 'customValidators', PropertyDescriptor&gt;&gt; | _(Optional)_ override certain settings of the created type |
 
 **Returns:**
 

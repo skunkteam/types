@@ -18,9 +18,9 @@ declare class InterfaceType<Props extends Properties, ResultType> extends BaseOb
 
 ## Constructors
 
-| Constructor                                                             | Modifiers | Description                                                       |
-| ----------------------------------------------------------------------- | --------- | ----------------------------------------------------------------- |
-| [(constructor)(props, options)](./types.interfacetype._constructor_.md) |           | Constructs a new instance of the <code>InterfaceType</code> class |
+| Constructor                                                                 | Modifiers | Description                                                       |
+| --------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------- |
+| [(constructor)(propsInfo, options)](./types.interfacetype._constructor_.md) |           | Constructs a new instance of the <code>InterfaceType</code> class |
 
 ## Properties
 
@@ -42,6 +42,8 @@ declare class InterfaceType<Props extends Properties, ResultType> extends BaseOb
 | ----------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | [accept(visitor)](./types.interfacetype.accept.md)                      |                        | Accept a visitor (visitor pattern).                                                                                                        |
 | [maybeStringify(value)](./types.interfacetype.maybestringify.md)        |                        | Create a JSON string of the given value, using the type information of the current type. Matches the specs of <code>JSON.stringify</code>. |
+| [mergeWith(args)](./types.interfacetype.mergewith.md)                   |                        | Create a new type by merging all properties of the given type into the properties of this type.                                            |
 | [toPartial(name)](./types.interfacetype.topartial.md)                   |                        | Clone this type with all properties marked optional.                                                                                       |
 | [typeValidator(input, options)](./types.interfacetype.typevalidator.md) | <code>protected</code> | The actual validation-logic.                                                                                                               |
 | [withOptional(args)](./types.interfacetype.withoptional.md)             |                        | Create a type with all properties of the current type, plus the given optional properties.                                                 |
+| [withRequired(args)](./types.interfacetype.withrequired.md)             |                        | Create a type with all properties of the current type, plus the given additional required properties.                                      |
