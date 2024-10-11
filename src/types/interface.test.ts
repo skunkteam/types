@@ -10,7 +10,11 @@ import { unknownRecord } from './unknown';
 
 testTypeImpl({
     name: '{ force?: boolean }',
-    type: partial({ force: boolean }),
+    type: [
+        partial({ force: boolean }),
+        // very contrived way to get the same result, should behave exactly the same
+        object('CustomNameThatIsRemoved', { force: boolean }).withOptional({ name: null }, { force: boolean }),
+    ],
     basicType: 'object',
     validValues: [{ force: true }, { force: true, otherOpts: 'also valid', [stripped]: { force: true } }, {}],
     invalidValues: [
@@ -25,7 +29,10 @@ testTypeImpl({
 
 testTypeImpl({
     name: '{ really?: boolean.autoCast, amounts?: { begin: number.autoCast, end: number.autoCast } }',
-    type: partial({ really: boolean, amounts: object({ begin: number, end: number }) }).autoCastAll,
+    type: [
+        partial({ really: boolean, amounts: object({ begin: number, end: number }) }).autoCastAll,
+        partial({ really: boolean.autoCast }).withOptional({ amounts: object({ begin: number.autoCast, end: number.autoCast }) }),
+    ],
     basicType: 'object',
     validValues: [{}, { really: true }, { really: false, amounts: { begin: 123, end: -456 } }, { amounts: { begin: 123, end: -456 } }],
     validConversions: [

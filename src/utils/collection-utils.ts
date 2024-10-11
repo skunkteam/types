@@ -8,7 +8,7 @@ export function decodeOptionalName<Rest extends unknown[]>(args: [string, ...Res
     return (typeof args[0] === 'string' ? args : [undefined, ...args]) as [string | undefined, ...Rest];
 }
 
-export function decodeOptionalOptions<Options extends { name?: string }, OtherParam>(
+export function decodeOptionalOptions<Options extends { name?: string | null }, OtherParam>(
     args: [other: OtherParam] | [name: string, other: OtherParam] | [options: Options, other: OtherParam],
 ): [Partial<Options>, OtherParam] {
     if (args.length === 1) return [{}, args[0]];
