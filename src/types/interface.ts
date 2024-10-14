@@ -57,9 +57,21 @@ export interface InterfaceTypeOptionsWithPartial extends InterfaceTypeOptions {
     partial?: boolean;
 }
 
+/**
+ * Options for {@link InterfaceType.withOptional}, {@link InterfaceType.withRequired} and {@link InterfaceType.mergeWith}.
+ */
 export interface InterfaceMergeOptions {
-    /** The optional name for the type, uses a default TypeScript-like name if no name is given. */
-    name?: string;
+    /**
+     * The optional name for the new type, or `null` to force a generated TypeScript-like name.
+     *
+     * @remarks
+     * When omitted, it will follow the name of original type (on the left). It will either use the custom name of that type or generate a
+     * new default TypeScript-like name if the type did not have a custom name.
+     *
+     * Use this `name` setting with a `string` to provide a new custom name or use `null` to force a generated TypeScript-like name, even if the
+     * original type has a custom name.
+     */
+    name?: string | null;
 
     /**
      * When set, do not apply the custom validations from the base types onto the new merged type.
@@ -227,12 +239,18 @@ export class InterfaceType<Props extends Properties, ResultType>
     }
 
     private _mergeWith<OtherProps extends Properties, OtherType>(
-        { name = this.isDefaultName ? undefined : this.name, omitParsers, omitValidations }: Partial<InterfaceMergeOptions>,
+        { name: nameOption, omitParsers, omitValidations }: Partial<InterfaceMergeOptions>,
         otherPropsInfo: PropertiesInfo<OtherProps>,
         otherCustomValidators: ReadonlyArray<Validator<unknown>>,
         otherHasCustomParser: boolean,
         method: string,
     ): MergeType<Props, ResultType, OtherProps, OtherType> {
+        const name =
+            nameOption === null
+                ? // if the option was set to `null`, then force a new default name
+                  undefined
+                : // otherwise default to what the current type has
+                  nameOption ?? (this.isDefaultName ? undefined : this.name);
         const customValidators = omitValidations ? [] : [...this.customValidators, ...otherCustomValidators];
         if (customValidators.length) {
             // Check that we have no conflicting properties. If there are no conflicting properties then each validator is still safe to

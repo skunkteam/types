@@ -4,10 +4,16 @@
 
 ## InterfaceMergeOptions.name property
 
-The optional name for the type, uses a default TypeScript-like name if no name is given.
+The optional name for the new type, or `null` to force a generated TypeScript-like name.
 
 **Signature:**
 
 ```typescript
-name?: string;
+name?: string | null;
 ```
+
+## Remarks
+
+When omitted, it will follow the name of original type (on the left). It will either use the custom name of that type or generate a new default TypeScript-like name if the type did not have a custom name.
+
+Use this `name` setting with a `string` to provide a new custom name or use `null` to force a generated TypeScript-like name, even if the original type has a custom name.
