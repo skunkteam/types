@@ -140,9 +140,9 @@ export type int = The<typeof int>;
 // @public (undocumented)
 export const int: Type<Branded<number, 'int'>, NumberTypeConfig>;
 
-// @public (undocumented)
+// @public
 export interface InterfaceMergeOptions {
-    name?: string;
+    name?: string | null;
     omitParsers?: true;
     omitValidations?: true;
 }
