@@ -4,6 +4,8 @@
 
 ## PartialType type
 
+Result of the [partial()](./types.partial.md) function and the [InterfaceType.toPartial()](./types.interfacetype.topartial.md) method.
+
 **Signature:**
 
 ```typescript

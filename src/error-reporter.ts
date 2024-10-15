@@ -1,6 +1,6 @@
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { BasicType, Failure, FailureDetails, OneOrMore, ValidationDetails } from './interfaces';
-import { an, basicType, checkOneOrMore, humanList, isSingle, plural, printKey, printPath, printValue, remove } from './utils';
+import { an, basicType, castArray, checkOneOrMore, humanList, isSingle, plural, printKey, printPath, printValue, remove } from './utils';
 
 const BULLETS = ['-', '•', '‣', '◦'];
 const DEFAULT_BULLET = '*';
@@ -191,8 +191,9 @@ function maybePrintParserInput(details: FailureDetails | Failure, printedValue: 
 }
 
 function printBasicTypeAndValue(bt: BasicType | BasicType[], printedValue?: string) {
-    const first = Array.isArray(bt) ? bt[0] : bt;
-    return `${humanList(bt, 'or', an)}${printedValue && printedValue !== first ? ` (${printedValue})` : ''}`;
+    const bts = castArray(bt);
+    const [first] = bts;
+    return `${humanList(bts, 'or', an)}${printedValue && printedValue !== first ? ` (${printedValue})` : ''}`;
 }
 
 function prependWithTypeName(detail: FailureDetails) {
@@ -264,7 +265,7 @@ function unionMessage(detail: FailureDetails & { kind: 'union' }, level: number)
         // only mismatched discriminators left
         for (const mismatch of mismatchedDiscriminators) {
             const requiredValues = humanList(
-                mismatch.detail.kind === 'invalid literal' ? mismatch.detail.expected : mismatch.detail.expectedValue,
+                castArray(mismatch.detail.kind === 'invalid literal' ? mismatch.detail.expected : mismatch.detail.expectedValue),
                 'or',
                 printValue,
             );

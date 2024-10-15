@@ -1,5 +1,5 @@
 import type { OneOrMore, PropertiesInfo } from '../interfaces';
-import { castArray } from './collection-utils';
+import { stringStringify } from './stringifiers';
 import { isOneOrMore, isValidIdentifier } from './type-utils';
 
 /**
@@ -20,7 +20,7 @@ export function printValue(input: unknown, budget = 50, visited: Set<unknown> = 
         case 'function':
             return `[Function: ${truncateString(input.name, budget - 12)}]`;
         case 'string':
-            return truncateString(JSON.stringify(input), budget);
+            return truncateString(stringStringify(input), budget);
         case 'object':
             if (input === null) {
                 return 'null';
@@ -95,8 +95,42 @@ export function printPath(path: ReadonlyArray<PropertyKey>): string {
  * This means that if the the `key` is a valid identifier it will be returned as is, otherwise it will be quoted.
  */
 export function printKey(key: string): string {
-    return isValidIdentifier(key) ? key : JSON.stringify(key);
+    return isValidIdentifier(key) ? key : stringStringify(key);
 }
+
+/**
+ * Rules to try to guess the indefinite article for an English word. Rules must be tested in order.
+ *
+ * @remarks
+ * Based on the excellent work in Perl's Lingua::EN::Inflect: http://search.cpan.org/perldoc/Lingua::EN::Inflect (borrowed most regexes)
+ */
+const AN_RULES = [
+    // Special cases
+    [/^[^a-z0-9]*(?:euler|hour(?!i)|heir|honest|hono)/i, `an`],
+
+    // Single letter words
+    [/^[^a-z0-9]*[bcdgjkpqtuvwyz]\b/i, `a`],
+
+    // Abbreviations
+    [/^[^a-z0-9]*[aefhilmnorsx][.-]/i, `an`],
+    [/^[^a-z0-9]*[a-z][.-]/i, `a`],
+
+    // Consonants
+    [/^[^a-z0-9]*[bcdfghjklmnpqrstvwxz]/i, `a`],
+
+    // Special vowel-forms
+    [/^[^a-z0-9]*e[uw]/i, `a`],
+    [/^[^a-z0-9]*onc?e\b/i, `a`],
+    [/^[^a-z0-9]*uni(?:[^nmd]|mo)/i, `a`],
+    [/^[^a-z0-9]*ut[th]/i, `an`],
+    [/^[^a-z0-9]*u[bcfhjkqrst][aeiou]/i, `a`],
+
+    // Vowels
+    [/^[^a-z0-9]*[aeiou]/i, `an`],
+
+    // Handle 'y'...
+    [/^[^a-z0-9]*y(?:b[lor]|cl[ea]|fere|gg|p[ios]|rou|tt)/i, `an`],
+] as const;
 
 /**
  * Try to guess the indefinite article for an English word.
@@ -104,47 +138,20 @@ export function printKey(key: string): string {
  * @remarks
  * Based on the excellent work in Perl's Lingua::EN::Inflect: http://search.cpan.org/perldoc/Lingua::EN::Inflect (borrowed most regexes)
  */
-// istanbul ignore next because it is approximate anyway
 export function an(name: string): string {
-    const s = name.startsWith('[') ? name.slice(1) : name;
-
-    // Special cases
-    if (/^euler|^hour(?!i)|^heir|^honest|^hono/i.test(s)) return `an ${name}`;
-    if (/^[aefhilmnorsx][.-]/i.test(s)) return `an ${name}`;
-    if (/^[bcdgjkpqtuvwyz]$/i.test(s)) return `a ${name}`;
-
-    // Abbreviations
-    if (/^[aefhilmnorsx][.-]/i.test(s)) return `an ${name}`;
-    if (/^[a-z][.-]/i.test(s)) return `a ${name}`;
-
-    // Consonants
-    if (/^[^aeiouy]/i.test(s)) return `a ${name}`;
-
-    // Special vowel-forms
-    if (/^e[uw]/i.test(s)) return `a ${name}`;
-    if (/^onc?e\b/i.test(s)) return `a ${name}`;
-    if (/^uni(?:[^nmd]|mo)/i.test(s)) return `a ${name}`;
-    if (/^ut[th]/i.test(s)) return `an ${name}`;
-    if (/^u[bcfhjkqrst][aeiou]/i.test(s)) return `a ${name}`;
-
-    // Vowels
-    if (/^[aeiou]/i.test(s)) return `an ${name}`;
-
-    // Handle 'y'...
-    if (/^y(?:b[lor]|cl[ea]|fere|gg|p[ios]|rou|tt)/i.test(s)) return `an ${name}`;
+    for (const [re, an] of AN_RULES) {
+        if (re.test(name)) return `${an} ${name}`;
+    }
 
     return `a ${name}`;
 }
 
-export function humanList<T>(input: T | Iterable<T>, lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
-    const arr = castArray(input);
-    const last = arr[arr.length - 1];
+export function humanList<T>(input: T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
+    const mapped = input.map(v => map(v));
+    const last = mapped.pop();
     if (last === undefined) return '';
-    if (arr.length === 1) return map(last);
-    return `${arr
-        .slice(0, -1)
-        .map(v => map(v))
-        .join(', ')} ${lastSeparator} ${map(last)}`;
+    if (!mapped.length) return last;
+    return `${mapped.join(', ')} ${lastSeparator} ${last}`;
 }
 
 export function plural(amount: { length: number } | number, thing: string, things = `${thing}s`): string {

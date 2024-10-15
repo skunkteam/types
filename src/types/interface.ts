@@ -2,6 +2,7 @@ import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType, type TypedPropertyInf
 import type {
     MessageDetails,
     ObjectType,
+    OneOrMore,
     PossibleDiscriminator,
     Properties,
     PropertiesInfo,
@@ -24,11 +25,14 @@ import {
     hasOwnProperty,
     humanList,
     interfaceStringify,
+    isOneOrMore,
     mapValues,
     plural,
     prependPathToDetails,
     printKey,
+    stringStringify,
 } from '../utils';
+import type { intersection } from './intersection';
 import { unknownRecord } from './unknown';
 
 /**
@@ -53,7 +57,15 @@ export interface InterfaceTypeOptions {
 }
 
 export interface InterfaceTypeOptionsWithPartial extends InterfaceTypeOptions {
-    /** Mark all properties as optional in this type. */
+    /**
+     * Mark all properties as optional in this type.
+     *
+     * @remarks
+     * Note that this is NOT reflected in the resulting TypeScript type!
+     *
+     * @deprecated
+     * Use the {@link partial} function instead to get proper TypeScript typings.
+     */
     partial?: boolean;
 }
 
@@ -89,6 +101,8 @@ export interface InterfaceMergeOptions {
      *
      * When overlap is detected in the property-names of the types and any custom validation is encountered by Skunk Team types, an Error
      * will be thrown. Use this option to ignore the custom validations and continue with the merge.
+     *
+     * Alternatively, it is always possible to use an {@link intersection} instead.
      */
     omitValidations?: true;
 
@@ -101,24 +115,83 @@ export interface InterfaceMergeOptions {
      * encountered by Skunk Team types, an Error will be thrown. Use this option to ignore the parsers and continue with the merge.
      *
      * This is to ensure that custom parser are never accidentally lost by adding additional properties to an existing type.
+     *
+     * Alternatively, it is always possible to use an {@link intersection} instead.
      */
     omitParsers?: true;
 }
 
+/**
+ * Options for {@link InterfaceType.pick} and {@link InterfaceType.omit}.
+ */
+export interface InterfacePickOptions {
+    /**
+     * The optional name for the new type, or `null` to force a generated TypeScript-like name.
+     *
+     * @remarks
+     * When omitted, it will follow the name of original type (on the left). It will either use the custom name of that type or generate a
+     * new default TypeScript-like name if the type did not have a custom name.
+     *
+     * Use this `name` setting with a `string` to provide a new custom name or use `null` to force a generated TypeScript-like name, even if
+     * the original type has a custom name.
+     */
+    name?: string | null;
+
+    /**
+     * Suppress the error about existing custom validations on the base type.
+     *
+     * @remarks
+     * Validations are not reused when picking or omitting properties from a base type. This is because validations work on the original
+     * base type. The new type, with some properties omitted, is not assignable to the original type. Therefore, we cannot reliably call the
+     * validations with instances of the new type.
+     *
+     * When a custom validation is encountered by Skunk Team types, an Error will be thrown. Use this option to ignore the validations and
+     * continue with the pick or omit operation.
+     *
+     * This is to ensure that custom validations are never accidentally lost.
+     */
+    omitValidations?: true;
+
+    /**
+     * Choose whether to apply the custom parser from the base type onto the newly "picked type" or not.
+     *
+     * @remarks
+     * By default, custom parsers (i.e. parsers that are added to a type using {@link BaseTypeImpl.withParser} or
+     * {@link BaseTypeImpl.autoCast}) are not reused when a new type is created using {@link InterfaceType.pick} and
+     * {@link InterfaceType.omit}.
+     *
+     * However, it is possible to reuse a parser that is set on the base type. Parsers have a single input of type `unknown` and may produce
+     * anything (also with type `unknown`). The result of a parser will always be validated afterwards by the type it is applied to.
+     * Technically, any parser is applicable to any type, but it might not make sense to do so. Therefore, you can choose to apply it or not
+     * with this option.
+     *
+     * If a custom parser is found on the base type, then this options is mandatory.
+     */
+    applyParser?: boolean;
+}
+
+/** Result of the {@link object} function. */
 export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Simplify<Props>, Simplify<TypeOfProperties<Writable<Props>>>>>;
 
+/** Result of the {@link partial} function and the {@link InterfaceType.toPartial} method. */
 export type PartialType<Props extends Properties> = TypeImpl<
     InterfaceType<Simplify<Props>, Simplify<Partial<TypeOfProperties<Writable<Props>>>>>
 >;
 
+/** Result of the {@link InterfaceType.withOptional}, {@link InterfaceType.withRequired} and {@link InterfaceType.mergeWith} methods. */
 export type MergeType<Props extends Properties, ResultType, OtherProps extends Properties, OtherResultType> = TypeImpl<
     InterfaceType<Simplify<Omit<Props, keyof OtherProps> & OtherProps>, Simplify<Omit<ResultType, keyof OtherResultType> & OtherResultType>>
+>;
+
+/** Result of the {@link InterfaceType.pick} and {@link InterfaceType.omit} methods. */
+export type PickType<Props extends Properties, ResultType, Key extends keyof Props & keyof ResultType & string> = TypeImpl<
+    InterfaceType<Simplify<Pick<Props, Key>>, Simplify<Pick<ResultType, Key>>>
 >;
 
 /**
  * The implementation behind types created with {@link object} and {@link partial}.
  */
-export class InterfaceType<Props extends Properties, ResultType>
+export class InterfaceType<Props extends Properties, ResultType extends unknownRecord>
     extends BaseObjectLikeTypeImpl<ResultType>
     implements TypedPropertyInformation<Props>
 {
@@ -142,7 +215,7 @@ export class InterfaceType<Props extends Properties, ResultType>
     }
 
     /** The keys (property-names) for this object-like type. */
-    readonly keys = Object.keys(this.propsInfo) as ReadonlyArray<keyof Props>;
+    readonly keys = Object.keys(this.propsInfo) as ReadonlyArray<keyof Props & keyof ResultType & string>;
     /** {@inheritdoc BaseObjectLikeTypeImpl.props} */
     readonly props = mapValues(this.propsInfo, i => i.type) as Props;
     /** {@inheritdoc BaseObjectLikeTypeImpl.possibleDiscriminators} */
@@ -228,7 +301,7 @@ export class InterfaceType<Props extends Properties, ResultType>
      * Keys of the given (right hand side) type override keys of this type (left hand side). Any options such as `strictMissingKeys` and
      * custom names are inherited from the left hand side type, but custom parsers and validators are dropped.
      */
-    mergeWith<OtherProps extends Properties, OtherType>(
+    mergeWith<OtherProps extends Properties, OtherType extends unknownRecord>(
         ...args:
             | [type: InterfaceType<OtherProps, OtherType>]
             | [name: string, type: InterfaceType<OtherProps, OtherType>]
@@ -239,18 +312,12 @@ export class InterfaceType<Props extends Properties, ResultType>
     }
 
     private _mergeWith<OtherProps extends Properties, OtherType>(
-        { name: nameOption, omitParsers, omitValidations }: Partial<InterfaceMergeOptions>,
+        { name, omitParsers, omitValidations }: Partial<InterfaceMergeOptions>,
         otherPropsInfo: PropertiesInfo<OtherProps>,
         otherCustomValidators: ReadonlyArray<Validator<unknown>>,
         otherHasCustomParser: boolean,
         method: string,
     ): MergeType<Props, ResultType, OtherProps, OtherType> {
-        const name =
-            nameOption === null
-                ? // if the option was set to `null`, then force a new default name
-                  undefined
-                : // otherwise default to what the current type has
-                  nameOption ?? (this.isDefaultName ? undefined : this.name);
         const customValidators = omitValidations ? [] : [...this.customValidators, ...otherCustomValidators];
         if (customValidators.length) {
             // Check that we have no conflicting properties. If there are no conflicting properties then each validator is still safe to
@@ -277,9 +344,100 @@ export class InterfaceType<Props extends Properties, ResultType>
             ...otherPropsInfo,
         };
         return createType(
-            new InterfaceType(propsInfo as PropertiesInfo<Omit<Props, keyof OtherProps> & OtherProps>, { ...this.options, name }),
+            new InterfaceType(propsInfo as PropertiesInfo<Omit<Props, keyof OtherProps> & OtherProps>, {
+                ...this.options,
+                name: this._deriveName(name, s => s),
+            }),
             { customValidators: { configurable: true, value: customValidators } },
         );
+    }
+
+    /**
+     * Create a new type that consists only of the mentioned properties similar to the builtin `Pick` type.
+     */
+    pick<const Key extends keyof Props & keyof ResultType & string>(
+        ...args: [keys: OneOrMore<Key>] | [name: string, keys: OneOrMore<Key>] | [options: InterfacePickOptions, keys: OneOrMore<Key>]
+    ): PickType<Props, ResultType, Key> {
+        const [opts, keys] = decodeOptionalOptions<InterfacePickOptions, OneOrMore<Key>>(args);
+        return this._pick(opts, keys, 'pick', name => `Pick<${name}, ${keys.map(stringStringify).join(' | ')}>`);
+    }
+
+    /**
+     * Create a new type that consists of all properties of the base type, except those mentioned, similar to the builtin `Omit` type.
+     */
+    omit<const Key extends keyof Props & keyof ResultType & string>(
+        ...args: [keys: OneOrMore<Key>] | [name: string, keys: OneOrMore<Key>] | [options: InterfacePickOptions, keys: OneOrMore<Key>]
+    ): PickType<Props, ResultType, Exclude<keyof Props & keyof ResultType & string, Key>> {
+        const [opts, keys] = decodeOptionalOptions<InterfacePickOptions, OneOrMore<Key>>(args);
+        const keysToOmit = new Set<string>(keys);
+        const pickKeys = this.keys.filter(key => !keysToOmit.delete(key));
+        if (!isOneOrMore(pickKeys)) throw new Error(`Error in ${this.name}.omit(): All properties omitted.`);
+        // Next, we also want to check that no keys were given that are not found in the base type. Those keys still remain in the
+        // `keysToOmit` set. We can reuse the error checking in the _pick method by simply adding them to the list of keys to pick here:
+        pickKeys.push(...keysToOmit);
+        return this._pick<Exclude<keyof Props & keyof ResultType & string, Key>>(
+            opts,
+            pickKeys as OneOrMore<Exclude<keyof Props & keyof ResultType & string, Key>>,
+            'omit',
+            name => `Omit<${name}, ${keys.map(stringStringify).join(' | ')}>`,
+        );
+    }
+
+    private _pick<const Key extends keyof Props & keyof ResultType & string>(
+        { name, applyParser, omitValidations }: InterfacePickOptions,
+        keys: OneOrMore<Key>,
+        method: string,
+        onCustomName: (name: string) => string,
+    ): PickType<Props, ResultType, Key> {
+        let typeParser;
+        if (this.typeParser) {
+            if (applyParser == null) {
+                throw new Error(
+                    `Error in ${this.name}.${method}(): The base type has a custom parser. Choose whether to reuse this parser with the ` +
+                        '`applyParser` option.',
+                );
+            }
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            typeParser = applyParser ? this.typeParser : undefined;
+        }
+        if (!omitValidations && this.customValidators.length) {
+            throw new Error(
+                `Error in ${this.name}.${method}(): Operation not allowed because the base type has custom validations applied. Use ` +
+                    '`omitValidations` to prevent this error.',
+            );
+        }
+        const propsInfo: PropertiesInfo = {};
+        const notFound = [];
+        for (const key of keys) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            (propsInfo[key] = this.propsInfo[key]) || notFound.push(key);
+        }
+        if (notFound.length) {
+            throw new Error(
+                `Error in ${this.name}.${method}(): Operations mentions one or more keys that do not exist on the base type: ` +
+                    `${humanList(notFound, 'and', stringStringify)}.`,
+            );
+        }
+        return createType(
+            new InterfaceType(propsInfo as PropertiesInfo<Pick<Props, Key>>, {
+                ...this.options,
+                name: this._deriveName(name, onCustomName),
+            }),
+            {
+                typeParser: { configurable: true, value: typeParser },
+            },
+        );
+    }
+
+    private _deriveName(nameOption: string | null | undefined, onCustomName: (name: string) => string): string | undefined {
+        switch (nameOption) {
+            case null:
+                return undefined;
+            case undefined:
+                return this.isDefaultName ? undefined : onCustomName(this.name);
+            default:
+                return nameOption;
+        }
     }
 
     /** {@inheritdoc BaseTypeImpl.accept} */
@@ -321,7 +479,7 @@ export function object<Props extends Properties>(
     ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptionsWithPartial, props: Props]
 ): FullType<Props> {
     const [{ partial = false, ...options }, props] = decodeOptionalOptions<InterfaceTypeOptionsWithPartial, Props>(args);
-    return createType(new InterfaceType(toPropsInfo(props, partial), options));
+    return createType(new InterfaceType<Props, TypeOfProperties<Writable<Props>>>(toPropsInfo(props, partial), options));
 }
 
 /**
@@ -336,7 +494,7 @@ export function partial<Props extends Properties>(
     ...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]
 ): PartialType<Props> {
     const [options, props] = decodeOptionalOptions<InterfaceTypeOptions, Props>(args);
-    return createType(new InterfaceType(toPropsInfo(props, true), options));
+    return createType(new InterfaceType<Props, Partial<TypeOfProperties<Writable<Props>>>>(toPropsInfo(props, true), options));
 }
 
 function toPropsInfo<Props extends Properties>(props: Props, optional: boolean): PropertiesInfo<Props> {
