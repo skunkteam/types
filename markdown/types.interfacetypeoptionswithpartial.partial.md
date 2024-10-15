@@ -4,6 +4,10 @@
 
 ## InterfaceTypeOptionsWithPartial.partial property
 
+> Warning: This API is now obsolete.
+>
+> Use the [partial()](./types.partial.md) function instead to get proper TypeScript typings.
+
 Mark all properties as optional in this type.
 
 **Signature:**
@@ -11,3 +15,7 @@ Mark all properties as optional in this type.
 ```typescript
 partial?: boolean;
 ```
+
+## Remarks
+
+Note that this is NOT reflected in the resulting TypeScript type!

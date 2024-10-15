@@ -4,6 +4,8 @@
 
 ## MergeType type
 
+Result of the [InterfaceType.withOptional()](./types.interfacetype.withoptional.md)<!-- -->, [InterfaceType.withRequired()](./types.interfacetype.withrequired.md) and [InterfaceType.mergeWith()](./types.interfacetype.mergewith.md) methods.
+
 **Signature:**
 
 ```typescript

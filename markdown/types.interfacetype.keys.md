@@ -9,5 +9,5 @@ The keys (property-names) for this object-like type.
 **Signature:**
 
 ```typescript
-readonly keys: readonly (keyof Props)[];
+readonly keys: readonly (keyof Props & keyof ResultType & string)[];
 ```

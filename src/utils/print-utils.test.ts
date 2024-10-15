@@ -1,4 +1,5 @@
-import { bracketsIfNeeded, printValue } from './print-utils';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { an, bracketsIfNeeded, printValue } from './print-utils';
 
 describe(printValue, () => {
     const circular = { nested: { prop: { value: 123, circular: 0 as unknown } } };
@@ -69,5 +70,58 @@ describe(bracketsIfNeeded, () => {
         ${'a | b'} | ${'a | b'}
     `('bracketsIfNeeded($input, "|") => $output', ({ input, output }) => {
         expect(bracketsIfNeeded(input, '|')).toBe(output);
+    });
+});
+
+describe(an, () => {
+    test.each([
+        // Special cases
+        'an euler formula',
+        'an hour',
+        'a houri',
+        'an honour',
+        'an honest thief',
+
+        // Single letter words
+        'a U-boat',
+        'a Y thingy',
+
+        // Abbreviations
+        'an A.B.C.',
+        'a B.Y.O.D.',
+
+        // Consonants
+        'a motor',
+        'a boat',
+
+        // Special vowel-forms
+        'a eulogy',
+        'a once great nation',
+        'a university',
+        'a unimodal distribution',
+        'an unimaginable set of rules',
+        'an utterance',
+        'a ubiquity',
+        'a UFO',
+        'a uranium isotope',
+
+        // Vowels
+        'an ugly truth',
+        'an island',
+        'an original thought',
+
+        // Handle 'y'...
+        'a year',
+        'an Yggdrasil',
+        'an ypsilon',
+        'a yoctometer',
+
+        // ...
+        'an exhausted programmer',
+    ])('produce %j', s => {
+        const [, a, word] = /^(a|an) (.*)$/.exec(s)!;
+        expect(an(word)).toBe(s);
+        expect(an(`[${word}]`)).toBe(`${a} [${word}]`);
+        expect(an(`<<<${word}>>>`)).toBe(`${a} <<<${word}>>>`);
     });
 });

@@ -20,8 +20,9 @@ export function hasOwnProperty<Key extends PropertyKey>(obj: object, key: Key): 
     return Object.prototype.hasOwnProperty.call(obj, key);
 }
 
+const VALID_IDENTIFIER_RE = /^[a-z_$][a-z_$0-9]*$/i;
 export function isValidIdentifier(s: string): boolean {
-    return /^[a-z_$][a-z_$0-9]*$/i.test(s);
+    return VALID_IDENTIFIER_RE.test(s);
 }
 
 export function basicType(value: unknown): BasicType {

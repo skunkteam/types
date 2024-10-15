@@ -4,6 +4,8 @@
 
 ## FullType type
 
+Result of the [object()](./types.object.md) function.
+
 **Signature:**
 
 ```typescript

@@ -17,3 +17,5 @@ omitParsers?: true;
 Parsers are not reused when merging multiple interface types using [withOptional](./types.interfacetype.withoptional.md)<!-- -->, [withRequired](./types.interfacetype.withrequired.md) and [mergeWith](./types.interfacetype.mergewith.md)<!-- -->. When a custom parser is encountered by Skunk Team types, an Error will be thrown. Use this option to ignore the parsers and continue with the merge.
 
 This is to ensure that custom parser are never accidentally lost by adding additional properties to an existing type.
+
+Alternatively, it is always possible to use an [intersection()](./types.intersection.md) instead.

@@ -131,7 +131,7 @@ export interface Failure {
 // @public
 export type FailureDetails = ValidationDetails & MessageDetails;
 
-// @public (undocumented)
+// @public
 export type FullType<Props extends Properties> = TypeImpl<InterfaceType<Simplify<Props>, Simplify<TypeOfProperties<Writable<Props>>>>>;
 
 // @public (undocumented)
@@ -148,19 +148,28 @@ export interface InterfaceMergeOptions {
 }
 
 // @public
-export class InterfaceType<Props extends Properties, ResultType> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props> {
+export interface InterfacePickOptions {
+    applyParser?: boolean;
+    name?: string | null;
+    omitValidations?: true;
+}
+
+// @public
+export class InterfaceType<Props extends Properties, ResultType extends unknownRecord> extends BaseObjectLikeTypeImpl<ResultType> implements TypedPropertyInformation<Props> {
     constructor(
     propsInfo: PropertiesInfo<Props>, options: InterfaceTypeOptions);
     accept<R>(visitor: Visitor<R>): R;
     readonly basicType: 'object';
     // (undocumented)
     readonly isDefaultName: boolean;
-    readonly keys: readonly (keyof Props)[];
+    readonly keys: readonly (keyof Props & keyof ResultType & string)[];
     maybeStringify(value: ResultType): string;
-    mergeWith<OtherProps extends Properties, OtherType>(...args: [type: InterfaceType<OtherProps, OtherType>] | [name: string, type: InterfaceType<OtherProps, OtherType>] | [options: InterfaceMergeOptions, type: InterfaceType<OtherProps, OtherType>]): MergeType<Props, ResultType, OtherProps, OtherType>;
+    mergeWith<OtherProps extends Properties, OtherType extends unknownRecord>(...args: [type: InterfaceType<OtherProps, OtherType>] | [name: string, type: InterfaceType<OtherProps, OtherType>] | [options: InterfaceMergeOptions, type: InterfaceType<OtherProps, OtherType>]): MergeType<Props, ResultType, OtherProps, OtherType>;
     readonly name: string;
+    omit<const Key extends keyof Props & keyof ResultType & string>(...args: [keys: OneOrMore<Key>] | [name: string, keys: OneOrMore<Key>] | [options: InterfacePickOptions, keys: OneOrMore<Key>]): PickType<Props, ResultType, Exclude<keyof Props & keyof ResultType & string, Key>>;
     // (undocumented)
     readonly options: InterfaceTypeOptions;
+    pick<const Key extends keyof Props & keyof ResultType & string>(...args: [keys: OneOrMore<Key>] | [name: string, keys: OneOrMore<Key>] | [options: InterfacePickOptions, keys: OneOrMore<Key>]): PickType<Props, ResultType, Key>;
     // (undocumented)
     readonly possibleDiscriminators: readonly PossibleDiscriminator[];
     // (undocumented)
@@ -183,6 +192,7 @@ export interface InterfaceTypeOptions {
 
 // @public (undocumented)
 export interface InterfaceTypeOptionsWithPartial extends InterfaceTypeOptions {
+    // @deprecated
     partial?: boolean;
 }
 
@@ -274,7 +284,7 @@ export type LiteralValue = string | number | boolean | null | undefined | void;
 // @public
 export type MergeIntersection<T> = T extends Record<PropertyKey, unknown> ? Simplify<T> : T;
 
-// @public (undocumented)
+// @public
 export type MergeType<Props extends Properties, ResultType, OtherProps extends Properties, OtherResultType> = TypeImpl<InterfaceType<Simplify<Omit<Props, keyof OtherProps> & OtherProps>, Simplify<Omit<ResultType, keyof OtherResultType> & OtherResultType>>>;
 
 // @public
@@ -365,11 +375,14 @@ export interface ParserOptions {
 // @public
 export function partial<Props extends Properties>(...args: [props: Props] | [name: string, props: Props] | [options: InterfaceTypeOptions, props: Props]): PartialType<Props>;
 
-// @public (undocumented)
+// @public
 export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Simplify<Props>, Simplify<Partial<TypeOfProperties<Writable<Props>>>>>>;
 
 // @public (undocumented)
 export function pattern<const BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: StringTypeConfig['customMessage']): Type<Branded<string, BrandName>, StringTypeConfig>;
+
+// @public
+export type PickType<Props extends Properties, ResultType, Key extends keyof Props & keyof ResultType & string> = TypeImpl<InterfaceType<Simplify<Pick<Props, Key>>, Simplify<Pick<ResultType, Key>>>>;
 
 // @public
 export type PossibleDiscriminator = {

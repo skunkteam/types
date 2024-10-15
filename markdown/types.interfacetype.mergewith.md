@@ -9,7 +9,7 @@ Create a new type by merging all properties of the given type into the propertie
 **Signature:**
 
 ```typescript
-mergeWith<OtherProps extends Properties, OtherType>(...args: [type: InterfaceType<OtherProps, OtherType>] | [name: string, type: InterfaceType<OtherProps, OtherType>] | [options: InterfaceMergeOptions, type: InterfaceType<OtherProps, OtherType>]): MergeType<Props, ResultType, OtherProps, OtherType>;
+mergeWith<OtherProps extends Properties, OtherType extends unknownRecord>(...args: [type: InterfaceType<OtherProps, OtherType>] | [name: string, type: InterfaceType<OtherProps, OtherType>] | [options: InterfaceMergeOptions, type: InterfaceType<OtherProps, OtherType>]): MergeType<Props, ResultType, OtherProps, OtherType>;
 ```
 
 ## Parameters
