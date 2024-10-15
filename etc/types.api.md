@@ -73,7 +73,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     literal(input: DeepUnbranded<ResultType>): ResultType;
     maybeStringify(value: ResultType): string | undefined;
     abstract readonly name: string;
-    or<Other extends BaseTypeImpl<unknown>>(_other: Other): Type<ResultType | TypeOf<Other>>;
+    or<Other extends BaseTypeImpl<unknown>>(_other: Other): ObjectType<ResultType | TypeOf<Other>>;
     stringify(value: ResultType): string;
     abstract readonly typeConfig: TypeConfig;
     protected typeParser?(input: unknown, options: ValidationOptions): Result<unknown>;
@@ -317,6 +317,12 @@ export type MessageDetails = Partial<ValidationDetails> & {
     message: string;
 });
 
+// Warning: (ae-forgotten-export) The symbol "PickableImpl" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "PickableKeys" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const narrowPickedKeys: <TypeImpl extends PickableImpl, Keys extends PickableKeys<TypeOf<TypeImpl>>>(pickedKeys: OneOrMore<Keys>, innerTypes: OneOrMore<TypeImpl>) => OneOrMore<Keys[]>;
+
 // @public (undocumented)
 export const nullType: TypeImpl<LiteralType<null>>;
 
@@ -371,6 +377,44 @@ export type PartialType<Props extends Properties> = TypeImpl<InterfaceType<Simpl
 // @public (undocumented)
 export function pattern<const BrandName extends string>(name: BrandName, regExp: RegExp, customMessage?: StringTypeConfig['customMessage']): Type<Branded<string, BrandName>, StringTypeConfig>;
 
+// Warning: (ae-forgotten-export) The symbol "DistributedPick" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function pick<TypeImpl extends PickableImpl, Keys extends PickableKeys<TypeOf<TypeImpl>>>(...args: [name: string, baseType: TypeImpl, keys: OneOrMore<Keys>] | [baseType: TypeImpl, keys: OneOrMore<Keys>]): ObjectType<DistributedPick<TypeOf<TypeImpl>, Keys>>;
+
+// @public (undocumented)
+export const pickPropertiesInfo: (propsInfo: PropertiesInfo, keys: OneOrMore<string>) => {
+    [k: string]: PropertyInfo<Type<any, unknown>>;
+};
+
+// @public (undocumented)
+export class PickType<Type extends PickableImpl, ResultType> extends BaseObjectLikeTypeImpl<ResultType> {
+    constructor(type: Type, keys: OneOrMore<PickableKeys<TypeOf<Type>>>, name?: string);
+    // (undocumented)
+    accept<R>(visitor: Visitor<R>): R;
+    // (undocumented)
+    basicType: BasicType;
+    // (undocumented)
+    readonly isDefaultName: boolean;
+    // (undocumented)
+    readonly keys: OneOrMore<PickableKeys<TypeOf<Type>>>;
+    maybeStringify(value: ResultType): string;
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    possibleDiscriminators: readonly PossibleDiscriminator[];
+    // (undocumented)
+    readonly props: Properties;
+    // (undocumented)
+    propsInfo: PropertiesInfo;
+    // (undocumented)
+    readonly type: Type;
+    // (undocumented)
+    typeConfig: unknown;
+    // (undocumented)
+    protected typeValidator(input: unknown, options: ValidationOptions): Result<ResultType>;
+}
+
 // @public
 export type PossibleDiscriminator = {
     readonly path: readonly string[];
@@ -413,6 +457,9 @@ export type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
     optional: boolean;
     type: T;
 };
+
+// @public (undocumented)
+export function propsInfoToProps(propsInfo: PropertiesInfo): Properties;
 
 // @public
 export function record<KeyType extends number | string, ValueType>(...args: [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean] | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
@@ -633,6 +680,9 @@ export type ValidationResult = boolean | string | MessageDetails | Array<string 
 
 // @public
 export type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;
+
+// @public
+export const validPick: (pickedKeys: string[], innerTypeKeys: OneOrMore<string[]>) => boolean;
 
 // @public (undocumented)
 export function valueof<T extends Record<string, string>>(...args: [name: string, obj: T] | [obj: T]): TypeImpl<KeyofType<Transposed<T>>>;

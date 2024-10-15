@@ -9,7 +9,7 @@ Union this Type with another Type.
 **Signature:**
 
 ```typescript
-or<Other extends BaseTypeImpl<unknown>>(_other: Other): Type<ResultType | TypeOf<Other>>;
+or<Other extends BaseTypeImpl<unknown>>(_other: Other): ObjectType<ResultType | TypeOf<Other>>;
 ```
 
 ## Parameters
@@ -20,7 +20,7 @@ or<Other extends BaseTypeImpl<unknown>>(_other: Other): Type<ResultType | TypeOf
 
 **Returns:**
 
-[Type](./types.type.md)<!-- -->&lt;ResultType \| [TypeOf](./types.typeof.md)<!-- -->&lt;Other&gt;&gt;
+[ObjectType](./types.objecttype.md)<!-- -->&lt;ResultType \| [TypeOf](./types.typeof.md)<!-- -->&lt;Other&gt;&gt;
 
 ## Remarks
 

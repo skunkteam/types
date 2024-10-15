@@ -12,8 +12,8 @@ import type {
     ValidationOptions,
     Visitor,
 } from '../interfaces';
-import { checkOneOrMore, decodeOptionalName, define, hasOwnProperty, interfaceStringify, prependPathToDetails } from '../utils';
-import { UnionType, propsInfoToProps, union } from './union';
+import { checkOneOrMore, decodeOptionalName, define, hasOwnProperty, interfaceStringify, mapValues, prependPathToDetails } from '../utils';
+import { UnionType, union } from './union';
 import { unknownRecord } from './unknown';
 
 type PickableImpl = BaseObjectLikeTypeImpl<unknown>;
@@ -39,7 +39,7 @@ export class PickType<Type extends PickableImpl, ResultType> extends BaseObjectL
         super();
         this.isDefaultName = !name;
         this.name = name || `Pick<${type.name}, ${keys.map(k => `'${k}'`).join(' | ')}>`;
-        this.props = propsInfoToProps(this.propsInfo);
+        this.props = mapValues(this.propsInfo, i => i.type);
     }
 
     protected override typeValidator(input: unknown, options: ValidationOptions): Result<ResultType> {
@@ -49,16 +49,15 @@ export class PickType<Type extends PickableImpl, ResultType> extends BaseObjectL
 
         const constructResult: Record<string, unknown> = {};
         const details: MessageDetails[] = [];
-        for (const [key, innerType] of this.propsArray) {
+        for (const [key, { type, optional }] of this.propsArray) {
             const missingKey = !hasOwnProperty(input, key);
-            const partialKey = this.propsInfo[key]?.partial;
 
             if (missingKey) {
-                partialKey || details.push({ kind: 'missing property', property: key, type: innerType });
+                optional || details.push({ kind: 'missing property', property: key, type });
                 continue;
             }
 
-            const innerResult = innerType.validate(input[key], options);
+            const innerResult = type.validate(input[key], options);
             if (innerResult.ok) {
                 constructResult[key] = innerResult.value;
             } else {
