@@ -160,21 +160,21 @@ export class InterfaceType<Props extends Properties, ResultType>
         const { strictMissingKeys } = this.options;
         const constructResult: Record<string, unknown> = {};
         const details: MessageDetails[] = [];
-        for (const [key, { type: innerType, optional: partial }] of this.propsArray) {
+        for (const [key, { type, optional }] of this.propsArray) {
             const missingKey = !hasOwnProperty(input, key);
-            if (partial) {
+            if (optional) {
                 if (missingKey || (!strictMissingKeys && input[key] === undefined)) {
                     continue;
                 }
             } else if (missingKey && strictMissingKeys) {
-                details.push(missingProperty(key, innerType));
+                details.push(missingProperty(key, type));
                 continue;
             }
-            const innerResult = innerType.validate(input[key], options);
+            const innerResult = type.validate(input[key], options);
             if (innerResult.ok) {
                 constructResult[key] = innerResult.value;
             } else if (missingKey) {
-                details.push(missingProperty(key, innerType));
+                details.push(missingProperty(key, type));
             } else {
                 details.push(...prependPathToDetails(innerResult, key));
             }

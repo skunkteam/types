@@ -15,6 +15,7 @@ Runtime type-validation with derived TypeScript types.
 | [IntersectionType](./types.intersectiontype.md) | The implementation behind types created with [intersection()](./types.intersection.md) and [BaseObjectLikeTypeImpl.and()](./types.baseobjectliketypeimpl.and.md)<!-- -->.                                        |
 | [KeyofType](./types.keyoftype.md)               | The implementation behind types created with [keyof()](./types.keyof.md) and [valueof()](./types.valueof.md)<!-- -->.                                                                                            |
 | [LiteralType](./types.literaltype.md)           | The implementation behind types created with [literal()](./types.literal.md) and [nullType](./types.nulltype.md)<!-- -->, [undefinedType](./types.undefinedtype.md) and [voidType](./types.voidtype.md)<!-- -->. |
+| [PickType](./types.picktype.md)                 |                                                                                                                                                                                                                  |
 | [RecordType](./types.recordtype.md)             | The implementation behind types created with [record()](./types.record.md)<!-- -->.                                                                                                                              |
 | [SimpleType](./types.simpletype.md)             | Implementation for simple types such as primitive types.                                                                                                                                                         |
 | [UnionType](./types.uniontype.md)               | The implementation behind types created with [union()](./types.union.md) and [BaseTypeImpl.or()](./types.basetypeimpl.or.md)<!-- -->.                                                                            |
@@ -42,9 +43,11 @@ Runtime type-validation with derived TypeScript types.
 | [object(args)](./types.object.md)                                 | Create a type-validator that validates (or parses) an object structure.                                                                           |
 | [partial(args)](./types.partial.md)                               | Create a type-validator that validates (or parses) an object structure with only optional properties.                                             |
 | [pattern(name, regExp, customMessage)](./types.pattern.md)        |                                                                                                                                                   |
+| [pick(args)](./types.pick.md)                                     |                                                                                                                                                   |
 | [printKey(key)](./types.printkey.md)                              | Print a property-key in a JavaScript compatible way.                                                                                              |
 | [printPath(path)](./types.printpath.md)                           | Print a property-path in a "JavaScripty way".                                                                                                     |
 | [printValue(input, budget, visited)](./types.printvalue.md)       | Print an unknown value with a given character budget (default: 50).                                                                               |
+| [propsInfoToProps(propsInfo)](./types.propsinfotoprops.md)        |                                                                                                                                                   |
 | [record(args)](./types.record.md)                                 | Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document |
 | [reportError_2(root, level, omitInput)](./types.reporterror_2.md) | Creates an human-readable error report of the given failure.                                                                                      |
 | [union(args)](./types.union.md)                                   |                                                                                                                                                   |
@@ -71,21 +74,24 @@ Runtime type-validation with derived TypeScript types.
 
 ## Variables
 
-| Variable                                      | Description                                                                                  |
-| --------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| [autoCastFailure](./types.autocastfailure.md) | Returned by an autocaster to indicate that it is not able to auto-cast the given input.      |
-| [boolean](./types.boolean.md)                 | Built-in validator for boolean-values.                                                       |
-| [brands](./types.brands.md)                   | The symbol that gives access to the (design-time-only) brands of a Type.                     |
-| [designType](./types.designtype.md)           | The symbol that gives access to the (design-time-only) associated TypeScript type of a Type. |
-| [int](./types.int.md)                         |                                                                                              |
-| [nullType](./types.nulltype.md)               |                                                                                              |
-| [number](./types.number.md)                   |                                                                                              |
-| [string](./types.string.md)                   | Built-in validator for string-values.                                                        |
-| [undefinedType](./types.undefinedtype.md)     |                                                                                              |
-| [unknown](./types.unknown.md)                 | Built-in validator that accepts all values.                                                  |
-| [unknownArray](./types.unknownarray.md)       | Built-in validator that accepts all arrays.                                                  |
-| [unknownRecord](./types.unknownrecord.md)     | Built-in validator that accepts all objects (<code>null</code> is not accepted).             |
-| [voidType](./types.voidtype.md)               |                                                                                              |
+| Variable                                            | Description                                                                                                                                                                                                                            |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [autoCastFailure](./types.autocastfailure.md)       | Returned by an autocaster to indicate that it is not able to auto-cast the given input.                                                                                                                                                |
+| [boolean](./types.boolean.md)                       | Built-in validator for boolean-values.                                                                                                                                                                                                 |
+| [brands](./types.brands.md)                         | The symbol that gives access to the (design-time-only) brands of a Type.                                                                                                                                                               |
+| [designType](./types.designtype.md)                 | The symbol that gives access to the (design-time-only) associated TypeScript type of a Type.                                                                                                                                           |
+| [int](./types.int.md)                               |                                                                                                                                                                                                                                        |
+| [narrowPickedKeys](./types.narrowpickedkeys.md)     | Return the intersection of picked keys with each of the property keys of the inner types.                                                                                                                                              |
+| [nullType](./types.nulltype.md)                     |                                                                                                                                                                                                                                        |
+| [number](./types.number.md)                         |                                                                                                                                                                                                                                        |
+| [pickPropertiesInfo](./types.pickpropertiesinfo.md) |                                                                                                                                                                                                                                        |
+| [string](./types.string.md)                         | Built-in validator for string-values.                                                                                                                                                                                                  |
+| [undefinedType](./types.undefinedtype.md)           |                                                                                                                                                                                                                                        |
+| [unknown](./types.unknown.md)                       | Built-in validator that accepts all values.                                                                                                                                                                                            |
+| [unknownArray](./types.unknownarray.md)             | Built-in validator that accepts all arrays.                                                                                                                                                                                            |
+| [unknownRecord](./types.unknownrecord.md)           | Built-in validator that accepts all objects (<code>null</code> is not accepted).                                                                                                                                                       |
+| [validPick](./types.validpick.md)                   | Check if the intersection of all the non-empty narrowed keys is not empty. If it is, it means the picked keys describe an impossible union variant. Empty narrowed keys are ignored, because they will not end up in the union at all. |
+| [voidType](./types.voidtype.md)                     |                                                                                                                                                                                                                                        |
 
 ## Type Aliases
 

@@ -5,6 +5,7 @@ export * from './intersection';
 export * from './keyof';
 export * from './literal';
 export * from './number';
+export * from './pick';
 export * from './record';
 export * from './string';
 export * from './union';
