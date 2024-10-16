@@ -29,11 +29,9 @@ testTypeImpl({
 const StrangeNumberUnion = union('StrangeNumberUnion', [
     number.withConstraint('LessThanMinus10', n => n < -10),
     literal(0),
-    number.withValidation(n => {
-        const messages = [];
-        n > 10 || messages.push('should be more than 10');
-        n > 5 || messages.push('not even close');
-        return messages;
+    number.withValidation(function* (n) {
+        if (n <= 10) yield 'should be more than 10';
+        if (n <= 5) yield 'not even close';
     }),
 ]);
 

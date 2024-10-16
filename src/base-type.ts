@@ -2,6 +2,7 @@ import type {
     BasicType,
     Branded,
     DeepUnbranded,
+    FailureDetails,
     LiteralValue,
     MergeIntersection,
     ObjectType,
@@ -29,9 +30,9 @@ import {
     basicType,
     bracketsIfNeeded,
     castArray,
-    checkOneOrMore,
     decodeOptionalOptions,
     defaultStringify,
+    isOneOrMore,
     prependContextToDetails,
     printValue,
 } from './utils';
@@ -495,24 +496,17 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      * @param validatorResult - the result of the validation or parse step
      */
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType> {
-        if (isOk(validatorResult)) {
-            return { ok: true, value: result as ResultType };
-        }
-        if (validatorResult === false) {
-            return { ok: false, input, type: this, details: [{ type: this, input }] };
-        }
-        return {
-            ok: false,
-            input,
-            type: this,
-            details: checkOneOrMore(
-                castArray(validatorResult).map(result => ({
-                    type: this,
-                    input,
-                    ...(typeof result === 'string' ? { kind: 'custom message', message: result } : result),
-                })),
-            ),
-        };
+        if (validatorResult === true) return { ok: true, value: result as ResultType };
+        if (validatorResult === false) return { ok: false, input, type: this, details: [{ type: this, input }] };
+
+        const details = castArray(validatorResult).map(
+            (result): FailureDetails => ({
+                type: this,
+                input,
+                ...(typeof result === 'string' ? { kind: 'custom message', message: result } : result),
+            }),
+        );
+        return isOneOrMore(details) ? { ok: false, input, type: this, details } : { ok: true, value: result as ResultType };
     }
 
     /**
@@ -616,10 +610,6 @@ function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType, any>, options: V
         visited.set(me, valueMap);
     }
     return valueMap as Map<unknown, Result<ResultType>>;
-}
-
-function isOk(validatorResult: ValidationResult): validatorResult is true | [] {
-    return validatorResult === true || (Array.isArray(validatorResult) && !validatorResult.length);
 }
 
 function createAutoCastParser<ResultType, TypeConfig>(

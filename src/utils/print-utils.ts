@@ -136,7 +136,7 @@ export function an(name: string): string {
     return `a ${name}`;
 }
 
-export function humanList<T>(input: T | T[], lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
+export function humanList<T>(input: T | Iterable<T>, lastSeparator: 'and' | 'or', map: (i: T) => string = String): string {
     const arr = castArray(input);
     const last = arr[arr.length - 1];
     if (last === undefined) return '';

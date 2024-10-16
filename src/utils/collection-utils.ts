@@ -1,7 +1,13 @@
 import type { Transposed } from '../interfaces';
 
-export function castArray<T>(input: undefined | T | T[]): T[] {
-    return input === undefined ? [] : Array.isArray(input) ? input : [input];
+export function castArray<T>(input: undefined | T | T[] | Iterable<T>): T[] {
+    return input === undefined
+        ? []
+        : Array.isArray(input)
+        ? input
+        : typeof input === 'object' && input && Symbol.iterator in input
+        ? [...input]
+        : [input];
 }
 
 export function decodeOptionalName<Rest extends unknown[]>(args: [string, ...Rest] | Rest): [string | undefined, ...Rest] {

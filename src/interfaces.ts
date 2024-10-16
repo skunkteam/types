@@ -26,9 +26,10 @@ export type ObjectType<ResultType, TypeConfig = unknown> = TypeImpl<BaseObjectLi
  * The possible return values inside validation and constraint functions.
  *
  * @remarks
- * The validation is considered a success if the result is `true` or an empty array, anything else is considered to be a failure.
+ * The validation is considered a success if the result is `true` or `undefined` or an empty iterator, anything else is considered to be a
+ * failure.
  */
-export type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
+export type ValidationResult = undefined | boolean | string | MessageDetails | Iterable<string | MessageDetails>;
 
 /**
  * The type for optional custom messages
