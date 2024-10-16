@@ -629,7 +629,7 @@ export interface ValidationOptions {
 }
 
 // @public
-export type ValidationResult = boolean | string | MessageDetails | Array<string | MessageDetails>;
+export type ValidationResult = undefined | boolean | string | MessageDetails | Iterable<string | MessageDetails>;
 
 // @public
 export type Validator<ResultType> = (input: ResultType, options: ValidationOptions) => ValidationResult;
