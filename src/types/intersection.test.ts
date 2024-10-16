@@ -6,6 +6,7 @@ import { object, partial } from './interface';
 import { IntersectionOfTypeTuple, intersection } from './intersection';
 import { literal } from './literal';
 import { number } from './number';
+import { string } from './string';
 import { union } from './union';
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -82,6 +83,8 @@ describe(intersection, () => {
     test('invalid type defs', () => {
         jest.spyOn(console, 'warn').mockReturnValueOnce();
         intersection([object({ a: number }), object({ a: number })]);
+        expect(console.warn).not.toHaveBeenCalled();
+        intersection([object({ a: number }), object({ a: string })]);
         expect(console.warn).toHaveBeenCalledWith(
             'overlapping properties are currently not supported in intersections, overlapping properties: a',
         );

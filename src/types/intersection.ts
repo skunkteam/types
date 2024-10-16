@@ -6,6 +6,7 @@ import type {
     Properties,
     PropertiesInfo,
     Result,
+    Type,
     TypeImpl,
     ValidationOptions,
     Visitor,
@@ -101,12 +102,16 @@ define(IntersectionType, 'createAutoCastAllType', function (this: IntersectionTy
 });
 
 function checkOverlap(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {
-    const keys = new Set<string>();
+    const keys = new Map<string, Type<any>>();
     const overlap = new Set<string>();
     for (const type of types) {
-        for (const key of Object.keys(type.props)) {
-            if (keys.has(key)) overlap.add(key);
-            keys.add(key);
+        for (const [key, propType] of Object.entries(type.props)) {
+            const prevPropType = keys.get(key);
+            if (!prevPropType) {
+                keys.set(key, propType);
+            } else if (prevPropType !== propType) {
+                overlap.add(key);
+            }
         }
     }
     if (overlap.size)
