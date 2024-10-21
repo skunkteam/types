@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { autoCast } from './autocast';
 import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
 import {
     assignableTo,
@@ -103,24 +104,24 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'Age.autoCast',
-    type: Age.autoCast,
+    name: 'AutoCast<Age>',
+    type: autoCast(Age),
     basicType: 'number',
     validValues: [0, 1, Age.MAX],
     invalidValues: [
-        [-1, 'error in [Age.autoCast]: the unborn miracle, got: -1'],
-        [Age.MAX + 1, 'error in [Age.autoCast]: wow, that is really old, got: 200'],
-        [-1.5, ['errors in [Age.autoCast]:', '', '- the unborn miracle, got: -1.5', '', '- expected a whole number, got: -1.5']],
-        [1.5, 'error in [Age.autoCast]: expected a whole number, got: 1.5'],
-        ...defaultUsualSuspects(Age.autoCast),
+        [-1, 'error in [AutoCast<Age>]: the unborn miracle, got: -1'],
+        [Age.MAX + 1, 'error in [AutoCast<Age>]: wow, that is really old, got: 200'],
+        [-1.5, ['errors in [AutoCast<Age>]:', '', '- the unborn miracle, got: -1.5', '', '- expected a whole number, got: -1.5']],
+        [1.5, 'error in [AutoCast<Age>]: expected a whole number, got: 1.5'],
+        ...defaultUsualSuspects(autoCast(Age)),
     ],
     validConversions: [
         [`${Age.MAX}`, Age.MAX],
         ['0', 0],
     ],
     invalidConversions: [
-        ['abc', 'error in parser of [Age.autoCast]: could not autocast value: "abc"'],
-        ['-1', 'error in [Age.autoCast]: the unborn miracle, got: -1, parsed from: "-1"'],
+        ['abc', 'error in parser of [AutoCast<Age>]: could not autocast value: "abc"'],
+        ['-1', 'error in [AutoCast<Age>]: the unborn miracle, got: -1, parsed from: "-1"'],
     ],
 });
 
@@ -589,7 +590,7 @@ testTypeImpl({
 });
 
 const NestedParsers = object('NestedParsers', {
-    outer: object({ inner: object({ value: number.autoCast }) }).withParser(inner => ({ inner })),
+    outer: object({ inner: object({ value: autoCast(number) }) }).withParser(inner => ({ inner })),
 }).withParser(outer => ({ outer }));
 
 testTypeImpl({
@@ -606,7 +607,7 @@ testTypeImpl({
                 // and especially how they are related without bloating the error report.
                 '(got: { outer: {} }, parsed from: {})',
                 '',
-                '- at <outer.inner>: missing property <value> [number.autoCast], got: {}',
+                '- at <outer.inner>: missing property <value> [AutoCast<number>], got: {}',
             ],
         ],
         [
@@ -624,7 +625,7 @@ testTypeImpl({
 });
 
 type ReplacedAutocastParser = The<typeof ReplacedAutocastParser>;
-const ReplacedAutocastParser = number.autoCast.withParser({ name: 'ReplacedAutocastParser', chain: false }, input => input);
+const ReplacedAutocastParser = autoCast(number).withParser({ name: 'ReplacedAutocastParser', chain: false }, input => input);
 
 testTypeImpl({
     name: 'ReplacedAutocastParser',
@@ -635,7 +636,7 @@ testTypeImpl({
 });
 
 type ChainedAutocastParser = The<typeof ChainedAutocastParser>;
-const ChainedAutocastParser = number.autoCast.withParser({ name: 'ChainedAutocastParser', chain: true }, input => input);
+const ChainedAutocastParser = autoCast(number).withParser({ name: 'ChainedAutocastParser', chain: true }, input => input);
 
 testTypeImpl({
     name: 'ChainedAutocastParser',

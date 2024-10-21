@@ -1,3 +1,4 @@
+import { autoCast } from '../autocast';
 import type { The } from '../interfaces';
 import { assignableTo, testTypeImpl, testTypes } from '../testutils';
 import { literal, nullType, undefinedType } from './literal';
@@ -18,8 +19,8 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'false.autoCast',
-    type: literal(false).autoCast,
+    name: 'AutoCast<false>',
+    type: autoCast(literal(false)),
     basicType: 'boolean',
     validValues: [false],
     invalidValues: [
@@ -37,7 +38,7 @@ testTypeImpl({
     invalidConversions: [
         [true, 'expected the literal false, got: true'],
         [1, 'expected the literal false, got: true, parsed from: 1'],
-        ['FALSE', 'error in parser of [false.autoCast]: could not autocast value: "FALSE"'],
+        ['FALSE', 'error in parser of [AutoCast<false>]: could not autocast value: "FALSE"'],
     ],
 });
 
@@ -53,8 +54,8 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: '"specific string".autoCast',
-    type: literal('specific string').autoCast,
+    name: 'AutoCast<"specific string">',
+    type: autoCast(literal('specific string')),
     validValues: ['specific string'],
     invalidValues: [[{ toString: () => 'specific string' }, 'expected a string ("specific string"), got an object ("specific string")']],
     validConversions: [[{ toString: () => 'specific string' }, 'specific string']],
@@ -91,8 +92,8 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'null.autoCast',
-    type: nullType.autoCast,
+    name: 'AutoCast<null>',
+    type: autoCast(nullType),
     basicType: 'null',
     validValues: [null],
     invalidValues: [[undefined, 'expected a null, got an undefined']],
@@ -100,12 +101,12 @@ testTypeImpl({
         [null, null],
         [undefined, null],
     ],
-    invalidConversions: [[0, 'error in parser of [null.autoCast]: could not autocast value: 0']],
+    invalidConversions: [[0, 'error in parser of [AutoCast<null>]: could not autocast value: 0']],
 });
 
 testTypeImpl({
-    name: 'undefined.autoCast',
-    type: undefinedType.autoCast,
+    name: 'AutoCast<undefined>',
+    type: autoCast(undefinedType),
     basicType: 'undefined',
     validValues: [undefined],
     invalidValues: [[null, 'expected an undefined, got a null']],
@@ -113,12 +114,12 @@ testTypeImpl({
         [null, undefined],
         [undefined, undefined],
     ],
-    invalidConversions: [[0, 'error in parser of [undefined.autoCast]: could not autocast value: 0']],
+    invalidConversions: [[0, 'error in parser of [AutoCast<undefined>]: could not autocast value: 0']],
 });
 
 testTypeImpl({
-    name: '42.autoCast',
-    type: literal(42).autoCast,
+    name: 'AutoCast<42>',
+    type: autoCast(literal(42)),
     validValues: [42],
     invalidValues: [['42', 'expected a number (42), got a string ("42")']],
     validConversions: [['42', 42]],

@@ -1,6 +1,7 @@
+import { autoCastAll } from '../autocast';
 import { BaseTypeImpl, createType } from '../base-type';
 import type { MessageDetails, Result, TypeImpl, ValidationOptions, Visitor } from '../interfaces';
-import { decodeOptionalName, define, extensionName, prependPathToDetails, stringStringify } from '../utils';
+import { decodeOptionalName, define, prependPathToDetails, stringStringify, wrapperName } from '../utils';
 import { unknownRecord } from './unknown';
 
 /**
@@ -94,8 +95,8 @@ define(
     'createAutoCastAllType',
     function (this: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<any>, any, Record<number | string, any>>) {
         const { keyType, valueType, strict } = this;
-        const name = extensionName(this, 'autoCastAll');
-        return createType(new RecordType(keyType.autoCastAll, valueType.autoCastAll, name, strict));
+        const name = wrapperName(this, 'AutoCastAll');
+        return createType(new RecordType(autoCastAll(keyType), autoCastAll(valueType), name, strict));
     },
 );
 

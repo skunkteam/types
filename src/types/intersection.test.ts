@@ -1,3 +1,4 @@
+import { autoCastAll } from '../autocast';
 import { BaseTypeImpl } from '../base-type';
 import type { The } from '../interfaces';
 import { assignableTo, testTypeImpl, testTypes } from '../testutils';
@@ -30,9 +31,9 @@ describe(intersection, () => {
     });
 
     testTypeImpl({
-        name: 'NamedObject.autoCastAll & { true: true.autoCast }',
+        name: 'AutoCastAll<NamedObject> & { true: AutoCast<true> }',
         // stupid type, I know
-        type: intersection([object('NamedObject', { obj: literal('[object Object]') }), object({ true: literal(true) })]).autoCastAll,
+        type: autoCastAll(intersection([object('NamedObject', { obj: literal('[object Object]') }), object({ true: literal(true) })])),
         basicType: 'object',
         validConversions: [
             [

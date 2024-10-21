@@ -1,3 +1,4 @@
+import { autoCastAll } from '../autocast';
 import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType } from '../base-type';
 import type {
     BasicType,
@@ -12,7 +13,7 @@ import type {
     ValidationOptions,
     Visitor,
 } from '../interfaces';
-import { an, basicType, bracketsIfNeeded, decodeOptionalName, defaultStringify, define, extensionName, printPath } from '../utils';
+import { an, basicType, bracketsIfNeeded, decodeOptionalName, defaultStringify, define, printPath, wrapperName } from '../utils';
 
 /**
  * The implementation behind types created with {@link union} and {@link BaseTypeImpl.or}.
@@ -110,8 +111,8 @@ export class UnionType<
 // Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
 // up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
 define(UnionType, 'createAutoCastAllType', function (this: UnionType<OneOrMore<BaseTypeImpl<unknown>>, any>) {
-    const types = this.types.map(t => t.autoCastAll) as OneOrMore<BaseTypeImpl<unknown>>;
-    return createType(new UnionType(types, extensionName(this, 'autoCastAll')));
+    const types = this.types.map(autoCastAll) as OneOrMore<BaseTypeImpl<unknown>>;
+    return createType(new UnionType(types, wrapperName(this, 'AutoCastAll')));
 });
 
 export function union<Types extends OneOrMore<BaseTypeImpl<unknown>>>(

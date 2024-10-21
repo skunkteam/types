@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import type { DeepUnbranded, The } from '../interfaces';
 import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
@@ -36,21 +37,21 @@ const StrangeNumberUnion = union('StrangeNumberUnion', [
 ]);
 
 // No autoCast feature
-expect(StrangeNumberUnion.autoCast).toBe(StrangeNumberUnion);
+expect(autoCast(StrangeNumberUnion)).toBe(StrangeNumberUnion);
 
 testTypeImpl({
-    name: 'StrangeNumberUnion.autoCastAll',
-    type: StrangeNumberUnion.autoCastAll,
+    name: 'AutoCastAll<StrangeNumberUnion>',
+    type: autoCastAll(StrangeNumberUnion),
     validValues: [-11, 0, 11],
     invalidValues: [
         [
             3,
             [
-                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
+                'error in [AutoCastAll<StrangeNumberUnion>]: failed every element in union:',
                 '(got: 3)',
-                '  • expected a [LessThanMinus10.autoCast]',
+                '  • expected an [AutoCast<LessThanMinus10>]',
                 '  • expected the literal 0',
-                '  • errors in [number.autoCast]:',
+                '  • errors in [AutoCast<number>]:',
                 '    ‣ should be more than 10',
                 '    ‣ not even close',
             ],
@@ -58,11 +59,11 @@ testTypeImpl({
         [
             7,
             [
-                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
+                'error in [AutoCastAll<StrangeNumberUnion>]: failed every element in union:',
                 '(got: 7)',
-                '  • expected a [LessThanMinus10.autoCast]',
+                '  • expected an [AutoCast<LessThanMinus10>]',
                 '  • expected the literal 0',
-                '  • error in [number.autoCast]: should be more than 10',
+                '  • error in [AutoCast<number>]: should be more than 10',
             ],
         ],
     ],
@@ -75,11 +76,11 @@ testTypeImpl({
         [
             '-5',
             [
-                'error in [StrangeNumberUnion.autoCastAll]: failed every element in union:',
+                'error in [AutoCastAll<StrangeNumberUnion>]: failed every element in union:',
                 '(got: "-5")',
-                '  • expected a [LessThanMinus10.autoCast]',
+                '  • expected an [AutoCast<LessThanMinus10>]',
                 '  • expected the literal 0',
-                '  • errors in [number.autoCast]:',
+                '  • errors in [AutoCast<number>]:',
                 '    ‣ should be more than 10',
                 '    ‣ not even close',
             ],
@@ -89,7 +90,7 @@ testTypeImpl({
 
 testTypeImpl({
     name: 'StrangeNumberUnionWithParser',
-    type: StrangeNumberUnion.withParser('StrangeNumberUnionWithParser', number.autoCast),
+    type: StrangeNumberUnion.withParser('StrangeNumberUnionWithParser', autoCast(number)),
     validConversions: [
         ['-15', -15],
         ['0', 0],
@@ -111,7 +112,7 @@ testTypeImpl({
     ],
 });
 
-const ObjectUnion = union([object({ tag: literal('a'), a: string }), object({ tag: keyof({ b: null, c: null }), b: number.autoCast })]);
+const ObjectUnion = union([object({ tag: literal('a'), a: string }), object({ tag: keyof({ b: null, c: null }), b: autoCast(number) })]);
 
 test('ObjectUnion examples', () => {
     expect(createExample(ObjectUnion, 1)).toMatchInlineSnapshot(`
@@ -128,7 +129,7 @@ test('ObjectUnion examples', () => {
     `);
 });
 
-testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b" | "c", b: number.autoCast }', type: ObjectUnion });
+testTypeImpl({ name: '{ tag: "a", a: string } | { tag: "b" | "c", b: AutoCast<number> }', type: ObjectUnion });
 testTypeImpl({
     name: 'ObjectUnion',
     type: ObjectUnion.withName('ObjectUnion'),
@@ -144,7 +145,7 @@ testTypeImpl({
             [
                 'error in [ObjectUnion]: every subtype of union has at least one discriminator mismatch',
                 '  • [{ tag: "a", a: string }] requires <tag> to be "a", got: "d"',
-                '  • [{ tag: "b" | "c", b: number.autoCast }] requires <tag> to be "b" or "c", got: "d"',
+                '  • [{ tag: "b" | "c", b: AutoCast<number> }] requires <tag> to be "b" or "c", got: "d"',
             ],
         ],
         [
@@ -423,7 +424,7 @@ testTypeImpl({
 type MixedUnion = The<typeof MixedUnion>;
 const MixedUnion = union([...ObjectUnion.types, ...StringLiteralUnion.types]);
 testTypeImpl({
-    name: '{ tag: "a", a: string } | { tag: "b" | "c", b: number.autoCast } | "abc" | "def"',
+    name: '{ tag: "a", a: string } | { tag: "b" | "c", b: AutoCast<number> } | "abc" | "def"',
     type: MixedUnion,
     validValues: [{ tag: 'a', a: 'string' }, { tag: 'b', b: 123 }, 'abc', 'def'],
 });

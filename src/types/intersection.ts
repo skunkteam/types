@@ -1,3 +1,4 @@
+import { autoCastAll } from '../autocast';
 import { BaseObjectLikeTypeImpl, createType, type TypedPropertyInformation } from '../base-type';
 import type {
     MergeIntersection,
@@ -17,11 +18,11 @@ import {
     decodeOptionalName,
     defaultObjectRep,
     define,
-    extensionName,
     humanList,
     interfaceStringify,
     isFailure,
     partition,
+    wrapperName,
 } from '../utils';
 import { UnionType } from './union';
 import { unknownRecord } from './unknown';
@@ -97,8 +98,8 @@ define(IntersectionType, 'basicType', 'object');
 // Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
 // up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
 define(IntersectionType, 'createAutoCastAllType', function (this: IntersectionType<OneOrMore<BaseObjectLikeTypeImpl<unknown>>>) {
-    const types = this.types.map(t => t.autoCastAll) as OneOrMore<BaseObjectLikeTypeImpl<unknown>>;
-    return createType(new IntersectionType(types, extensionName(this, 'autoCastAll')));
+    const types = this.types.map(autoCastAll) as OneOrMore<BaseObjectLikeTypeImpl<unknown>>;
+    return createType(new IntersectionType(types, wrapperName(this, 'AutoCastAll')));
 });
 
 function checkOverlap(types: OneOrMore<BaseObjectLikeTypeImpl<unknown>>) {

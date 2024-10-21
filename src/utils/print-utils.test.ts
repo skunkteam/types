@@ -34,42 +34,60 @@ describe(printValue, () => {
 
 describe(bracketsIfNeeded, () => {
     test.each`
-        input                         | output
-        ${'a'}                        | ${'a'}
-        ${'a b'}                      | ${'(a b)'}
-        ${'func(example ok)'}         | ${'func(example ok)'}
-        ${'func (example ok)'}        | ${'(func (example ok))'}
-        ${'<a'}                       | ${'(<a)'}
-        ${'<<a>'}                     | ${'(<<a>)'}
-        ${'<<a>>'}                    | ${'<<a>>'}
-        ${'{ prop: value }'}          | ${'{ prop: value }'}
-        ${'{ prop: value }.autoCast'} | ${'({ prop: value }.autoCast)'}
-        ${'{a} {b}'}                  | ${'({a} {b})'}
-        ${'"{a} {b}"'}                | ${'"{a} {b}"'}
-        ${'"{a} \\" {b}"'}            | ${'"{a} \\" {b}"'}
-        ${'"{a} {b}'}                 | ${'("{a} {b})'}
+        input                          | output
+        ${'a'}                         | ${'a'}
+        ${'a b'}                       | ${'(a b)'}
+        ${'func(example ok)'}          | ${'func(example ok)'}
+        ${'func (example ok)'}         | ${'(func (example ok))'}
+        ${'<a'}                        | ${'(<a)'}
+        ${'<<a>'}                      | ${'(<<a>)'}
+        ${'<<a>>'}                     | ${'<<a>>'}
+        ${'{ prop: value }'}           | ${'{ prop: value }'}
+        ${'{ prop: value }.autoCast'}  | ${'({ prop: value }.autoCast)'}
+        ${'AutoCast<{ prop: value }>'} | ${'AutoCast<{ prop: value }>'}
+        ${'{a} {b}'}                   | ${'({a} {b})'}
+        ${'"{a} {b}"'}                 | ${'"{a} {b}"'}
+        ${'"{a} \\" {b}"'}             | ${'"{a} \\" {b}"'}
+        ${'"{a} {b}'}                  | ${'("{a} {b})'}
     `('bracketsIfNeeded($input) => $output', ({ input, output }) => {
         expect(bracketsIfNeeded(input)).toBe(output);
     });
 
     test.each`
-        input      | output
-        ${'a'}     | ${'a'}
-        ${'a b'}   | ${'(a b)'}
-        ${'a & b'} | ${'a & b'}
-        ${'a | b'} | ${'(a | b)'}
+        input        | output
+        ${'a'}       | ${'a'}
+        ${'a b'}     | ${'(a b)'}
+        ${'a & b'}   | ${'a & b'}
+        ${'a | b'}   | ${'(a | b)'}
+        ${'a &| b'}  | ${'(a &| b)'}
+        ${'a & | b'} | ${'(a & | b)'}
     `('bracketsIfNeeded($input, "&") => $output', ({ input, output }) => {
         expect(bracketsIfNeeded(input, '&')).toBe(output);
     });
 
     test.each`
-        input      | output
-        ${'a'}     | ${'a'}
-        ${'a b'}   | ${'(a b)'}
-        ${'a & b'} | ${'(a & b)'}
-        ${'a | b'} | ${'a | b'}
+        input        | output
+        ${'a'}       | ${'a'}
+        ${'a b'}     | ${'(a b)'}
+        ${'a & b'}   | ${'(a & b)'}
+        ${'a | b'}   | ${'a | b'}
+        ${'a |& b'}  | ${'(a |& b)'}
+        ${'a | & b'} | ${'(a | & b)'}
     `('bracketsIfNeeded($input, "|") => $output', ({ input, output }) => {
         expect(bracketsIfNeeded(input, '|')).toBe(output);
+    });
+
+    test.each`
+        input          | output
+        ${'a'}         | ${'a'}
+        ${'a b'}       | ${'(a b)'}
+        ${'a & b'}     | ${'a & b'}
+        ${'a | b'}     | ${'a | b'}
+        ${'a & b | c'} | ${'a & b | c'}
+        ${'a |& b'}    | ${'(a |& b)'}
+        ${'a | & b'}   | ${'(a | & b)'}
+    `('bracketsIfNeeded($input, "|") => $output', ({ input, output }) => {
+        expect(bracketsIfNeeded(input, '|', '&')).toBe(output);
     });
 });
 
