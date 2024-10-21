@@ -1,3 +1,4 @@
+import { autoCast } from './autocast';
 import type {
     BasicType,
     Branded,
@@ -23,18 +24,16 @@ import type {
     Validator,
     Visitor,
 } from './interfaces';
-import { autoCastFailure, designType } from './symbols';
+import { designType } from './symbols';
 import {
     addParserInputToResult,
     an,
     basicType,
-    bracketsIfNeeded,
     castArray,
     decodeOptionalOptions,
     defaultStringify,
     isOneOrMore,
     prependContextToDetails,
-    printValue,
 } from './utils';
 import { ValidationError } from './validation-error';
 
@@ -122,34 +121,8 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         boundIs?: BaseTypeImpl<ResultType, TypeConfig>['is'];
     } = {};
 
-    /**
-     * The same type, but with an auto-casting default parser installed.
-     *
-     * @remarks
-     * Each type implementation provides its own auto-cast rules. See builtin types for examples of auto-cast rules.
-     */
-    get autoCast(): this {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        const { autoCaster, typeParser } = this;
-        if (!autoCaster || typeParser) return this;
-        return (this._instanceCache.autoCast ??= createType(this, {
-            name: { configurable: true, value: `${bracketsIfNeeded(this.name)}.autoCast` },
-            typeParser: { configurable: true, value: createAutoCastParser(autoCaster) },
-        })) as this;
-    }
-
-    /**
-     * Create a recursive autocasting version of the current type.
-     *
-     * @remarks
-     * This will replace any parser in the nested structure with the appropriate autocaster when applicable.
-     */
-    get autoCastAll(): this {
-        return (this._instanceCache.autoCastAll ??= this.createAutoCastAllType()) as this;
-    }
-
-    protected createAutoCastAllType(): this {
-        return this.autoCast;
+    protected createAutoCastAllType(): Type<ResultType> {
+        return autoCast(this as unknown as Type<ResultType>);
     }
 
     /**
@@ -610,21 +583,4 @@ function getVisitedMap<ResultType>(me: BaseTypeImpl<ResultType, any>, options: V
         visited.set(me, valueMap);
     }
     return valueMap as Map<unknown, Result<ResultType>>;
-}
-
-function createAutoCastParser<ResultType, TypeConfig>(
-    autoCaster: (this: BaseTypeImpl<ResultType, TypeConfig>, value: unknown) => unknown,
-): BaseTypeImpl<ResultType, TypeConfig>['typeParser'] {
-    return function (this: BaseTypeImpl<ResultType, TypeConfig>, input) {
-        const autoCastResult = autoCaster.call(this, input);
-        return this.createResult(
-            input,
-            autoCastResult,
-            autoCastResult !== autoCastFailure || {
-                kind: 'custom message',
-                message: `could not autocast value: ${printValue(input)}`,
-                omitInput: true,
-            },
-        );
-    };
 }

@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import { USUAL_SUSPECTS, basicTypeMessage, createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { unknown, unknownArray, unknownRecord } from './unknown';
 
@@ -39,9 +40,9 @@ testTypeImpl({
 });
 
 test('no autoCastAll', () => {
-    expect(unknown.autoCastAll).toBe(unknown.autoCast);
-    expect(unknownRecord.autoCastAll).toBe(unknownRecord.autoCast);
-    expect(unknownArray.autoCastAll).toBe(unknownArray.autoCast);
+    expect(autoCastAll(unknown)).toBe(autoCast(unknown));
+    expect(autoCastAll(unknownRecord)).toBe(autoCast(unknownRecord));
+    expect(autoCastAll(unknownArray)).toBe(autoCast(unknownArray));
 });
 
 test('visitors', () => {

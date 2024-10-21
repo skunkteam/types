@@ -1,3 +1,4 @@
+import { autoCast } from '../autocast';
 import type { The } from '../interfaces';
 import { ValidationErrorForTest, assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { keyof, valueof } from './keyof';
@@ -32,18 +33,18 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: '("0" | "1").autoCast',
-    type: keyof({ 0: 0, 1: 1 }).autoCast,
+    name: 'AutoCast<"0" | "1">',
+    type: autoCast(keyof({ 0: 0, 1: 1 })),
     basicType: 'string',
     validValues: ['0', '1'],
-    invalidValues: [[0, basicTypeMessage(keyof({ 0: 0, 1: 1 }).autoCast, 0)]],
+    invalidValues: [[0, basicTypeMessage(autoCast(keyof({ 0: 0, 1: 1 })), 0)]],
     validConversions: [
         [0, '0'],
         [1, '1'],
     ],
     invalidConversions: [
-        ['a', 'error in [("0" | "1").autoCast]: expected one of the literals "0" or "1", got: "a"'],
-        [2, 'error in [("0" | "1").autoCast]: expected one of the literals "0" or "1", got: "2", parsed from: 2'],
+        ['a', 'error in [AutoCast<"0" | "1">]: expected one of the literals "0" or "1", got: "a"'],
+        [2, 'error in [AutoCast<"0" | "1">]: expected one of the literals "0" or "1", got: "2", parsed from: 2'],
     ],
 });
 

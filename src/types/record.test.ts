@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import type { MessageDetails, The } from '../interfaces';
 import { createExample, defaultUsualSuspects, stripped, testTypeImpl } from '../testutils';
 import { printKey, printValue } from '../utils';
@@ -36,7 +37,7 @@ testTypeImpl({
 });
 
 type NumberRecord = The<typeof NumberRecord>;
-const NumberRecord = record('NumberRecord', number, string.autoCast);
+const NumberRecord = record('NumberRecord', number, autoCast(string));
 
 test('NumberRecord examples', () => {
     expect(createExample(NumberRecord)).toMatchInlineSnapshot(`
@@ -102,8 +103,8 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'IntRecord.autoCastAll',
-    type: IntRecord.autoCastAll,
+    name: 'AutoCastAll<IntRecord>',
+    type: autoCastAll(IntRecord),
     validConversions: [[{ 1: 1 }, { 1: '1' }]],
 });
 

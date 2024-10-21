@@ -1,3 +1,4 @@
+import { autoCast } from './autocast';
 import type { The } from './interfaces';
 import { SimpleType } from './simple-type';
 import { createExample } from './testutils';
@@ -37,7 +38,7 @@ describe(SimpleType, () => {
         expect(BufferType(buffer)).toBe(buffer);
         expect(() => BufferType([])).toThrow(`expected a [Buffer], got: []`);
         expect(() => BufferType(Uint8Array.of(1, 2, 3))).toThrow(`expected a [Buffer], got: "1,2,3"`);
-        expect(BufferType.autoCast(Uint8Array.of(1, 2, 3))).toEqual(Buffer.of(1, 2, 3));
+        expect(autoCast(BufferType)(Uint8Array.of(1, 2, 3))).toEqual(Buffer.of(1, 2, 3));
     });
 
     test('has basic support for stringify', () => {

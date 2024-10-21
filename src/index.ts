@@ -1,3 +1,4 @@
+export * from './autocast';
 export * from './base-type';
 export * from './error-reporter';
 export * from './interfaces';

@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import type { OneOrMore, The } from '../interfaces';
 import { assignableTo, defaultUsualSuspects, stripped, testTypeImpl, testTypes } from '../testutils';
 import { boolean } from './boolean';
@@ -31,12 +32,12 @@ testTypeImpl({
 
 const Amounts = object({ begin: number, end: number });
 testTypeImpl({
-    name: '{ really?: boolean.autoCast, amounts?: { begin: number.autoCast, end: number.autoCast } }',
+    name: '{ really?: AutoCast<boolean>, amounts?: { begin: AutoCast<number>, end: AutoCast<number> } }',
     type: [
-        partial({ really: boolean, amounts: Amounts }).autoCastAll,
-        partial({ really: boolean, amounts: Amounts, removeThis: string }).autoCastAll.pick(['really', 'amounts']),
-        partial({ really: boolean, amounts: Amounts, removeThis: string }).omit(['removeThis']).autoCastAll,
-        partial({ really: boolean.autoCast }).withOptional({ amounts: Amounts.autoCastAll }),
+        autoCastAll(partial({ really: boolean, amounts: Amounts })),
+        autoCastAll(partial({ really: boolean, amounts: Amounts, removeThis: string })).pick(['really', 'amounts']),
+        autoCastAll(partial({ really: boolean, amounts: Amounts, removeThis: string }).omit(['removeThis'])),
+        partial({ really: autoCast(boolean) }).withOptional({ amounts: autoCastAll(Amounts) }),
     ],
     basicType: 'object',
     validValues: [{}, { really: true }, { really: false, amounts: { begin: 123, end: -456 } }, { amounts: { begin: 123, end: -456 } }],
@@ -49,9 +50,9 @@ testTypeImpl({
     ],
 });
 
-testTypeImpl({ name: 'CustomNamed.autoCastAll', type: object('CustomNamed', { prop: string }).autoCastAll });
-testTypeImpl({ name: 'Pick<CustomNamed.autoCastAll, "prop">', type: object('CustomNamed', { prop: string }).autoCastAll.pick(['prop']) });
-testTypeImpl({ name: 'Pick<CustomNamed, "prop">.autoCastAll', type: object('CustomNamed', { prop: string }).pick(['prop']).autoCastAll });
+testTypeImpl({ name: 'AutoCastAll<CustomNamed>', type: autoCastAll(object('CustomNamed', { prop: string })) });
+testTypeImpl({ name: 'Pick<AutoCastAll<CustomNamed>, "prop">', type: autoCastAll(object('CustomNamed', { prop: string })).pick(['prop']) });
+testTypeImpl({ name: 'AutoCastAll<Pick<CustomNamed, "prop">>', type: autoCastAll(object('CustomNamed', { prop: string }).pick(['prop'])) });
 
 const specialStringOrUndefined = string.or(undefinedType).withParser(i => i || '<empty>');
 testTypeImpl({
@@ -408,9 +409,9 @@ describe('checkOnly', () => {
 
     test('fail if applicable', () => {
         expect(() => CheckOnlyType(wrongObj)).toThrow();
-        expect(() => CheckOnlyType.autoCastAll(wrongObj)).toThrow();
+        expect(() => autoCastAll(CheckOnlyType)(wrongObj)).toThrow();
 
         expect(() => RegularType(wrongObj)).toThrow();
-        expect(RegularType.autoCastAll(wrongObj)).toEqual(correctObj);
+        expect(autoCastAll(RegularType)(wrongObj)).toEqual(correctObj);
     });
 });

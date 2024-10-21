@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import { BaseObjectLikeTypeImpl, BaseTypeImpl, createType, type TypedPropertyInformation } from '../base-type';
 import type {
     MessageDetails,
@@ -21,7 +22,6 @@ import {
     decodeOptionalOptions,
     defaultObjectRep,
     define,
-    extensionName,
     hasOwnProperty,
     humanList,
     interfaceStringify,
@@ -31,6 +31,7 @@ import {
     prependPathToDetails,
     printKey,
     stringStringify,
+    wrapperName,
 } from '../utils';
 import type { intersection } from './intersection';
 import { unknownRecord } from './unknown';
@@ -157,7 +158,7 @@ export interface InterfacePickOptions {
      *
      * @remarks
      * By default, custom parsers (i.e. parsers that are added to a type using {@link BaseTypeImpl.withParser} or
-     * {@link BaseTypeImpl.autoCast}) are not reused when a new type is created using {@link InterfaceType.pick} and
+     * {@link autoCast}) are not reused when a new type is created using {@link InterfaceType.pick} and
      * {@link InterfaceType.omit}.
      *
      * However, it is possible to reuse a parser that is set on the base type. Parsers have a single input of type `unknown` and may produce
@@ -455,12 +456,12 @@ define(InterfaceType, 'basicType', 'object');
 // Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
 // up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
 define(InterfaceType, 'createAutoCastAllType', function (this: InterfaceType<Properties, any>) {
-    const name = extensionName(this, 'autoCastAll');
+    const name = wrapperName(this, 'AutoCastAll');
     const props: PropertiesInfo = {};
     for (const [key, { type, optional: partial }] of this.propsArray) {
-        props[key] = { type: type.autoCastAll, optional: partial };
+        props[key] = { type: autoCastAll(type), optional: partial };
     }
-    return createType(new InterfaceType(props, { ...this.options, name }).autoCast);
+    return createType(autoCast(new InterfaceType(props, { ...this.options, name })));
 });
 
 function missingProperty(property: string, type: BaseTypeImpl<unknown>): MessageDetails {
