@@ -42,9 +42,9 @@ export class ValidationError extends Error implements Failure {
 
     private constructor(
         message: string,
-        public type: BaseTypeImpl<unknown>,
-        public input: unknown,
-        public details: OneOrMore<FailureDetails>,
+        readonly type: BaseTypeImpl<unknown>,
+        readonly input: unknown,
+        readonly details: OneOrMore<FailureDetails>,
     ) {
         super(message);
     }
