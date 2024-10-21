@@ -7,9 +7,9 @@
 **Signature:**
 
 ```typescript
-protected createAutoCastAllType(): this;
+protected createAutoCastAllType(): Type<ResultType>;
 ```
 
 **Returns:**
 
-this
+[Type](./types.type.md)<!-- -->&lt;ResultType&gt;

@@ -7,5 +7,5 @@
 **Signature:**
 
 ```typescript
-type: BaseTypeImpl<unknown>;
+readonly type: BaseTypeImpl<unknown>;
 ```
