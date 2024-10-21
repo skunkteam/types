@@ -33,6 +33,12 @@ export interface ArrayTypeConfig extends LengthChecksConfig {
 export type ArrayViolation = LengthViolation;
 
 // @public
+export function autoCast<T extends BaseTypeImpl<unknown>>(type: T): T;
+
+// @public
+export function autoCastAll<T extends BaseTypeImpl<unknown>>(type: T): T;
+
+// @public
 export const autoCastFailure: unique symbol;
 
 // @public
@@ -56,15 +62,13 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     abstract accept<R>(visitor: Visitor<R>): R;
     andThen<Return, RestArgs extends unknown[]>(fn: (value: ResultType, ...restArgs: RestArgs) => Return): (input: unknown, ...restArgs: RestArgs) => Return;
     assert(input: unknown): asserts input is ResultType;
-    get autoCast(): this;
-    get autoCastAll(): this;
     protected autoCaster?(this: BaseTypeImpl<ResultType, TypeConfig>, value: unknown): unknown;
     abstract readonly basicType: BasicType | 'mixed';
     get check(): (this: void, input: unknown) => ResultType;
     protected combineConfig(oldConfig: TypeConfig, newConfig: TypeConfig): TypeConfig;
     construct(input: unknown): ResultType;
     // (undocumented)
-    protected createAutoCastAllType(): this;
+    protected createAutoCastAllType(): Type<ResultType>;
     protected createResult(input: unknown, result: unknown, validatorResult: ValidationResult): Result<ResultType>;
     protected readonly customValidators: ReadonlyArray<Validator<unknown>>;
     readonly enumerableLiteralDomain?: Iterable<LiteralValue>;
@@ -617,17 +621,17 @@ export type ValidationDetails = {
 // @public
 export class ValidationError extends Error implements Failure {
     // (undocumented)
-    details: OneOrMore<FailureDetails>;
+    readonly details: OneOrMore<FailureDetails>;
     static fromFailure(failure: Failure): ValidationError;
     // (undocumented)
-    input: unknown;
+    readonly input: unknown;
     // (undocumented)
     readonly name = "ValidationError";
     // (undocumented)
     readonly ok = false;
     static try<Return>({ type, input }: Pick<Failure, 'type' | 'input'>, fn: () => Return): Result<Return>;
     // (undocumented)
-    type: BaseTypeImpl<unknown>;
+    readonly type: BaseTypeImpl<unknown>;
 }
 
 // @public

@@ -20,7 +20,7 @@ Inspired by [io-ts](https://github.com/gcanti/io-ts), but without the functional
 
 ### strict / loose mode
 
-Every type is strict by default (applies no coercion during validation), but can be converted into a looser variant using the [`.autoCast`](markdown/types.basetypeimpl.autocast.md) feature. Also, objects are stripped of unknown properties by default.
+Every type is strict by default (applies no coercion during validation), but can be converted into a looser variant using the [`autoCast`](markdown/types.autocast.md) feature. Also, objects are stripped of unknown properties by default.
 
 ### Great (human-)readable error messages
 
@@ -525,7 +525,7 @@ function AugmentedGeneric<T>(inner: ObjectType<T>): ObjectType<AugmentedGeneric<
 
 ### Parsers
 
-Validation is most likely used to validate incoming data / messages. Sometimes this data looks a lot like your internal type, but is slightly off. For example, maybe, the input has strings instead of numbers, or a "yes"/"no" instead of booleans. In those cases you can "prepend" a parsing step to your validator. For builtin types the most common conversions are available using the [`.autoCast`](markdown/types.basetypeimpl.autocast.md) feature.
+Validation is most likely used to validate incoming data / messages. Sometimes this data looks a lot like your internal type, but is slightly off. For example, maybe, the input has strings instead of numbers, or a "yes"/"no" instead of booleans. In those cases you can "prepend" a parsing step to your validator. For builtin types the most common conversions are available using the [`autoCast`](markdown/types.autocast.md) feature.
 
 Take the following (questionable) definition of `Age`:
 
@@ -542,7 +542,7 @@ When we turn on the `autoCast` feature, it will accept anything it can reasonabl
 
 ```typescript
 type Age = The<typeof Age>;
-const Age = int.withConstraint('Age', n => (n >= 0 && n < 200) || 'unexpected age').autoCast;
+const Age = autoCast(int.withConstraint('Age', n => (n >= 0 && n < 200) || 'unexpected age'));
 
 Age(123); // => 123
 Age('123'); // => 123
@@ -555,7 +555,7 @@ This is why we call the default function the "type constructor". It behaves simi
 // (try to) construct a valid instance of Age.
 Age.construct('123'); // => 123
 Age(true);
-// throws ValidationError: error in parser of [Age.autoCast]: could not autocast value: true
+// throws ValidationError: error in parser of [AutoCast<Age>]: could not autocast value: true
 
 // `is()` is a type-guard, it returns whether the value is already a valid Age.
 Age.is('123'); // => false
@@ -595,79 +595,79 @@ Answer('nope');
 
 All types have an associated `autoCast` type that adds a parser that tries to do some default (convenient) conversions where possible.
 
-| Type                                              | Input                  | Output                                                                                              |
-| ------------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------- |
-| **number**                                        |                        | Numeric autocasts automatically parse strings without known gotchas s.a. `" "` and `"123 abc"`:     |
-| `number`                                          | `123`                  | `123`                                                                                               |
-| `number.autoCast`                                 | `123`                  | `123`                                                                                               |
-| `number`                                          | `"123"`                | **_`error in [number]: expected a number, got a string ("123")`_**                                  |
-| `number.autoCast`                                 | `"123"`                | `123`                                                                                               |
-| `number.autoCast`                                 | `" 123 "`              | `123`                                                                                               |
-| `number.autoCast`                                 | `" 123 a"`             | **_`error in parser of [number.autoCast]: could not autocast value: " 123.4 a"`_**                  |
-| `number.autoCast`                                 | `" "`                  | **_`error in parser of [number.autoCast]: could not autocast value: " "`_**                         |
-| `number.autoCast`                                 | `"Infinity"`           | `Infinity` (use a checked type like `int` or define a `FiniteNumber` type to prevent this)          |
-| **int**                                           |                        | All numeric types (like `int`) inherit the same autoCast behaviour:                                 |
-| `int`                                             | `123`                  | `123`                                                                                               |
-| `int`                                             | `"123"`                | **_`error in base type of [int]: expected a number, got a string ("123")`_**                        |
-| `int.autoCast`                                    | `"123"`                | `123`                                                                                               |
-| `int.autoCast`                                    | `"123a"`               | **_`error in parser of [int.autoCast]: could not autocast value: "123a"`_**                         |
-| `int.autoCast`                                    | `123.4`                | **_`expected an [int], got: 123.4`_**                                                               |
-| `int.autoCast`                                    | `"123.4"`              | **_`expected an [int], got: 123.4, parsed from: "123.4"`_**                                         |
-| **array**                                         |                        | Arrays can auto-cast non-array values with the following behavior:                                  |
-| `array(number)`                                   | `[1, 2]`               | `[1, 2]`                                                                                            |
-| `array(number).autoCast`                          | `[1, 2]`               | `[1, 2]`                                                                                            |
-| `array(number)`                                   | `123`                  | **_`error in [number[]]: expected an array, got a number (123)`_**                                  |
-| `array(number).autoCast`                          | `123`                  | `[123]`                                                                                             |
-| `array(number)`                                   | `undefined`            | **_`error in [number[]]: expected an array, got an undefined `_**                                   |
-| `array(number).autoCast`                          | `undefined`            | `[]`                                                                                                |
-| `array(number).autoCastAll`                       | `[123]`                | `[123]` (_autoCastAll_ is a deeply nested _autoCast_, all elements are also _autoCast_)             |
-| `array(number).autoCastAll`                       | `["123"]`              | `[123]`                                                                                             |
-| `array(number).autoCastAll`                       | `123`                  | `[123]`                                                                                             |
-| `array(number).autoCastAll`                       | `"123"`                | `[123]`                                                                                             |
-| `unknownArray`                                    | `123`                  | **_`error in [unknown[]]: expected an array, got a number (123)`_**                                 |
-| `unknownArray.autoCast`                           | `123`                  | `[123]`                                                                                             |
-| `unknownArray`                                    | `undefined`            | **_`error in [unknown[]]: expected an array, got an undefined `_**                                  |
-| `unknownArray.autoCast`                           | `undefined`            | `[]`                                                                                                |
-| **boolean**                                       |                        | Booleans can autocast from very specific string values (inspired by XML spec)                       |
-| `boolean`                                         | `true`                 | `true`                                                                                              |
-| `boolean`                                         | `false`                | `false`                                                                                             |
-| `boolean`                                         | `"true"`               | **_`error in [boolean]: expected a boolean, got a string ("true") `_**                              |
-| `boolean.autoCast`                                | `"true"`               | `true`                                                                                              |
-| `boolean`                                         | `1`                    | **_`error in [boolean]: expected a boolean, got a number (1)`_**                                    |
-| `boolean.autoCast`                                | `1`                    | `true`                                                                                              |
-| `boolean.autoCast`                                | `"false"`              | `false`                                                                                             |
-| `boolean.autoCast`                                | `0`                    | `false`                                                                                             |
-| **object** and **partial**                        |                        | Object types have no _autoCast_ variant, but _autoCastAll_ puts all properties into _autoCast_ mode |
-| `object({ a: number })`                           | `{ a: "1" }`           | **_`error in [{ a: number }] at <a>: expected a number, got a string ("1") `_**                     |
-| `object({ a: number }).autoCastAll`               | `{ a: "1" }`           | `{ a: 1 }`                                                                                          |
-| `object({ a: array(number) })`                    | `{ a: "1" }`           | **_`error in [{ a: number[] }]: expected an array, got a string ("1")`_**                           |
-| `object({ a: array(number) }).autoCastAll`        | `{ a: "1" }`           | `{ a: [1] }`                                                                                        |
-| `object({ a: array(number) })`                    | `{}`                   | **_`error in [{ a: number[] }]: missing property <a> [number[]], got: {}`_**                        |
-| `object({ a: array(number) }).autoCastAll`        | `{}`                   | `{ a: [] }` (`object` determines that `array(number).autoCastAll` can handle `undefined` value)     |
-| **keyof** and **valueof**                         |                        | Converts to String before passing to the base type                                                  |
-| `keyof({ false: "F", true: "T" })`                | `"false"`              | `"false"`                                                                                           |
-| `keyof({ false: "F", true: "T" })`                | `false`                | **_`error in ["false" \| "true"]: expected a string, got a boolean (false)`_**                      |
-| `keyof({ false: "F", true: "T" }).autoCast`       | `false`                | `"false"`                                                                                           |
-| **literal**                                       |                        | Literals use the autoCast technique that is appropriate for the type of literal                     |
-| `literal(123)`                                    | `"123"`                | **_`expected a number (123), got a string ("123")`_**                                               |
-| `literal(123).autoCast`                           | `"123"`                | `123`                                                                                               |
-| `literal("123")`                                  | `123`                  | **_`expected a string ("123"), got a number (123)`_**                                               |
-| `literal("123").autoCast`                         | `123`                  | `"123"`                                                                                             |
-| `nullType` (or `literal(null)`)                   | `undefined`            | **_`expected a null, got an undefined`_**                                                           |
-| `nullType.autocast` (or `literal(null).autocast`) | `undefined`            | `null`                                                                                              |
-| **string**                                        |                        | String can (currently) autoCast everything, this will probably change in the future                 |
-| `string`                                          | `123`                  | **_`error in [string]: expected a string, got a number (123)`_**                                    |
-| `string.autoCast`                                 | `123`                  | `"123"`                                                                                             |
-| `string.autoCast`                                 | `123n`                 | "123"                                                                                               |
-| `string.autoCast`                                 | `false`                | "false"                                                                                             |
-| `string`                                          | `null`                 | **_`error in [string]: expected a string, got a null `_**                                           |
-| `string.autoCast`                                 | `null`                 | **_`error in parser of [string.autoCast]: could not autocast value: null`_**                        |
-| `string`                                          | `undefined`            | **_`error in [string]: expected a string, got an undefined `_**                                     |
-| `string.autoCast`                                 | `undefined`            | **_`error in parser of [string.autoCast]: could not autocast value: undefined`_**                   |
-| `string`                                          | `Symbol.iterator`      | **_`error in [string]: expected a string, got a symbol ([Symbol: Symbol.iterator])`_**              |
-| `string.autoCast`                                 | `Symbol.iterator`      | **_`error in parser of [string.autoCast]: could not autocast value: [Symbol: Symbol.iterator]`_**   |
-| `string.autoCast`                                 | `{ prop: "value" }`    | **_`error in parser of [string.autoCast]: could not autocast value: { prop: "value" }`_**           |
-| `string.autoCast`                                 | `function myFunc() {}` | **_`error in parser of [string.autoCast]: could not autocast value: [Function: myFunc]`_**          |
+| Type                                                | Input                  | Output                                                                                              |
+| --------------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------- |
+| **number**                                          |                        | Numeric autocasts automatically parse strings without known gotchas s.a. `" "` and `"123 abc"`:     |
+| `number`                                            | `123`                  | `123`                                                                                               |
+| `autoCast(number)`                                  | `123`                  | `123`                                                                                               |
+| `number`                                            | `"123"`                | **_`error in [number]: expected a number, got a string ("123")`_**                                  |
+| `autoCast(number)`                                  | `"123"`                | `123`                                                                                               |
+| `autoCast(number)`                                  | `" 123 "`              | `123`                                                                                               |
+| `autoCast(number)`                                  | `" 123 a"`             | **_`error in parser of [AutoCast<number>]: could not autocast value: " 123 a"`_**                   |
+| `autoCast(number)`                                  | `" "`                  | **_`error in parser of [AutoCast<number>]: could not autocast value: " "`_**                        |
+| `autoCast(number)`                                  | `"Infinity"`           | `Infinity` (use a checked type like `int` or define a `FiniteNumber` type to prevent this)          |
+| **int**                                             |                        | All numeric types (like `int`) inherit the same autoCast behaviour:                                 |
+| `int`                                               | `123`                  | `123`                                                                                               |
+| `int`                                               | `"123"`                | **_`error in [int]: expected a number, got a string ("123")`_**                                     |
+| `autoCast(int)`                                     | `"123"`                | `123`                                                                                               |
+| `autoCast(int)`                                     | `"123a"`               | **_`error in parser of [AutoCast<int>]: could not autocast value: "123a"`_**                        |
+| `autoCast(int)`                                     | `123.4`                | **_`error in [AutoCast<int>]: expected a whole number, got: 123.4`_**                               |
+| `autoCast(int)`                                     | `"123.4"`              | **_`error in [AutoCast<int>]: expected a whole number, got: 123.4, parsed from: "123.4"`_**         |
+| **array**                                           |                        | Arrays can auto-cast non-array values with the following behavior:                                  |
+| `array(number)`                                     | `[1, 2]`               | `[1, 2]`                                                                                            |
+| `autoCast(array(number))`                           | `[1, 2]`               | `[1, 2]`                                                                                            |
+| `array(number)`                                     | `123`                  | **_`error in [number[]]: expected an array, got a number (123)`_**                                  |
+| `autoCast(array(number))`                           | `123`                  | `[123]`                                                                                             |
+| `array(number)`                                     | `undefined`            | **_`error in [number[]]: expected an array, got an undefined `_**                                   |
+| `autoCast(array(number))`                           | `undefined`            | `[]`                                                                                                |
+| `autoCastAll(array(number))`                        | `[123]`                | `[123]` (_autoCastAll_ is a deeply nested _autoCast_, all elements are also _autoCast_)             |
+| `autoCastAll(array(number))`                        | `["123"]`              | `[123]`                                                                                             |
+| `autoCastAll(array(number))`                        | `123`                  | `[123]`                                                                                             |
+| `autoCastAll(array(number))`                        | `"123"`                | `[123]`                                                                                             |
+| `unknownArray`                                      | `123`                  | **_`error in [unknown[]]: expected an array, got a number (123)`_**                                 |
+| `autoCast(unknownArray)`                            | `123`                  | `[123]`                                                                                             |
+| `unknownArray`                                      | `undefined`            | **_`error in [unknown[]]: expected an array, got an undefined `_**                                  |
+| `autoCast(unknownArray)`                            | `undefined`            | `[]`                                                                                                |
+| **boolean**                                         |                        | Booleans can autocast from very specific string values (inspired by XML spec)                       |
+| `boolean`                                           | `true`                 | `true`                                                                                              |
+| `boolean`                                           | `false`                | `false`                                                                                             |
+| `boolean`                                           | `"true"`               | **_`error in [boolean]: expected a boolean, got a string ("true") `_**                              |
+| `autoCast(boolean)`                                 | `"true"`               | `true`                                                                                              |
+| `boolean`                                           | `1`                    | **_`error in [boolean]: expected a boolean, got a number (1)`_**                                    |
+| `autoCast(boolean)`                                 | `1`                    | `true`                                                                                              |
+| `autoCast(boolean)`                                 | `"false"`              | `false`                                                                                             |
+| `autoCast(boolean)`                                 | `0`                    | `false`                                                                                             |
+| **object** and **partial**                          |                        | Object types have no _autoCast_ variant, but _autoCastAll_ puts all properties into _autoCast_ mode |
+| `object({ a: number })`                             | `{ a: "1" }`           | **_`error in [{ a: number }] at <a>: expected a number, got a string ("1") `_**                     |
+| `autoCastAll(object({ a: number }))`                | `{ a: "1" }`           | `{ a: 1 }`                                                                                          |
+| `object({ a: array(number) })`                      | `{ a: "1" }`           | **_`error in [{ a: number[] }]: expected an array, got a string ("1")`_**                           |
+| `autoCastAll(object({ a: array(number) }))`         | `{ a: "1" }`           | `{ a: [1] }`                                                                                        |
+| `object({ a: array(number) })`                      | `{}`                   | **_`error in [{ a: number[] }]: missing property <a> [number[]], got: {}`_**                        |
+| `autoCastAll(object({ a: array(number) }))`         | `{}`                   | `{ a: [] }` (`object` determines that `AutoCastAll<array(number)>` can handle `undefined` value)    |
+| **keyof** and **valueof**                           |                        | Converts to String before passing to the base type                                                  |
+| `keyof({ false: "F", true: "T" })`                  | `"false"`              | `"false"`                                                                                           |
+| `keyof({ false: "F", true: "T" })`                  | `false`                | **_`error in ["false" \| "true"]: expected a string, got a boolean (false)`_**                      |
+| `autoCast(keyof({ false: "F", true: "T" }))`        | `false`                | `"false"`                                                                                           |
+| **literal**                                         |                        | Literals use the autoCast technique that is appropriate for the type of literal                     |
+| `literal(123)`                                      | `"123"`                | **_`expected a number (123), got a string ("123")`_**                                               |
+| `autoCast(literal(123))`                            | `"123"`                | `123`                                                                                               |
+| `literal("123")`                                    | `123`                  | **_`expected a string ("123"), got a number (123)`_**                                               |
+| `autoCast(literal("123"))`                          | `123`                  | `"123"`                                                                                             |
+| `nullType` (or `literal(null)`)                     | `undefined`            | **_`expected a null, got an undefined`_**                                                           |
+| `autoCast(nullType)` (or `autoCast(literal(null))`) | `undefined`            | `null`                                                                                              |
+| **string**                                          |                        | String can (currently) autoCast everything, this will probably change in the future                 |
+| `string`                                            | `123`                  | **_`error in [string]: expected a string, got a number (123)`_**                                    |
+| `autoCast(string)`                                  | `123`                  | `"123"`                                                                                             |
+| `autoCast(string)`                                  | `123n`                 | `"123"`                                                                                             |
+| `autoCast(string)`                                  | `false`                | "false"                                                                                             |
+| `string`                                            | `null`                 | **_`error in [string]: expected a string, got a null `_**                                           |
+| `autoCast(string)`                                  | `null`                 | **_`error in parser of [AutoCast<string>]: could not autocast value: null`_**                       |
+| `string`                                            | `undefined`            | **_`error in [string]: expected a string, got an undefined `_**                                     |
+| `autoCast(string)`                                  | `undefined`            | **_`error in parser of [AutoCast<string>]: could not autocast value: undefined`_**                  |
+| `string`                                            | `Symbol.iterator`      | **_`error in [string]: expected a string, got a symbol ([Symbol: Symbol.iterator])`_**              |
+| `autoCast(string)`                                  | `Symbol.iterator`      | **_`error in parser of [AutoCast<string>]: could not autocast value: [Symbol: Symbol.iterator]`_**  |
+| `autoCast(string)`                                  | `{ prop: "value" }`    | **_`error in parser of [AutoCast<string>]: could not autocast value: { prop: "value" }`_**          |
+| `autoCast(string)`                                  | `function myFunc() {}` | **_`error in parser of [AutoCast<string>]: could not autocast value: [Function: myFunc]`_**         |
 
 ### Literals
 

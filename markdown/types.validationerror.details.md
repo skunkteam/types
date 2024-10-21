@@ -7,5 +7,5 @@
 **Signature:**
 
 ```typescript
-details: OneOrMore<FailureDetails>;
+readonly details: OneOrMore<FailureDetails>;
 ```

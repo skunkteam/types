@@ -7,5 +7,5 @@
 **Signature:**
 
 ```typescript
-input: unknown;
+readonly input: unknown;
 ```

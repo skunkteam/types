@@ -14,7 +14,7 @@ applyParser?: boolean;
 
 ## Remarks
 
-By default, custom parsers (i.e. parsers that are added to a type using [BaseTypeImpl.withParser()](./types.basetypeimpl.withparser.md) or [BaseTypeImpl.autoCast](./types.basetypeimpl.autocast.md)<!-- -->) are not reused when a new type is created using [InterfaceType.pick()](./types.interfacetype.pick.md) and [InterfaceType.omit()](./types.interfacetype.omit.md)<!-- -->.
+By default, custom parsers (i.e. parsers that are added to a type using [BaseTypeImpl.withParser()](./types.basetypeimpl.withparser.md) or [autoCast()](./types.autocast.md)<!-- -->) are not reused when a new type is created using [InterfaceType.pick()](./types.interfacetype.pick.md) and [InterfaceType.omit()](./types.interfacetype.omit.md)<!-- -->.
 
 However, it is possible to reuse a parser that is set on the base type. Parsers have a single input of type `unknown` and may produce anything (also with type `unknown`<!-- -->). The result of a parser will always be validated afterwards by the type it is applied to. Technically, any parser is applicable to any type, but it might not make sense to do so. Therefore, you can choose to apply it or not with this option.
 

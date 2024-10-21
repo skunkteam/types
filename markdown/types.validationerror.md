@@ -24,11 +24,11 @@ Is itself also a [Failure](./types.failure.md) and can be used as such in APIs.
 
 | Property                                      | Modifiers             | Type                                                                                                 | Description |
 | --------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------- | ----------- |
-| [details](./types.validationerror.details.md) |                       | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; |             |
-| [input](./types.validationerror.input.md)     |                       | unknown                                                                                              |             |
+| [details](./types.validationerror.details.md) | <code>readonly</code> | [OneOrMore](./types.oneormore.md)<!-- -->&lt;[FailureDetails](./types.failuredetails.md)<!-- -->&gt; |             |
+| [input](./types.validationerror.input.md)     | <code>readonly</code> | unknown                                                                                              |             |
 | [name](./types.validationerror.name.md)       | <code>readonly</code> | (not declared)                                                                                       |             |
 | [ok](./types.validationerror.ok.md)           | <code>readonly</code> | (not declared)                                                                                       |             |
-| [type](./types.validationerror.type.md)       |                       | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       |             |
+| [type](./types.validationerror.type.md)       | <code>readonly</code> | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;unknown&gt;                                       |             |
 
 ## Methods
 
