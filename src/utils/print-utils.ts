@@ -167,12 +167,19 @@ export function defaultObjectRep(propsInfo: PropertiesInfo): string {
     return `{ ${props.map(([key, { optional: partial, type }]) => `${printKey(key)}${partial ? '?' : ''}: ${type.name}`).join(', ')} }`;
 }
 
-export function bracketsIfNeeded(name: string, allowedSeparator?: '|' | '&'): string {
-    return isValidIdentifier(name) || evalBrackets(new PeekableIterator(name), allowedSeparator) ? name : `(${name})`;
+/**
+ * Surround the given (possibly custom) type-name with a pair of parentheses if needed.
+ *
+ * @param name - the type-name to consider
+ * @param allowedSeparators - the top-level operation that does not need parentheses
+ * @returns the name, possibly surrounded by parentheses
+ */
+export function bracketsIfNeeded(name: string, ...allowedSeparators: ('|' | '&')[]): string {
+    return isValidIdentifier(name) || evalBrackets(new PeekableIterator(name), allowedSeparators) ? name : `(${name})`;
 }
 
-export function extensionName(obj: { name: string; isDefaultName: boolean }, extension: string): string | undefined {
-    return obj.isDefaultName ? undefined : `${bracketsIfNeeded(obj.name)}.${extension}`;
+export function wrapperName(obj: { name: string; isDefaultName: boolean }, wrapper: string): string | undefined {
+    return obj.isDefaultName ? undefined : `${wrapper}<${bracketsIfNeeded(obj.name, '&', '|')}>`;
 }
 
 class PeekableIterator<T> {
@@ -199,18 +206,20 @@ const MATCHING_BRACKET = {
 } as const;
 
 /**
- * Validate the character stream for valid bracket-pairs.
+ * Validate the character stream for valid bracket-pairs to determine it needs to be surrounded by new brackets.
  *
  * @remarks
- * Used to determine whether to add brackets or not.
+ * Used to determine whether to surround the given text with brackets or not. It is also possible to allow one or more types of top-level
+ * operations using `allowedSeperator`.
  *
  * @param chars - the peekable character iterator
- * @param allowedSeparator - an optional allowed group-separator that does not fail validation
+ * @param allowedSeparator - optional allowed group-separators that do not fail validation
  * @param groupEndChar - the end character for the current group, when specified we are currently inside brackets
  * @returns `true` iff brackets match up and no additional bracket is needed for clarity
  */
-function evalBrackets(chars: PeekableIterator<string>, allowedSeparator?: '|' | '&', groupEndChar?: string) {
+function evalBrackets(chars: PeekableIterator<string>, allowedSeparators: ('|' | '&')[], groupEndChar?: string) {
     let hasBracketGroup = false;
+
     while (chars.advance()) {
         switch (chars.current) {
             case groupEndChar:
@@ -221,7 +230,7 @@ function evalBrackets(chars: PeekableIterator<string>, allowedSeparator?: '|' | 
             case '(':
             case '<':
                 // consume the entire bracket-group
-                if (!evalBrackets(chars, undefined, MATCHING_BRACKET[chars.current])) return false;
+                if (!evalBrackets(chars, [], MATCHING_BRACKET[chars.current])) return false;
                 hasBracketGroup = true;
                 break;
             case '"':
@@ -234,10 +243,12 @@ function evalBrackets(chars: PeekableIterator<string>, allowedSeparator?: '|' | 
             case ' ':
                 if (!groupEndChar) {
                     // not inside brackets, so spaces and allowed separators need special care
-                    if (!allowedSeparator) return false;
+                    if (!allowedSeparators.length) return false;
                     let foundSeparator;
                     do {
-                        foundSeparator ||= chars.current === allowedSeparator;
+                        if (chars.current === ' ') continue;
+                        if (foundSeparator) return false;
+                        foundSeparator ||= allowedSeparators.includes(chars.current);
                     } while (chars.next && '|& '.includes(chars.next) && chars.advance());
                     if (!foundSeparator) return false;
                 }

@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import { BaseTypeImpl, createType } from '../base-type';
 import type { ArrayTypeConfig, Result, TypeImpl, TypeOf, ValidationOptions, Visitor } from '../interfaces';
 import {
@@ -90,7 +91,7 @@ define(ArrayType, 'basicType', 'array');
 // Defined outside class definition, because TypeScript somehow ends up in a wild-typings-goose-chase that takes
 // up to a minute or more. We have to make sure consuming libs don't have to pay this penalty ever.
 define(ArrayType, 'createAutoCastAllType', function (this: ArrayType<BaseTypeImpl<any>, any, any[]>) {
-    return createType(new ArrayType(this.elementType.autoCastAll, this.typeConfig, this.isDefaultName ? undefined : this.name).autoCast);
+    return createType(autoCast(new ArrayType(autoCastAll(this.elementType), this.typeConfig, this.isDefaultName ? undefined : this.name)));
 });
 
 /**

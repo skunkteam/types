@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import type { The } from '../interfaces';
 import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { array } from './array';
@@ -32,18 +33,18 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'string[].autoCast',
-    type: array(string).autoCast,
+    name: 'AutoCast<string[]>',
+    type: autoCast(array(string)),
     basicType: 'array',
     // wrap arrays inside extra array because of the use of jest.each in testTypeImpl
     validValues: [[['a', 'b', 'bla']], [[]]],
     invalidValues: [
-        ['a', 'error in [string[].autoCast]: expected an array, got a string ("a")'],
-        [{ 0: 'a', length: 1 }, 'error in [string[].autoCast]: expected an array, got an object ({ "0": "a", length: 1 })'],
+        ['a', 'error in [AutoCast<string[]>]: expected an array, got a string ("a")'],
+        [{ 0: 'a', length: 1 }, 'error in [AutoCast<string[]>]: expected an array, got an object ({ "0": "a", length: 1 })'],
         [
             [1, 2, 3],
             [
-                'errors in [string[].autoCast]:',
+                'errors in [AutoCast<string[]>]:',
                 '',
                 '- at <[0]>: expected a string, got a number (1)',
                 '',
@@ -58,21 +59,21 @@ testTypeImpl({
         ['str', ['str']],
     ],
     invalidConversions: [
-        [1, ['errors in [string[].autoCast]:', '(got: [1], parsed from: 1)', '', '- at <[0]>: expected a string, got a number (1)']],
+        [1, ['errors in [AutoCast<string[]>]:', '(got: [1], parsed from: 1)', '', '- at <[0]>: expected a string, got a number (1)']],
     ],
 });
 
 testTypeImpl({
-    name: 'Array<number.autoCast>',
-    type: array(number.autoCast),
+    name: 'Array<AutoCast<number>>',
+    type: array(autoCast(number)),
     basicType: 'array',
     // wrap arrays inside extra array because of the use of jest.each in testTypeImpl
     validValues: [[[1, 2, 3]], [[]]],
     invalidValues: [
-        [1, 'error in [Array<number.autoCast>]: expected an array, got a number (1)'],
-        [{ 0: 0 }, 'error in [Array<number.autoCast>]: expected an array, got an object ({ "0": 0 })'],
-        [['1'], 'error in [Array<number.autoCast>] at <[0]>: expected a number, got a string ("1")'],
-        ...defaultUsualSuspects(array(number.autoCast)),
+        [1, 'error in [Array<AutoCast<number>>]: expected an array, got a number (1)'],
+        [{ 0: 0 }, 'error in [Array<AutoCast<number>>]: expected an array, got an object ({ "0": 0 })'],
+        [['1'], 'error in [Array<AutoCast<number>>] at <[0]>: expected a number, got a string ("1")'],
+        ...defaultUsualSuspects(array(autoCast(number))),
     ],
     validConversions: [
         [
@@ -80,12 +81,12 @@ testTypeImpl({
             [1, 2, 3],
         ],
     ],
-    invalidConversions: [[1, 'error in [Array<number.autoCast>]: expected an array, got a number (1)']],
+    invalidConversions: [[1, 'error in [Array<AutoCast<number>>]: expected an array, got a number (1)']],
 });
 
 testTypeImpl({
-    name: 'Array<number.autoCast>.autoCast',
-    type: array(number).autoCastAll,
+    name: 'AutoCast<Array<AutoCast<number>>>',
+    type: autoCastAll(array(number)),
     basicType: 'array',
     // wrap arrays inside extra array because of the use of jest.each in testTypeImpl
     validValues: [[[1, 2, 3]], [[]]],
@@ -93,8 +94,8 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: '(custom name).autoCast',
-    type: array('custom name', number).autoCastAll,
+    name: 'AutoCast<(custom name)>',
+    type: autoCastAll(array('custom name', number)),
 });
 
 type SmallArray = The<typeof SmallArray>;

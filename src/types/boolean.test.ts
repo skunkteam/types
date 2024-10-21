@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import { basicTypeMessage, testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 
@@ -19,17 +20,17 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'boolean.autoCast',
-    type: boolean.autoCast,
+    name: 'AutoCast<boolean>',
+    type: autoCast(boolean),
     basicType: 'boolean',
     validValues: [true, false],
     invalidValues: [
-        ['false', basicTypeMessage(boolean.autoCast, 'false')],
-        [NaN, basicTypeMessage(boolean.autoCast, NaN)],
-        [null, basicTypeMessage(boolean.autoCast, null)],
-        [undefined, basicTypeMessage(boolean.autoCast, undefined)],
-        [0, basicTypeMessage(boolean.autoCast, 0)],
-        [1, basicTypeMessage(boolean.autoCast, 1)],
+        ['false', basicTypeMessage(autoCast(boolean), 'false')],
+        [NaN, basicTypeMessage(autoCast(boolean), NaN)],
+        [null, basicTypeMessage(autoCast(boolean), null)],
+        [undefined, basicTypeMessage(autoCast(boolean), undefined)],
+        [0, basicTypeMessage(autoCast(boolean), 0)],
+        [1, basicTypeMessage(autoCast(boolean), 1)],
     ],
     validConversions: [
         ['false', false],
@@ -40,12 +41,12 @@ testTypeImpl({
         [1, true],
     ],
     invalidConversions: [
-        [NaN, 'error in parser of [boolean.autoCast]: could not autocast value: NaN'],
-        [null, 'error in parser of [boolean.autoCast]: could not autocast value: null'],
-        [undefined, 'error in parser of [boolean.autoCast]: could not autocast value: undefined'],
+        [NaN, 'error in parser of [AutoCast<boolean>]: could not autocast value: NaN'],
+        [null, 'error in parser of [AutoCast<boolean>]: could not autocast value: null'],
+        [undefined, 'error in parser of [AutoCast<boolean>]: could not autocast value: undefined'],
     ],
 });
 
 test('no autoCastAll', () => {
-    expect(boolean.autoCastAll).toBe(boolean.autoCast);
+    expect(autoCastAll(boolean)).toBe(autoCast(boolean));
 });

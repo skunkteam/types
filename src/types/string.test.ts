@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import type { The } from '../interfaces';
 import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
 import { plural } from '../utils';
@@ -87,8 +88,8 @@ testTypes(() => {
 });
 
 testTypeImpl({
-    name: 'string.autoCast',
-    type: string.autoCast,
+    name: 'AutoCast<string>',
+    type: autoCast(string),
     basicType: 'string',
     validValues: ['', '123'],
     validConversions: [
@@ -98,15 +99,15 @@ testTypeImpl({
         ['abc', 'abc'],
     ],
     invalidConversions: [
-        [null, 'error in parser of [string.autoCast]: could not autocast value: null'],
-        [undefined, 'error in parser of [string.autoCast]: could not autocast value: undefined'],
-        [Symbol('abc'), 'error in parser of [string.autoCast]: could not autocast value: [Symbol: abc]'],
-        [Symbol.iterator, 'error in parser of [string.autoCast]: could not autocast value: [Symbol: Symbol.iterator]'],
-        [{ prop: 'value' }, 'error in parser of [string.autoCast]: could not autocast value: { prop: "value" }'],
-        [{ toString: () => 'ok' }, 'error in parser of [string.autoCast]: could not autocast value: "ok"'],
-        [function myFunc() {}, 'error in parser of [string.autoCast]: could not autocast value: [Function: myFunc]'],
+        [null, 'error in parser of [AutoCast<string>]: could not autocast value: null'],
+        [undefined, 'error in parser of [AutoCast<string>]: could not autocast value: undefined'],
+        [Symbol('abc'), 'error in parser of [AutoCast<string>]: could not autocast value: [Symbol: abc]'],
+        [Symbol.iterator, 'error in parser of [AutoCast<string>]: could not autocast value: [Symbol: Symbol.iterator]'],
+        [{ prop: 'value' }, 'error in parser of [AutoCast<string>]: could not autocast value: { prop: "value" }'],
+        [{ toString: () => 'ok' }, 'error in parser of [AutoCast<string>]: could not autocast value: "ok"'],
+        [function myFunc() {}, 'error in parser of [AutoCast<string>]: could not autocast value: [Function: myFunc]'],
     ],
 });
 test('no autoCastAll', () => {
-    expect(string.autoCastAll).toBe(string.autoCast);
+    expect(autoCastAll(string)).toBe(autoCast(string));
 });

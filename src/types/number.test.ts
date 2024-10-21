@@ -1,3 +1,4 @@
+import { autoCast, autoCastAll } from '../autocast';
 import { basicTypeMessage, defaultMessage, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { humanList } from '../utils/print-utils';
 import { int, number } from './number';
@@ -36,14 +37,14 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'number.autoCast',
-    type: number.autoCast,
+    name: 'AutoCast<number>',
+    type: autoCast(number),
     invalidValues: [
-        ['abc', basicTypeMessage(number.autoCast, 'abc')],
-        ['123', basicTypeMessage(number.autoCast, '123')],
-        [NaN, defaultMessage(number.autoCast, NaN)],
-        ['', basicTypeMessage(number.autoCast, '')],
-        [' ', basicTypeMessage(number.autoCast, ' ')],
+        ['abc', basicTypeMessage(autoCast(number), 'abc')],
+        ['123', basicTypeMessage(autoCast(number), '123')],
+        [NaN, defaultMessage(autoCast(number), NaN)],
+        ['', basicTypeMessage(autoCast(number), '')],
+        [' ', basicTypeMessage(autoCast(number), ' ')],
     ],
     validConversions: [
         [123, 123],
@@ -51,19 +52,19 @@ testTypeImpl({
         ['-123.456', -123.456],
     ],
     invalidConversions: [
-        ['', 'error in parser of [number.autoCast]: could not autocast value: ""'],
-        [' ', 'error in parser of [number.autoCast]: could not autocast value: " "'],
-        ['\n\r\v\t\f', 'error in parser of [number.autoCast]: could not autocast value: "\\n\\r\\u000b\\t\\f"'],
-        [{ toString: () => ' ' }, 'error in parser of [number.autoCast]: could not autocast value: " "'],
-        ['_', 'error in parser of [number.autoCast]: could not autocast value: "_"'],
-        ['abc', 'error in parser of [number.autoCast]: could not autocast value: "abc"'],
-        [NaN, 'error in parser of [number.autoCast]: could not autocast value: NaN'],
+        ['', 'error in parser of [AutoCast<number>]: could not autocast value: ""'],
+        [' ', 'error in parser of [AutoCast<number>]: could not autocast value: " "'],
+        ['\n\r\v\t\f', 'error in parser of [AutoCast<number>]: could not autocast value: "\\n\\r\\u000b\\t\\f"'],
+        [{ toString: () => ' ' }, 'error in parser of [AutoCast<number>]: could not autocast value: " "'],
+        ['_', 'error in parser of [AutoCast<number>]: could not autocast value: "_"'],
+        ['abc', 'error in parser of [AutoCast<number>]: could not autocast value: "abc"'],
+        [NaN, 'error in parser of [AutoCast<number>]: could not autocast value: NaN'],
     ],
 });
 
 testTypeImpl({
     name: 'NonNegativeInt',
-    type: int.autoCast.withConstraint('NonNegativeInt', n => n >= 0),
+    type: autoCast(int).withConstraint('NonNegativeInt', n => n >= 0),
     validValues: [0, 1, 10_000],
     invalidValues: [
         ['4', 'error in [NonNegativeInt]: expected a number, got a string ("4")'],
@@ -84,7 +85,7 @@ testTypeImpl({
 
 testTypeImpl({
     name: 'NonNegativeInt',
-    type: int.autoCast.withConfig('NonNegativeInt', { min: 0 }),
+    type: autoCast(int).withConfig('NonNegativeInt', { min: 0 }),
     validValues: [0, 1, 10_000],
     invalidValues: [
         ['4', 'error in [NonNegativeInt]: expected a number, got a string ("4")'],
@@ -173,24 +174,24 @@ testTypeImpl({
 });
 
 testTypeImpl({
-    name: 'Decade.autoCast',
-    type: Decade.autoCast,
+    name: 'AutoCast<Decade>',
+    type: autoCast(Decade),
     validValues: [0, 10, 50, 90],
     invalidValues: [
-        [1, 'error in [Decade.autoCast]: 1 is obviously not a decade, because it is not a multiple of 10'],
-        [-1, 'error in [Decade.autoCast]: -1 is obviously not a decade, because it is negative and not a multiple of 10'],
-        [100, 'error in [Decade.autoCast]: 100 is obviously not a decade, because it is too large'],
-        [101, 'error in [Decade.autoCast]: 101 is obviously not a decade, because it is too large and not a multiple of 10'],
+        [1, 'error in [AutoCast<Decade>]: 1 is obviously not a decade, because it is not a multiple of 10'],
+        [-1, 'error in [AutoCast<Decade>]: -1 is obviously not a decade, because it is negative and not a multiple of 10'],
+        [100, 'error in [AutoCast<Decade>]: 100 is obviously not a decade, because it is too large'],
+        [101, 'error in [AutoCast<Decade>]: 101 is obviously not a decade, because it is too large and not a multiple of 10'],
     ],
     validConversions: [
         ['0', 0],
         ['90', 90],
     ],
     invalidConversions: [
-        ['1', 'error in [Decade.autoCast]: 1 is obviously not a decade, because it is not a multiple of 10'],
-        ['-1', 'error in [Decade.autoCast]: -1 is obviously not a decade, because it is negative and not a multiple of 10'],
-        ['100', 'error in [Decade.autoCast]: 100 is obviously not a decade, because it is too large'],
-        ['101', 'error in [Decade.autoCast]: 101 is obviously not a decade, because it is too large and not a multiple of 10'],
+        ['1', 'error in [AutoCast<Decade>]: 1 is obviously not a decade, because it is not a multiple of 10'],
+        ['-1', 'error in [AutoCast<Decade>]: -1 is obviously not a decade, because it is negative and not a multiple of 10'],
+        ['100', 'error in [AutoCast<Decade>]: 100 is obviously not a decade, because it is too large'],
+        ['101', 'error in [AutoCast<Decade>]: 101 is obviously not a decade, because it is too large and not a multiple of 10'],
     ],
 });
 
@@ -281,5 +282,5 @@ test.each`
 });
 
 test('no autoCastAll', () => {
-    expect(number.autoCastAll).toBe(number.autoCast);
+    expect(autoCastAll(number)).toBe(autoCast(number));
 });
