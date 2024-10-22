@@ -1,145 +1,124 @@
 import assert from 'assert';
+import { expectTypeOf } from 'expect-type';
 import { BaseTypeImpl } from './base-type';
 import type { The } from './interfaces';
-import { assignableTo, testTypes } from './testutils';
 import { boolean, int, literal, number, object, pattern, string, undefinedType, unknownRecord } from './types';
 
 describe(BaseTypeImpl, () => {
     test.each(['a string', 123, false, { key: 'value' }] as const)('guard value: %p', value => {
         if (string.is(value)) {
-            assignableTo<'a string'>(value);
-            assignableTo<typeof value>('a string');
+            expectTypeOf(value).toEqualTypeOf<'a string'>();
             expect(value).toBe('a string');
         }
         if (number.is(value)) {
-            assignableTo<123>(value);
-            assignableTo<typeof value>(123);
+            expectTypeOf(value).toEqualTypeOf<123>();
             expect(value).toBe(123);
         }
         if (boolean.is(value)) {
-            assignableTo<false>(value);
-            assignableTo<typeof value>(false);
+            expectTypeOf(value).toEqualTypeOf<false>();
             expect(value).toBe(false);
         }
         if (unknownRecord.is(value)) {
-            assignableTo<{ key: 'value' }>(value);
-            assignableTo<typeof value>({ key: 'value' });
+            expectTypeOf(value).toEqualTypeOf<{ readonly key: 'value' }>();
             expect(value).toEqual({ key: 'value' });
         }
 
         const array = [value, value];
         if (array.every(string.is)) {
-            assignableTo<'a string'[]>(array);
-            assignableTo<typeof array>(['a string']);
+            expectTypeOf(array).toEqualTypeOf<'a string'[]>();
             expect(array).toEqual(['a string', 'a string']);
         } else if (array.every(number.is)) {
-            assignableTo<123[]>(array);
-            assignableTo<typeof array>([123]);
+            expectTypeOf(array).toEqualTypeOf<123[]>();
             expect(array).toEqual([123, 123]);
         } else if (array.every(boolean.is)) {
-            assignableTo<false[]>(array);
-            assignableTo<typeof array>([false]);
+            expectTypeOf(array).toEqualTypeOf<false[]>();
             expect(array).toEqual([false, false]);
         } else if (array.every(unknownRecord.is)) {
-            assignableTo<{ key: 'value' }[]>(array);
-            assignableTo<typeof array>([{ key: 'value' }]);
+            expectTypeOf(array).toEqualTypeOf<{ readonly key: 'value' }[]>();
             expect(array).toEqual([{ key: 'value' }, { key: 'value' }]);
         } else {
             assert.fail('should have matched one of the other predicates');
         }
 
-        testTypes(() => {
+        () => {
             string.assert(value);
-            assignableTo<'a string'>(value);
-            assignableTo<typeof value>('a string');
-        });
+            expectTypeOf(value).toEqualTypeOf<'a string'>();
+        };
 
-        testTypes(() => {
+        () => {
             number.assert(value);
-            assignableTo<123>(value);
-            assignableTo<typeof value>(123);
-        });
+            expectTypeOf(value).toEqualTypeOf<123>();
+        };
 
-        testTypes(() => {
+        () => {
             boolean.assert(value);
-            assignableTo<false>(value);
-            assignableTo<typeof value>(false);
-        });
+            expectTypeOf(value).toEqualTypeOf<false>();
+        };
 
-        testTypes(() => {
+        () => {
             unknownRecord.assert(value);
-            assignableTo<{ key: 'value' }>(value);
-            assignableTo<typeof value>({ key: 'value' });
-        });
+            expectTypeOf(value).toEqualTypeOf<{ readonly key: 'value' }>();
+        };
     });
 
     test('guard value: unknown', () => {
         const value = undefined as unknown;
+        expectTypeOf(value).toBeUnknown();
         if (string.is(value)) {
-            assignableTo<string>(value);
-            assignableTo<typeof value>('a string');
+            expectTypeOf(value).toEqualTypeOf<string>();
         }
         if (number.is(value)) {
-            assignableTo<number>(value);
-            assignableTo<typeof value>(123);
+            expectTypeOf(value).toEqualTypeOf<number>();
         }
         if (boolean.is(value)) {
-            assignableTo<boolean>(value);
-            assignableTo<typeof value>(false);
+            expectTypeOf(value).toEqualTypeOf<boolean>();
         }
         if (unknownRecord.is(value)) {
-            assignableTo<unknownRecord>(value);
-            assignableTo<typeof value>({ key: 'value' });
+            expectTypeOf(value).toEqualTypeOf<unknownRecord>();
         }
         expect(undefinedType.is(value)).toBeTrue();
         if (undefinedType.is(value)) {
-            assignableTo<undefined>(value);
-            assignableTo<typeof value>(undefined);
+            expectTypeOf(value).toEqualTypeOf<undefined>();
         }
 
         const array = [value, value];
         if (array.every(string.is)) {
-            assignableTo<string[]>(array);
-            assignableTo<typeof array>(['a string']);
+            expectTypeOf(array).toEqualTypeOf<string[]>();
         } else if (array.every(number.is)) {
-            assignableTo<number[]>(array);
-            assignableTo<typeof array>([123]);
+            expectTypeOf(array).toEqualTypeOf<number[]>();
         } else if (array.every(boolean.is)) {
-            assignableTo<boolean[]>(array);
-            assignableTo<typeof array>([false]);
+            expectTypeOf(array).toEqualTypeOf<boolean[]>();
         } else if (array.every(unknownRecord.is)) {
-            assignableTo<unknownRecord[]>(array);
-            assignableTo<typeof array>([{ key: 'value' }]);
+            expectTypeOf(array).toEqualTypeOf<unknownRecord[]>();
         } else if (array.every(undefinedType.is)) {
-            assignableTo<undefined[]>(array);
-            assignableTo<typeof array>([undefined]);
+            expectTypeOf(array).toEqualTypeOf<undefined[]>();
         } else {
             assert.fail('should have matched the last predicate');
         }
 
-        testTypes(() => {
+        () => {
+            const value = undefined as unknown;
             string.assert(value);
-            assignableTo<string>(value);
-            assignableTo<typeof value>('a string');
-        });
+            expectTypeOf(value).toEqualTypeOf<string>();
+        };
 
-        testTypes(() => {
+        () => {
+            const value = undefined as unknown;
             number.assert(value);
-            assignableTo<number>(value);
-            assignableTo<typeof value>(123);
-        });
+            expectTypeOf(value).toEqualTypeOf<number>();
+        };
 
-        testTypes(() => {
+        () => {
+            const value = undefined as unknown;
             boolean.assert(value);
-            assignableTo<boolean>(value);
-            assignableTo<typeof value>(false);
-        });
+            expectTypeOf(value).toEqualTypeOf<boolean>();
+        };
 
-        testTypes(() => {
+        () => {
+            const value = undefined as unknown;
             unknownRecord.assert(value);
-            assignableTo<unknownRecord>(value);
-            assignableTo<typeof value>({ key: 'value' });
-        });
+            expectTypeOf(value).toEqualTypeOf<unknownRecord>();
+        };
     });
 
     test('guard objects', () => {
@@ -151,16 +130,16 @@ describe(BaseTypeImpl, () => {
             | { narrow: string; wide: 'sneaky narrow' } // compatible if narrow happens to be `'value'`
             | { something: 'else' }; // compatible if narrow and wide are present, we don't know.
         const obj = { narrow: 'value', wide: 'sneaky narrow' } as UnionOfObjects;
+        expectTypeOf(obj).toEqualTypeOf<UnionOfObjects>();
         if (TheType.is(obj)) {
-            assignableTo<{ narrow: 'value'; wide: 'sneaky narrow' } | { something: 'else'; narrow: 'value'; wide: string }>(obj);
-            assignableTo<typeof obj>({ narrow: 'value', wide: 'sneaky narrow' });
-            assignableTo<typeof obj>({ something: 'else', narrow: 'value', wide: 'something else' });
+            expectTypeOf(obj).branded.toEqualTypeOf<
+                { narrow: 'value'; wide: 'sneaky narrow' } | { something: 'else'; narrow: 'value'; wide: string }
+            >();
         }
 
         const value = { narrow: 'value', wide: 'a literal' as const };
         if (TheType.is(value)) {
-            assignableTo<{ narrow: 'value'; wide: 'a literal' }>(value);
-            assignableTo<typeof value>({ narrow: 'value', wide: 'a literal' });
+            expectTypeOf(value).branded.toEqualTypeOf<{ narrow: 'value'; wide: 'a literal' }>();
         }
     });
 
@@ -179,16 +158,15 @@ describe(BaseTypeImpl, () => {
             }),
         );
 
-        assignableTo<Obj>({ a: NumericString('123'), b: int(123) });
-        // @ts-expect-error because values are not checked
-        assignableTo<Obj>({ a: '123', b: 123 });
+        expectTypeOf({ a: NumericString('123'), b: int(123) }).toMatchTypeOf<Obj>();
+        expectTypeOf({ a: '123', b: 123 }).not.toMatchTypeOf<Obj>(); // because values are not checked
 
         expect(Obj.literal({ a: '123', b: 123 })).toEqual({ a: '123', b: 123 });
 
         // Parsers are still run
         expect(Obj.literal({ a: '   123    ', b: 123 })).toEqual({ a: '123', b: 123 });
 
-        assignableTo<Obj>(Obj.literal({ a: '123', b: 123 }));
+        expectTypeOf(Obj.literal({ a: '123', b: 123 })).toEqualTypeOf<Obj>();
 
         expect(() => Obj.literal({ a: 'abc', b: 1.2 })).toThrowErrorMatchingInlineSnapshot(`
             "errors in [Obj]:

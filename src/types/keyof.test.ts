@@ -1,6 +1,7 @@
+import { expectTypeOf } from 'expect-type';
 import { autoCast } from '../autocast';
 import type { The } from '../interfaces';
-import { ValidationErrorForTest, assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { ValidationErrorForTest, basicTypeMessage, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { keyof, valueof } from './keyof';
 import { literal } from './literal';
 import { union } from './union';
@@ -66,22 +67,16 @@ describe(keyof, () => {
         }
     });
 
-    testTypes(() => {
-        assignableTo<YourAnswer>('yes');
-        assignableTo<YourAnswer>('no');
-        assignableTo<YourAnswer>('maybe');
-        assignableTo<'yes' | 'no' | 'maybe'>(YourAnswer(0));
+    test('types', () => {
+        expectTypeOf<YourAnswer>().toEqualTypeOf<'yes' | 'no' | 'maybe'>();
 
         type AsUnion = The<typeof AsUnion>;
         const AsUnion = union([literal('maybe'), literal('yes'), literal('no')]);
-        assignableTo<AsUnion>(YourAnswer(0));
-        assignableTo<YourAnswer>(AsUnion(0));
+        expectTypeOf(YourAnswer.literal('maybe')).toEqualTypeOf<YourAnswer>();
+        expectTypeOf<YourAnswer>().toEqualTypeOf<AsUnion>();
 
-        const translated = YourAnswer.translate(0);
-        assignableTo<'trouble' | boolean>(translated);
-        assignableTo<typeof translated>('trouble');
-        assignableTo<typeof translated>(false);
-        assignableTo<typeof translated>(true);
+        const translated = YourAnswer.translate('yes');
+        expectTypeOf(translated).toEqualTypeOf<'trouble' | boolean>();
     });
 });
 
@@ -93,10 +88,11 @@ describe(valueof, () => {
     const FromStringEnum = valueof(StringEnum);
 
     test('compatibility', () => {
-        assignableTo<'uno' | 'dos'>(FromStringEnum('uno'));
-        assignableTo<The<typeof FromStringEnum>>(StringEnum.One);
-        // @ts-expect-error because TypeScript does not allow assigning correct literals to enum bindings
-        assignableTo<The<typeof FromStringEnum>>('one');
+        expectTypeOf(FromStringEnum.literal(StringEnum.One)).toEqualTypeOf<StringEnum>();
+        expectTypeOf<StringEnum>().toEqualTypeOf<The<typeof FromStringEnum>>();
+        expectTypeOf(FromStringEnum.literal(StringEnum.One)).toMatchTypeOf<'uno' | 'dos'>();
+        // because TypeScript does not allow assigning correct literals to enum bindings
+        expectTypeOf<'one'>().not.toMatchTypeOf<The<typeof FromStringEnum>>();
         expect(FromStringEnum('dos')).toBe('dos');
         expect(FromStringEnum.translate('dos')).toBe('Two');
     });

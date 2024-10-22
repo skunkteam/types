@@ -1,6 +1,7 @@
+import { expectTypeOf } from 'expect-type';
 import { autoCast, autoCastAll } from '../autocast';
 import type { The } from '../interfaces';
-import { assignableTo, basicTypeMessage, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { basicTypeMessage, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { plural } from '../utils';
 import { pattern, string } from './string';
 
@@ -81,10 +82,10 @@ testTypeImpl({
     ],
 });
 
-testTypes(() => {
-    assignableTo<string>(ISODate(0));
-    // @ts-expect-error string is not assignable to ISODate
-    assignableTo<ISODate>('2000-01-01');
+test('types', () => {
+    expectTypeOf(ISODate('2000-01-01')).toEqualTypeOf<ISODate>();
+    expectTypeOf(ISODate('2000-01-01')).toMatchTypeOf<string>();
+    expectTypeOf('2000-01-01').not.toMatchTypeOf<ISODate>();
 });
 
 testTypeImpl({
