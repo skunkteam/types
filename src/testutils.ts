@@ -6,14 +6,6 @@ import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from '.
 import { an, basicType, printValue } from './utils';
 import { ValidationError } from './validation-error';
 
-export function assignableTo<T>(_value: T): void {
-    // intentionally left blank
-}
-
-export function testTypes(..._args: [msg: string, fn: () => void] | [fn: () => void]): void {
-    // intentionally left blank
-}
-
 export interface TypeTestCase {
     name: string;
     type: Type<any> | Type<any>[];

@@ -1,6 +1,7 @@
+import { expectTypeOf } from 'expect-type';
 import { autoCast, autoCastAll } from '../autocast';
 import type { The } from '../interfaces';
-import { assignableTo, createExample, defaultUsualSuspects, testTypeImpl, testTypes } from '../testutils';
+import { createExample, defaultUsualSuspects, testTypeImpl } from '../testutils';
 import { array } from './array';
 import { object } from './interface';
 import { undefinedType } from './literal';
@@ -134,30 +135,21 @@ testTypeImpl({
     invalidValues: [[[null], 'error in [undefined[]] at <[0]>: expected an undefined, got a null']],
 });
 
-testTypes(() => {
+test('types', () => {
     type MyArray = The<typeof MyArray>;
     const MyArray = array(object({ a: string, b: number }));
 
-    assignableTo<MyArray>([
-        { a: 'string', b: 1 },
-        { a: 'another string', b: 2 },
-    ]);
-    assignableTo<Array<{ a: string; b: number }>>(MyArray(0));
-
-    // @ts-expect-error wrong element type
-    assignableTo<MyArray>([1]);
+    expectTypeOf(MyArray.literal([{ a: 'string', b: 123 }])).toEqualTypeOf<MyArray>();
+    expectTypeOf<MyArray>().toEqualTypeOf<Array<{ a: string; b: number }>>();
 });
 
-testTypes('correct inference of arrays of branded types', () => {
+test('correct inference of arrays of branded types', () => {
     type MyBrandedType = The<typeof MyBrandedType>;
     const MyBrandedType = string.withConfig('MyBrandedType', { minLength: 2, maxLength: 2 });
     type MyBrandedTypeArray = The<typeof MyBrandedTypeArray>;
     const MyBrandedTypeArray = array(MyBrandedType);
 
-    const brandedArray = MyBrandedTypeArray.literal(['ab']);
-
-    assignableTo<MyBrandedType[]>(brandedArray);
-    assignableTo<MyBrandedTypeArray>([MyBrandedType.literal('ab')]);
-    // @ts-expect-error not a branded string
-    assignableTo<MyBrandedTypeArray>(['ab']);
+    expectTypeOf(MyBrandedTypeArray.literal(['ab'])).toEqualTypeOf<MyBrandedType[]>();
+    expectTypeOf([MyBrandedType.literal('ab')]).toEqualTypeOf<MyBrandedTypeArray>();
+    expectTypeOf(['ab']).not.toEqualTypeOf<MyBrandedTypeArray>();
 });

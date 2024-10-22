@@ -1,16 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { expectTypeOf } from 'expect-type';
 import { autoCast } from './autocast';
 import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
-import {
-    assignableTo,
-    basicTypeMessage,
-    createExample,
-    defaultMessage,
-    defaultUsualSuspects,
-    stripped,
-    testTypeImpl,
-    testTypes,
-} from './testutils';
+import { basicTypeMessage, createExample, defaultMessage, defaultUsualSuspects, stripped, testTypeImpl } from './testutils';
 import { array, boolean, int, number, object, string } from './types';
 import { partial } from './types/interface';
 import { intersection } from './types/intersection';
@@ -688,46 +680,29 @@ testTypeImpl({
 
 // Static types tests
 
-testTypes('TypeOf', () => {
-    const aString: The<typeof string> = 'a string';
-    const aNumber: The<typeof number> = 123;
-
-    assignableTo<The<typeof string>>('a string');
-    assignableTo<string>(aString);
-    // @ts-expect-error number not assignable to string
-    assignableTo<The<typeof string>>(123);
-    // @ts-expect-error string not assignable to number
-    assignableTo<number>(aString);
-
-    assignableTo<The<typeof number>>(123);
-    assignableTo<number>(aNumber);
-
-    // @ts-expect-error string not assignable to number
-    assignableTo<The<typeof number>>('a string');
-    // @ts-expect-error number not assignable to string
-    assignableTo<string>(aNumber);
+test('TypeOf', () => {
+    expectTypeOf(string('abc')).toEqualTypeOf<string>();
+    expectTypeOf(number(123)).toEqualTypeOf<number>();
+    expectTypeOf<The<typeof string>>().toEqualTypeOf<string>();
+    expectTypeOf<The<typeof number>>().toEqualTypeOf<number>();
 
     // Branded values: Percentage is assignable to number, but number is not assignable to Percentage.
 
-    assignableTo<Percentage>(Percentage(50));
-    assignableTo<number>(Percentage(50));
-    // @ts-expect-error number not assignable to Percentage
-    assignableTo<Percentage>(123);
+    expectTypeOf(Percentage(50)).toEqualTypeOf<Percentage>();
+    expectTypeOf<Percentage>().toMatchTypeOf<number>();
+    expectTypeOf<number>().not.toMatchTypeOf<Percentage>();
 
     type WithUser = The<typeof WithUser>;
     const WithUser = MyGenericWrapper(User);
-    assignableTo<MyGenericWrapper<User>>(WithUser({}));
-    assignableTo<WithUser>(WithUser({}));
-    assignableTo<WithUser>({ ok: true, inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: ShoeSize(5) } });
-    assignableTo<MyGenericWrapper<User>>({
+    expectTypeOf<WithUser>().toEqualTypeOf<MyGenericWrapper<User>>();
+    expectTypeOf<WithUser>().toEqualTypeOf<{ ok: boolean; inner: User }>();
+    expectTypeOf({
         ok: true,
         inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: ShoeSize(5) },
-    });
-    assignableTo<{ ok: boolean; inner: User }>({} as MyGenericWrapper<User>);
-    assignableTo<{ ok: boolean; inner: User }>({} as WithUser);
+    }).toEqualTypeOf<WithUser>();
 });
 
-testTypes('unbranding and literals', () => {
+test('unbranding and literals', () => {
     User.literal({
         name: {
             first: 'John',
@@ -744,10 +719,11 @@ testTypes('unbranding and literals', () => {
             shoeSize: 48,
         },
     });
-    assignableTo<Unbranded<Percentage>>(42);
-    assignableTo<DeepUnbranded<Percentage>>(42);
-    assignableTo<DeepUnbranded<User>>({ name: { first: 'John', last: 'Doe' }, shoeSize: 48 });
-    assignableTo<DeepUnbranded<WithUser>>({ ok: true, inner: { name: { first: 'John', last: 'Doe' }, shoeSize: 48 } });
+    expectTypeOf<Percentage>().not.toEqualTypeOf<number>();
+    expectTypeOf<Unbranded<Percentage>>().toEqualTypeOf<number>();
+    expectTypeOf<DeepUnbranded<Percentage>>().toEqualTypeOf<number>();
+    expectTypeOf<DeepUnbranded<User>>().toEqualTypeOf<{ name: { first: string; last: string }; shoeSize: number }>();
+    expectTypeOf<DeepUnbranded<WithUser>>().toEqualTypeOf<{ ok: boolean; inner: DeepUnbranded<User> }>();
 
     type ComplexBrandedScenario = The<typeof ComplexBrandedScenario>;
     const ComplexBrandedScenario = object({
@@ -761,35 +737,31 @@ testTypes('unbranding and literals', () => {
         .withOptional({ optional: SmallString })
         .withConstraint('SpecialObject', () => true);
 
-    assignableTo<DeepUnbranded<ComplexBrandedScenario>>({ int: 123, array: [{ name: { first: 'first', last: 'last' }, shoeSize: 12 }] });
+    expectTypeOf<DeepUnbranded<ComplexBrandedScenario>>().toHaveProperty('int').toEqualTypeOf<number>();
+    expectTypeOf<DeepUnbranded<ComplexBrandedScenario>>().toHaveProperty('optional').toEqualTypeOf<string | undefined>();
+    expectTypeOf<DeepUnbranded<ComplexBrandedScenario>>()
+        .toHaveProperty('array')
+        .toEqualTypeOf<Array<{ name: { first: string; last: string }; shoeSize: number; optional?: number }>>();
 });
 
-testTypes('assignability of sub-brands', () => {
-    assignableTo<number>(Age(123));
-    assignableTo<int>(Age(123));
-    assignableTo<Age>(Age(123));
-    // @ts-expect-error int not assignable to Age
-    assignableTo<Age>(int(123));
-    // @ts-expect-error number not assignable to Age
-    assignableTo<Age>(123);
+test('assignability of sub-brands', () => {
+    expectTypeOf(Age(123)).toEqualTypeOf<Age>();
+    expectTypeOf<Age>().toMatchTypeOf<int>();
+    expectTypeOf<Age>().toMatchTypeOf<number>();
+    expectTypeOf<int>().not.toMatchTypeOf<Age>();
+    expectTypeOf<number>().not.toMatchTypeOf<Age>();
 
-    assignableTo<number>(ConfirmedAge(123));
-    assignableTo<int>(ConfirmedAge(123));
-    assignableTo<Age>(ConfirmedAge(123));
-    assignableTo<ConfirmedAge>(ConfirmedAge(123));
-
-    // @ts-expect-error number not assignable to CheckedAge
-    assignableTo<ConfirmedAge>(123);
-
-    // @ts-expect-error int not assignable to CheckedAge
-    assignableTo<ConfirmedAge>(int(123));
-
-    // @ts-expect-error Age not assignable to CheckedAge
-    assignableTo<ConfirmedAge>(Age(123));
+    expectTypeOf(ConfirmedAge(123)).toEqualTypeOf<ConfirmedAge>();
+    expectTypeOf<ConfirmedAge>().toMatchTypeOf<Age>();
+    expectTypeOf<ConfirmedAge>().toMatchTypeOf<int>();
+    expectTypeOf<ConfirmedAge>().toMatchTypeOf<number>();
+    expectTypeOf<int>().not.toMatchTypeOf<ConfirmedAge>();
+    expectTypeOf<number>().not.toMatchTypeOf<ConfirmedAge>();
+    expectTypeOf<Age>().not.toMatchTypeOf<ConfirmedAge>();
 });
 
-testTypes('usability of assert', () => {
-    const value = {};
+test('usability of assert', () => {
+    const value = { a: 'string' };
     const MyImplicitType = object('MyImplicitType', { a: string });
     const MyExplicitType: Type<{ a: string }> = object('MyExplicitType', { a: string });
 
@@ -800,21 +772,22 @@ testTypes('usability of assert', () => {
     MyExplicitType.assert(value);
 });
 
-testTypes('type inference', () => {
-    function elementOfType<T>(_type: Type<T>): T {
+test('type inference', () => {
+    function elementOfType<T>(_type: Type<T> | ObjectType<T>): T {
         return 0 as any;
     }
 
-    assignableTo<number>(elementOfType(number));
-    assignableTo<ConfirmedAge>(elementOfType(ConfirmedAge));
-    assignableTo<User>(elementOfType(User));
-    assignableTo<RestrictedUser>(elementOfType(RestrictedUser));
-    assignableTo<NestedFromString>(elementOfType(NestedFromString));
-    assignableTo<ComplexNesting>(elementOfType(ComplexNesting));
-    assignableTo<IntersectionTest>(elementOfType(IntersectionTest));
-    assignableTo<MyGenericWrapper<User>>(elementOfType(MyGenericWrapper(User)));
-    assignableTo<GenericAugmentation<User>>(elementOfType(GenericAugmentation(User)));
+    expectTypeOf(elementOfType(number)).toEqualTypeOf<number>();
+    expectTypeOf(elementOfType(ConfirmedAge)).toEqualTypeOf<ConfirmedAge>();
+    expectTypeOf(elementOfType(User)).toEqualTypeOf<User>();
+    expectTypeOf(elementOfType(RestrictedUser)).toEqualTypeOf<RestrictedUser>();
+    expectTypeOf(elementOfType(NestedFromString)).toEqualTypeOf<NestedFromString>();
+    expectTypeOf(elementOfType(ComplexNesting)).toEqualTypeOf<ComplexNesting>();
+    expectTypeOf(elementOfType(IntersectionTest)).toEqualTypeOf<IntersectionTest>();
+    expectTypeOf(elementOfType(MyGenericWrapper(User))).toEqualTypeOf<MyGenericWrapper<User>>();
+    expectTypeOf(elementOfType(GenericAugmentation(User))).toEqualTypeOf<GenericAugmentation<User>>();
 
-    // @ts-expect-error I still don't know how to fix this for `extendWith`:
-    assignableTo<Age>(elementOfType(Age));
+    // I still don't know how to fix this for `extendWith`:
+    expectTypeOf(elementOfType(Age)).toEqualTypeOf<number>();
+    expectTypeOf(elementOfType(Age)).not.toEqualTypeOf<Age>();
 });

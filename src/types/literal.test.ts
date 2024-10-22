@@ -1,6 +1,7 @@
+import { expectTypeOf } from 'expect-type';
 import { autoCast } from '../autocast';
 import type { The } from '../interfaces';
-import { assignableTo, testTypeImpl, testTypes } from '../testutils';
+import { testTypeImpl } from '../testutils';
 import { literal, nullType, undefinedType } from './literal';
 
 testTypeImpl({
@@ -125,10 +126,10 @@ testTypeImpl({
     validConversions: [['42', 42]],
 });
 
-testTypes('literal', () => {
+test('literal', () => {
     type MyLiteral = The<typeof MyLiteral>;
     const MyLiteral = literal('some value');
 
-    assignableTo<'some value'>(MyLiteral('some value'));
-    assignableTo<MyLiteral>('some value');
+    expectTypeOf(MyLiteral('some value')).toEqualTypeOf<MyLiteral>;
+    expectTypeOf<MyLiteral>().toEqualTypeOf<'some value'>();
 });
