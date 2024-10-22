@@ -1,6 +1,7 @@
+import { expectTypeOf } from 'expect-type';
 import { autoCast, autoCastAll } from '../autocast';
 import type { OneOrMore, The } from '../interfaces';
-import { assignableTo, defaultUsualSuspects, stripped, testTypeImpl, testTypes } from '../testutils';
+import { defaultUsualSuspects, stripped, testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 import { InterfacePickOptions, InterfaceType, object, partial } from './interface';
 import { undefinedType } from './literal';
@@ -142,16 +143,15 @@ describe(object, () => {
         expect(impl).toHaveProperty('name', name);
     });
 
-    testTypes('type of keys and props', () => {
-        const { keys, props, propsInfo } = MyType;
-        assignableTo<{ s: typeof string; n: typeof number }>(props);
-        assignableTo<{ s: { optional: boolean; type: typeof string }; n: { optional: boolean; type: typeof number } }>(propsInfo);
-        assignableTo<typeof props>({ n: number, s: string });
-        assignableTo<ReadonlyArray<'s' | 'n'>>(keys);
-        assignableTo<typeof keys>(['s', 'n']);
+    test('type of keys and props', () => {
+        expectTypeOf(MyType).toHaveProperty('keys').toEqualTypeOf<ReadonlyArray<'s' | 'n'>>();
+        expectTypeOf(MyType).toHaveProperty('props').toEqualTypeOf<{ s: typeof string; n: typeof number }>();
+        expectTypeOf(MyType)
+            .toHaveProperty('propsInfo')
+            .toEqualTypeOf<{ s: { optional: boolean; type: typeof string }; n: { optional: boolean; type: typeof number } }>();
     });
 
-    testTypes('not readonly by default', () => {
+    test('not readonly by default', () => {
         const value: MyType = { n: 1, s: 's' };
         value.n = 4;
         value.s = 'str';
@@ -218,28 +218,15 @@ describe('withOptional', () => {
         expect(() => ValidationsReused.literal({ prop: 'wrong value', other: 'correct' })).toThrow('additional validation failed');
     });
 
-    testTypes('type of props and the resulting type', () => {
-        const { props, propsInfo } = MyTypeWithOptional;
-        assignableTo<{ s: typeof string; n: typeof number }>(props);
-        assignableTo<typeof props>({ n: number, s: string, b: boolean });
-        assignableTo<{
+    test('type of props and the resulting type', () => {
+        expectTypeOf(MyTypeWithOptional).toHaveProperty('props').toEqualTypeOf<{ s: typeof string; n: typeof number; b: typeof boolean }>();
+        expectTypeOf(MyTypeWithOptional).toHaveProperty('propsInfo').toEqualTypeOf<{
             s: { optional: boolean; type: typeof string };
             n: { optional: boolean; type: typeof number };
             b: { optional: boolean; type: typeof boolean };
-        }>(propsInfo);
-        assignableTo<typeof propsInfo>({
-            s: { optional: false, type: string },
-            n: { optional: false, type: number },
-            b: { optional: true, type: boolean },
-        });
-        assignableTo<MyTypeWithOptional>({ s: 'asdf' });
-        assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf' });
-        assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf', b: true });
-        // @ts-expect-error because q is not included in the type
-        assignableTo<MyTypeWithOptional>({ n: 123, s: 'asdf', q: true });
-        assignableTo<{ n?: number; s: string; b?: boolean }>(MyTypeWithOptional(0));
-        // @ts-expect-error because n is optional now
-        assignableTo<{ n: number; s: string; b?: boolean }>(MyTypeWithOptional(0));
+        }>();
+
+        expectTypeOf<MyTypeWithOptional>().toEqualTypeOf<{ s: string; n?: number; b?: boolean }>();
     });
 });
 
@@ -355,23 +342,14 @@ describe.each(['pick', 'omit'] as const)('%s', method => {
         );
     });
 
-    testTypes('type of props and the resulting type', () => {
-        const { props, propsInfo } = PickedType;
-        assignableTo<{ mandatory: typeof string; optional: typeof number }>(props);
-        assignableTo<typeof props>({ mandatory: string, optional: number });
-        assignableTo<{
+    test('type of props and the resulting type', () => {
+        expectTypeOf(PickedType).toHaveProperty('props').toEqualTypeOf<{ mandatory: typeof string; optional: typeof number }>();
+        expectTypeOf(PickedType).toHaveProperty('propsInfo').toEqualTypeOf<{
             mandatory: { optional: boolean; type: typeof string };
             optional: { optional: boolean; type: typeof number };
-        }>(propsInfo);
-        assignableTo<typeof propsInfo>({
-            mandatory: { optional: false, type: string },
-            optional: { optional: false, type: number },
-        });
-        assignableTo<PickedType>({ mandatory: 'asdf' });
-        assignableTo<PickedType>({ mandatory: 'asdf', optional: 123 });
-        // @ts-expect-error because q is not included in the type
-        assignableTo<PickedType>({ mandatory: 'asdf', optional: 123, q: true });
-        assignableTo<{ mandatory: string; optional?: number }>(PickedType(0));
+        }>();
+
+        expectTypeOf<PickedType>().toEqualTypeOf<{ mandatory: string; optional?: number }>();
     });
 
     method === 'omit' &&

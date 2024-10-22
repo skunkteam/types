@@ -1,7 +1,8 @@
+import { expectTypeOf } from 'expect-type';
 import { autoCastAll } from '../autocast';
 import { BaseTypeImpl } from '../base-type';
 import type { The } from '../interfaces';
-import { assignableTo, testTypeImpl, testTypes } from '../testutils';
+import { testTypeImpl } from '../testutils';
 import { boolean } from './boolean';
 import { object, partial } from './interface';
 import { IntersectionOfTypeTuple, intersection } from './intersection';
@@ -91,17 +92,16 @@ describe(intersection, () => {
         );
     });
 
-    testTypes('correct intersection of types', () => {
+    test('correct intersection of types', () => {
         type Union = BaseTypeImpl<{ option: 'a' } | { option: 'b' }>;
         type Name = BaseTypeImpl<{ first: string; last: string }>;
         type ManualIntersection = ({ option: 'a' } | { option: 'b' }) & { first: string; last: string };
         type CalculatedIntersection = IntersectionOfTypeTuple<[Union, Name]>;
 
-        assignableTo<CalculatedIntersection>({} as ManualIntersection);
-        assignableTo<ManualIntersection>({} as CalculatedIntersection);
+        expectTypeOf<CalculatedIntersection>().branded.toEqualTypeOf<ManualIntersection>();
     });
 
-    testTypes('mixed "and" and "or"', () => {
+    test('mixed "and" and "or"', () => {
         type InnerType = The<typeof InnerType>;
         const InnerType = object('InnerType', { innerProp: boolean });
 
@@ -110,42 +110,22 @@ describe(intersection, () => {
             .and(InnerType)
             .or(object({ type: literal('nested'), nested: InnerType }));
 
-        assignableTo<TaggedUnionWithAndAndOr>({ type: 'and', innerProp: true });
-        assignableTo<TaggedUnionWithAndAndOr>({ type: 'nested', nested: { innerProp: true } });
-        assignableTo<({ type: 'and' } & InnerType) | { type: 'nested'; nested: InnerType }>(TaggedUnionWithAndAndOr(0));
-
-        // @ts-expect-error because one of the `or` branches is missing
-        assignableTo<{ type: 'nested'; nested: InnerType }>(TaggedUnionWithAndAndOr(0));
-        // @ts-expect-error because the `and` branch is incorrect
-        assignableTo<({ type: 'and' } & { otherType: string }) | { type: 'nested'; nested: InnerType }>(TaggedUnionWithAndAndOr(0));
+        expectTypeOf<TaggedUnionWithAndAndOr>().toEqualTypeOf<
+            { type: 'and'; innerProp: boolean } | { type: 'nested'; nested: { innerProp: boolean } }
+        >();
     });
 
-    testTypes('resulting type and props', () => {
+    test('resulting type and props', () => {
         type MyIntersection = The<typeof MyIntersection>;
         const MyIntersection = intersection([intersection([partial({ a: number })]), object({ b: number }), object({ c: boolean })]);
 
-        assignableTo<MyIntersection>({ b: 1, c: false });
-        assignableTo<MyIntersection>({ a: 1, b: 2, c: true });
-        assignableTo<{ a?: number; b: number; c: boolean }>(MyIntersection({}));
+        expectTypeOf<MyIntersection>().toEqualTypeOf<{ a?: number; b: number; c: boolean }>();
 
-        // @ts-expect-error d is unknown property
-        assignableTo<MyIntersection>({ a: 1, b: 2, c: true, d: 0 });
-
-        // @ts-expect-error a is optional in MyIntersection
-        assignableTo<{ a: number }>(MyIntersection({}));
-
-        const { props, propsInfo } = MyIntersection;
-        assignableTo<{ a: typeof number; b: typeof number; c: typeof boolean }>(props);
-        assignableTo<typeof props>({ a: number, b: number, c: boolean });
-        assignableTo<{
+        expectTypeOf(MyIntersection).toHaveProperty('props').toEqualTypeOf<{ a: typeof number; b: typeof number; c: typeof boolean }>();
+        expectTypeOf(MyIntersection).toHaveProperty('propsInfo').toEqualTypeOf<{
             a: { optional: boolean; type: typeof number };
             b: { optional: boolean; type: typeof number };
             c: { optional: boolean; type: typeof boolean };
-        }>(propsInfo);
-        assignableTo<typeof propsInfo>({
-            a: { optional: false, type: number },
-            b: { optional: false, type: number },
-            c: { optional: false, type: boolean },
-        });
+        }>();
     });
 });
