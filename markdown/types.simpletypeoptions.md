@@ -14,7 +14,7 @@ interface SimpleTypeOptions<ResultType, TypeConfig>
 
 | Property                                                                         | Modifiers | Type                                                                                                       | Description  |
 | -------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------- | ------------ |
-| [acceptVisitor?](./types.simpletypeoptions.acceptvisitor.md)                     |           | SimpleAcceptVisitor&lt;ResultType, TypeConfig&gt;                                                          | _(Optional)_ |
+| [acceptVisitor?](./types.simpletypeoptions.acceptvisitor.md)                     |           | [SimpleAcceptVisitor](./types.simpleacceptvisitor.md)<!-- -->&lt;ResultType, TypeConfig&gt;                | _(Optional)_ |
 | [autoCaster?](./types.simpletypeoptions.autocaster.md)                           |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['autoCaster'\]              | _(Optional)_ |
 | [combineConfig?](./types.simpletypeoptions.combineconfig.md)                     |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['combineConfig'\]           | _(Optional)_ |
 | [enumerableLiteralDomain?](./types.simpletypeoptions.enumerableliteraldomain.md) |           | [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ResultType, TypeConfig&gt;\['enumerableLiteralDomain'\] | _(Optional)_ |

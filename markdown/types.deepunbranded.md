@@ -9,18 +9,15 @@ Unbrand a given type (recursive).
 **Signature:**
 
 ```typescript
-type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
-    ? {
-          [P in keyof T & number]: DeepUnbranded<T[P]>;
-      }
+type DeepUnbranded<T> = T extends readonly [any, ...any[]] | readonly []
+    ? UnbrandValues<Unbranded<T>>
+    : T extends Array<infer E>
+    ? Array<DeepUnbranded<E>>
+    : T extends ReadonlyArray<infer E>
+    ? ReadonlyArray<DeepUnbranded<E>>
     : T extends Record<string, unknown>
-    ? Omit<
-          {
-              [P in keyof T]: DeepUnbranded<T[P]>;
-          },
-          typeof brands
-      >
+    ? UnbrandValues<Unbranded<T>>
     : Unbranded<T>;
 ```
 
-**References:** [DeepUnbranded](./types.deepunbranded.md)<!-- -->, [brands](./types.brands.md)<!-- -->, [Unbranded](./types.unbranded.md)
+**References:** [UnbrandValues](./types.unbrandvalues.md)<!-- -->, [Unbranded](./types.unbranded.md)<!-- -->, [DeepUnbranded](./types.deepunbranded.md)

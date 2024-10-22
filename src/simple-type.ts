@@ -1,7 +1,7 @@
 import { BaseTypeImpl, createType } from './base-type';
 import type { BasicType, Result, Type, ValidationOptions, ValidationResult, Visitor } from './interfaces';
 
-type SimpleAcceptVisitor<ResultType, TypeConfig> = <R>(type: SimpleType<ResultType, TypeConfig>, visitor: Visitor<R>) => R;
+export type SimpleAcceptVisitor<ResultType, TypeConfig> = <R>(type: SimpleType<ResultType, TypeConfig>, visitor: Visitor<R>) => R;
 
 export interface SimpleTypeOptions<ResultType, TypeConfig> {
     enumerableLiteralDomain?: BaseTypeImpl<ResultType, TypeConfig>['enumerableLiteralDomain'];
