@@ -113,11 +113,7 @@ export function createType<Impl extends BaseTypeImpl<any, any>>(impl: Impl, over
 export type CustomMessage<T, E = void> = undefined | string | ((got: string, input: T, explanation: E) => string);
 
 // @public
-export type DeepUnbranded<T> = T extends ReadonlyArray<unknown> ? {
-    [P in keyof T & number]: DeepUnbranded<T[P]>;
-} : T extends Record<string, unknown> ? Omit<{
-    [P in keyof T]: DeepUnbranded<T[P]>;
-}, typeof brands> : Unbranded<T>;
+export type DeepUnbranded<T> = T extends readonly [any, ...any[]] | readonly [] ? UnbrandValues<Unbranded<T>> : T extends Array<infer E> ? Array<DeepUnbranded<E>> : T extends ReadonlyArray<infer E> ? ReadonlyArray<DeepUnbranded<E>> : T extends Record<string, unknown> ? UnbrandValues<Unbranded<T>> : Unbranded<T>;
 
 // @public
 export const designType: unique symbol;
@@ -460,6 +456,9 @@ export { reportError_2 as reportError }
 // @public
 export type Result<T> = Success<T> | Failure;
 
+// @public (undocumented)
+export type SimpleAcceptVisitor<ResultType, TypeConfig> = <R>(type: SimpleType<ResultType, TypeConfig>, visitor: Visitor<R>) => R;
+
 // @public
 export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType, TypeConfig> {
     accept<R>(visitor: Visitor<R>): R;
@@ -473,8 +472,6 @@ export class SimpleType<ResultType, TypeConfig> extends BaseTypeImpl<ResultType,
 
 // @public (undocumented)
 export interface SimpleTypeOptions<ResultType, TypeConfig> {
-    // Warning: (ae-forgotten-export) The symbol "SimpleAcceptVisitor" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     acceptVisitor?: SimpleAcceptVisitor<ResultType, TypeConfig>;
     // (undocumented)
@@ -563,6 +560,11 @@ export type TypeOfProperties<T extends Properties> = {
 
 // @public
 export type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
+
+// @public (undocumented)
+export type UnbrandValues<T> = {
+    [P in keyof T]: DeepUnbranded<T[P]>;
+};
 
 // @public (undocumented)
 export const undefinedType: TypeImpl<LiteralType<undefined>>;
