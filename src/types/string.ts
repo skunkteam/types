@@ -1,3 +1,4 @@
+import { autoCastFailure } from '..';
 import type { Branded, StringTypeConfig, Type } from '../interfaces';
 import { SimpleType } from '../simple-type';
 import { evalAdditionalChecks, stringStringify } from '../utils';
@@ -26,7 +27,17 @@ export const string: Type<string, StringTypeConfig> = SimpleType.create<string, 
         );
     },
     {
-        autoCaster: String,
+        autoCaster: value => {
+            switch (typeof value) {
+                case 'bigint':
+                case 'boolean':
+                case 'number':
+                case 'string':
+                    return value.toString();
+                default:
+                    return autoCastFailure;
+            }
+        },
         typeConfig: {},
         acceptVisitor: (type, visitor) => visitor.visitStringType(type),
         maybeStringify: stringStringify,

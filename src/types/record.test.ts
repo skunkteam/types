@@ -65,7 +65,7 @@ testTypeImpl({
     ],
     validConversions: [
         [{ 1: 1 }, { 1: '1' }],
-        [{ 123: Symbol('456') }, { 123: 'Symbol(456)' }],
+        [{ 123: false }, { 123: 'false' }],
     ],
 });
 
