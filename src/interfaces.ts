@@ -214,11 +214,17 @@ export type WithBrands<T, BrandNames extends string> = T & { readonly [brands]: 
 export type Unbranded<T> = T extends WithBrands<infer Base, any> ? Base : T;
 
 /** Unbrand a given type (recursive). */
-export type DeepUnbranded<T> = T extends ReadonlyArray<unknown>
-    ? { [P in keyof T & number]: DeepUnbranded<T[P]> }
+export type DeepUnbranded<T> = T extends readonly [any, ...any[]] | readonly []
+    ? UnbrandValues<Unbranded<T>>
+    : T extends Array<infer E>
+    ? Array<DeepUnbranded<E>>
+    : T extends ReadonlyArray<infer E>
+    ? ReadonlyArray<DeepUnbranded<E>>
     : T extends Record<string, unknown>
-    ? Omit<{ [P in keyof T]: DeepUnbranded<T[P]> }, typeof brands>
+    ? UnbrandValues<Unbranded<T>>
     : Unbranded<T>;
+
+export type UnbrandValues<T> = { [P in keyof T]: DeepUnbranded<T[P]> };
 
 /**
  * The properties of an object type.
