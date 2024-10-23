@@ -210,10 +210,10 @@ const MATCHING_BRACKET = {
  *
  * @remarks
  * Used to determine whether to surround the given text with brackets or not. It is also possible to allow one or more types of top-level
- * operations using `allowedSeperator`.
+ * operations using `allowedSeparators`.
  *
  * @param chars - the peekable character iterator
- * @param allowedSeparator - optional allowed group-separators that do not fail validation
+ * @param allowedSeparators - optional allowed group-separators that do not fail validation
  * @param groupEndChar - the end character for the current group, when specified we are currently inside brackets
  * @returns `true` iff brackets match up and no additional bracket is needed for clarity
  */
