@@ -92,9 +92,19 @@ testTypeImpl({
     basicType: 'string',
     validValues: ['', '123'],
     validConversions: [
-        [Symbol('abc'), 'Symbol(abc)'],
+        [false, 'false'],
         [123, '123'],
-        [{ toString: () => 'ok' }, 'ok'],
+        [BigInt(123), '123'],
+        ['abc', 'abc'],
+    ],
+    invalidConversions: [
+        [null, 'error in parser of [string.autoCast]: could not autocast value: null'],
+        [undefined, 'error in parser of [string.autoCast]: could not autocast value: undefined'],
+        [Symbol('abc'), 'error in parser of [string.autoCast]: could not autocast value: [Symbol: abc]'],
+        [Symbol.iterator, 'error in parser of [string.autoCast]: could not autocast value: [Symbol: Symbol.iterator]'],
+        [{ prop: 'value' }, 'error in parser of [string.autoCast]: could not autocast value: { prop: "value" }'],
+        [{ toString: () => 'ok' }, 'error in parser of [string.autoCast]: could not autocast value: "ok"'],
+        [function myFunc() {}, 'error in parser of [string.autoCast]: could not autocast value: [Function: myFunc]'],
     ],
 });
 test('no autoCastAll', () => {
