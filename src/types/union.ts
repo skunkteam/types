@@ -31,7 +31,10 @@ export class UnionType<
     /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
-    constructor(readonly types: Types, name?: string) {
+    constructor(
+        readonly types: Types,
+        name?: string,
+    ) {
         super();
         this.isDefaultName = !name;
         this.name = name || types.map(type => bracketsIfNeeded(type.name, '|')).join(' | ');
