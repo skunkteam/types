@@ -103,7 +103,7 @@ type Bound<T extends 'min' | 'max'> = {
 function selectBound<T extends 'min' | 'max'>(key: T, current: NumberTypeConfig, update: NumberTypeConfig): Bound<T> {
     const exclKey = `${key}Exclusive` as const;
 
-    const onlyTheBound = (c: NumberTypeConfig) => ({ [key]: c[key], [exclKey]: c[exclKey] }) as Bound<T>;
+    const onlyTheBound = (c: NumberTypeConfig) => ({ [key]: c[key], [exclKey]: c[exclKey] } as Bound<T>);
 
     const currentPosition: number | undefined = current[key] ?? current[exclKey];
     if (currentPosition == null) return onlyTheBound(update);
