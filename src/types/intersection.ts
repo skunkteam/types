@@ -43,7 +43,10 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     /** {@inheritdoc BaseTypeImpl.typeConfig} */
     readonly typeConfig: undefined;
 
-    constructor(readonly types: Types, name?: string) {
+    constructor(
+        readonly types: Types,
+        name?: string,
+    ) {
         super();
         this.isDefaultName = !name;
         this.name = name || defaultName(types);
