@@ -1,5 +1,6 @@
+import { expectTypeOf } from 'expect-type';
 import { autoCast, autoCastAll } from '../autocast';
-import type { MessageDetails, The } from '../interfaces';
+import { type MessageDetails, type The } from '../interfaces';
 import { createExample, defaultUsualSuspects, stripped, testTypeImpl } from '../testutils';
 import { printKey, printValue } from '../utils';
 import { object } from './interface';
@@ -243,4 +244,23 @@ testTypeImpl({
             [{ message: 'key: <a> should have value "aa", got: "aaa"' }, { message: 'key: <b> should have value "bb", got: "bbbb"' }],
         ],
     ],
+});
+
+test('Branded types', () => {
+    // Branded values have a particular interaction with the Record type.
+    type BrandedString = The<typeof BrandedString>;
+    const BrandedString = string.withBrand('BrandedString');
+
+    type BrandedKVRecord = The<typeof BrandedKVRecord>;
+    const BrandedKVRecord = record('BrandedKVRecord', BrandedString, BrandedString);
+
+    // Currently, branded types are not supported as Record key types. They are instead widened to the unbranded base type:
+    expectTypeOf<BrandedKVRecord>().toEqualTypeOf<Record<string, BrandedString>>();
+    // The problem with branded keytypes arises when trying to create a literal of the record type.
+    expectTypeOf(
+        // This `.literal()` would give a TS error because the `DeepUnbranding` can't deal with branded key types.
+        BrandedKVRecord.literal({
+            a: 'b',
+        }),
+    ).toEqualTypeOf<Record<string, BrandedString>>();
 });
