@@ -96,7 +96,7 @@ define(
 );
 
 /** Small helper type that somehow nudges TS compiler to not widen branded string and number types to their base type. */
-type Unwidened<T> = T extends T ? T : never;
+export type Unwidened<T> = T extends T ? T : never;
 /**
  * Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document
  */
