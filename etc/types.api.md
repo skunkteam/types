@@ -427,8 +427,6 @@ export type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
     type: T;
 };
 
-// Warning: (ae-forgotten-export) The symbol "Unwidened" needs to be exported by the entry point index.d.ts
-//
 // @public
 export function record<KeyType extends number | string, ValueType>(...args: [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean] | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
 
@@ -614,6 +612,9 @@ export type unknownRecord = Record<string, unknown>;
 
 // @public
 export const unknownRecord: Type<unknownRecord>;
+
+// @public
+export type Unwidened<T> = T extends T ? T : never;
 
 // @public
 export type ValidationDetails = {
