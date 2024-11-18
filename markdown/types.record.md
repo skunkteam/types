@@ -11,16 +11,16 @@ Note: record has strict validation by default, while type does not have strict v
 ```typescript
 declare function record<KeyType extends number | string, ValueType>(
     ...args:
-        | [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]
-        | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]
+        | [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
+        | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
 ): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                                                                                                                                                                                                                   | Description |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| args      | \[name: string, keyType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;KeyType&gt;, valueType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ValueType&gt;, strict?: boolean\] \| \[keyType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;KeyType&gt;, valueType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;ValueType&gt;, strict?: boolean\] |             |
+| Parameter | Type                                                                                                                                                                                                                                                                                                                                                                                                     | Description |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| args      | \[name: string, keyType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;KeyType&gt;, valueType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Unwidened&lt;ValueType&gt;&gt;, strict?: boolean\] \| \[keyType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;KeyType&gt;, valueType: [BaseTypeImpl](./types.basetypeimpl.md)<!-- -->&lt;Unwidened&lt;ValueType&gt;&gt;, strict?: boolean\] |             |
 
 **Returns:**
 
