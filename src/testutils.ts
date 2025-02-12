@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
+import { StandardSchemaV1 } from '@standard-schema/spec';
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, StringTypeConfig, Type, Visitor } from './interfaces';
 import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types';
@@ -87,11 +88,13 @@ export function testTypeImpl({
                 expect(type.apply(undefined, [input])).toEqual(output);
                 expect(type.bind(undefined, input)()).toEqual(output);
                 expect(type.call(undefined, input)).toEqual(output);
+                expect(standardValidate(type, input)).toEqual(output);
             });
 
         invalidConversions &&
             test.each(invalidConversions)('will not convert: %p', (value, message) => {
                 expect(() => type(value)).toThrowWithMessage(ValidationErrorForTest, Array.isArray(message) ? message.join('\n') : message);
+                expect(() => standardValidate(type, value)).toThrow();
             });
     }
 }
@@ -204,4 +207,23 @@ class CreateExampleVisitor implements Visitor<unknown> {
 
 function hasExample<T>(obj: BaseTypeImpl<T>): obj is BaseTypeImpl<T> & { example: T } {
     return 'example' in obj;
+}
+
+/**
+ * Helper function around StandardSchema validation interface to incorporate it in the existing conversion tests.
+ *
+ * Note that Skunkteam Types has a distinction between checking if an input conforms to a schema (Type) as-is (`.is()`, `.check()`) vs
+ * validating if an input can be parsed and converted into the schema (`.construct()`). This makes it non-trivial to fully incorporate
+ * the StandardSchema interface into the existing test-suite.
+ */
+function standardValidate<T extends StandardSchemaV1>(schema: T, input: StandardSchemaV1.InferInput<T>): StandardSchemaV1.InferOutput<T> {
+    const result = schema['~standard'].validate(input);
+    if (result instanceof Promise) throw new TypeError('No asynchronous type validation in Skunkteam Types');
+
+    // if the `issues` field exists, the validation failed
+    if (result.issues) {
+        throw new Error(result.issues.map(issue => issue.message).join('\n'));
+    }
+
+    return result.value;
 }

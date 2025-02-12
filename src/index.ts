@@ -1,6 +1,6 @@
 export * from './autocast';
 export * from './base-type';
-export * from './error-reporter';
+export { reportError } from './error-reporter';
 export * from './interfaces';
 export * from './simple-type';
 export * from './symbols';
