@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
-import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, StringTypeConfig, Type, Visitor } from './interfaces';
-import type { ArrayType, KeyofType, LiteralType, RecordType, UnionType } from './types';
+import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, Properties, StringTypeConfig, Type, Visitor } from './interfaces';
+import type { ArrayType, InterfaceType, IntersectionType, KeyofType, LiteralType, RecordType, UnionType, unknownRecord } from './types';
 import { an, basicType, printValue } from './utils';
 import { ValidationError } from './validation-error';
 
@@ -140,7 +140,11 @@ class CreateExampleVisitor implements Visitor<unknown> {
         return [true, false][this.seed++ % 2];
     }
 
-    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): unknown {
+    visitIntersectionType(type: IntersectionType<OneOrMore<BaseObjectLikeTypeImpl<unknown>>>): unknown {
+        return Object.assign({}, ...type.types.map(t => t.accept(this)));
+    }
+
+    visitObjectType(type: InterfaceType<Properties, unknownRecord>): unknown {
         if (hasExample(type)) return type.example;
         return Object.fromEntries(Object.entries(type.props).map(([key, propType]) => [key, propType.accept(this)]));
     }
