@@ -666,13 +666,15 @@ export interface Visitor<R> {
     // (undocumented)
     visitCustomType(type: BaseTypeImpl<unknown>): R;
     // (undocumented)
+    visitIntersectionType(type: IntersectionType<OneOrMore<BaseObjectLikeTypeImpl<unknown>>>): R;
+    // (undocumented)
     visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
     // (undocumented)
     visitLiteralType(type: LiteralType<LiteralValue>): R;
     // (undocumented)
     visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
     // (undocumented)
-    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
+    visitObjectType(type: InterfaceType<Properties, unknownRecord>): R;
     // (undocumented)
     visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<unknown>, unknown>): R;
     // (undocumented)

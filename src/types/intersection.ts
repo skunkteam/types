@@ -85,7 +85,7 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
 
     /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
-        return visitor.visitObjectLikeType(this);
+        return visitor.visitIntersectionType(this);
     }
 
     /** {@inheritdoc BaseTypeImpl.maybeStringify} */
