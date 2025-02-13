@@ -86,6 +86,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     withBrand<const BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withConfig<const BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withConstraint<const BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
+    withDefault(...args: [value: DeepUnbranded<ResultType>] | [name: string, value: DeepUnbranded<ResultType>] | [options: WithDefaultOptions, value: DeepUnbranded<ResultType>]): this;
     withName(name: string): this;
     withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, newConstructor: (i: unknown) => unknown] | [options: ParserOptions, newConstructor: (i: unknown) => unknown]): this;
     withValidation(validation: Validator<ResultType>): this;
@@ -695,6 +696,12 @@ export type WithBrands<T, BrandNames extends string> = T & {
         [P in BrandNames]: true;
     };
 };
+
+// @public
+export interface WithDefaultOptions {
+    clone?: boolean;
+    name?: string;
+}
 
 // @public
 export type Writable<T> = {
