@@ -443,7 +443,7 @@ export class InterfaceType<Props extends Properties, ResultType extends unknownR
 
     /** {@inheritdoc BaseTypeImpl.accept} */
     accept<R>(visitor: Visitor<R>): R {
-        return visitor.visitObjectLikeType(this);
+        return visitor.visitObjectType(this as InterfaceType<Properties, unknownRecord>);
     }
 
     /** {@inheritdoc BaseTypeImpl.maybeStringify} */
