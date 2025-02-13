@@ -290,6 +290,26 @@ export interface ParserOptions {
     chain?: boolean;
 }
 
+/**
+ * Options that can be passed to {@link BaseTypeImpl.withDefault}.
+ */
+export interface WithDefaultOptions {
+    /**
+     * The new name to use in error messages.
+     */
+    name?: string;
+    /**
+     * Whether to clone the given value on each use.
+     *
+     * @remarks
+     * When `true` (the default), on each use the value will be cloned using `structuredClone` to prevent subtle bugs because of object
+     * reuse.
+     *
+     * @defaultValue `true`
+     */
+    clone?: boolean;
+}
+
 /** The supported types of literals. */
 export type LiteralValue = string | number | boolean | null | undefined | void;
 

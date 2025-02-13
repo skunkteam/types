@@ -23,6 +23,7 @@ import type {
     ValidationResult,
     Validator,
     Visitor,
+    WithDefaultOptions,
 } from './interfaces';
 import { designType } from './symbols';
 import {
@@ -356,6 +357,23 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
             },
         });
         return type;
+    }
+
+    /**
+     * Define a new type with the same specs, but with the given default value.
+     *
+     * @remarks
+     * This is a convenient method that adds a simple parser that resolves to the given `value` whenever the `input` to the parser is `undefined`.
+     */
+    withDefault(
+        ...args:
+            | [value: DeepUnbranded<ResultType>]
+            | [name: string, value: DeepUnbranded<ResultType>]
+            | [options: WithDefaultOptions, value: DeepUnbranded<ResultType>]
+    ): this {
+        const [{ name, clone = true }, value] = decodeOptionalOptions<WithDefaultOptions, DeepUnbranded<ResultType>>(args);
+        const cloneFn = clone ? structuredClone : <T>(i: T) => i;
+        return this.withParser({ name, chain: true }, input => (input === undefined ? cloneFn(value) : input));
     }
 
     /**
