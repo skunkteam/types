@@ -501,6 +501,9 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown>
         return { ...oldConfig, ...newConfig };
     }
 
+    /**
+     * Skunkteam Types implementation of [StandardSchemaV1](https://standardschema.dev/)
+     */
     get ['~standard'](): StandardSchemaV1.Props<unknown, ResultType> {
         return (this._instanceCache.standardSchema ??= {
             version: 1,

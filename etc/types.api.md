@@ -4,6 +4,8 @@
 
 ```ts
 
+import { StandardSchemaV1 } from '@standard-schema/spec';
+
 // @public
 export function array<ElementType extends BaseTypeImpl<any>>(...args: [name: string, elementType: ElementType, typeConfig?: ArrayTypeConfig] | [elementType: ElementType, typeConfig?: ArrayTypeConfig]): TypeImpl<ArrayType<ElementType, TypeOf<ElementType>, Array<TypeOf<ElementType>>>>;
 
@@ -56,7 +58,8 @@ export abstract class BaseObjectLikeTypeImpl<ResultType, TypeConfig = unknown> e
 }
 
 // @public
-export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType> {
+export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType>, StandardSchemaV1<unknown, ResultType> {
+    get ['~standard'](): StandardSchemaV1.Props<unknown, ResultType>;
     // @internal
     readonly [designType]: ResultType;
     abstract accept<R>(visitor: Visitor<R>): R;

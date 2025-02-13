@@ -9,10 +9,10 @@ The base-class of all type-implementations.
 **Signature:**
 
 ```typescript
-declare abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType>
+declare abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType>, StandardSchemaV1<unknown, ResultType>
 ```
 
-**Implements:** [TypeLink](./types.typelink.md)<!-- -->&lt;ResultType&gt;
+**Implements:** [TypeLink](./types.typelink.md)<!-- -->&lt;ResultType&gt;, StandardSchemaV1&lt;unknown, ResultType&gt;
 
 ## Remarks
 
@@ -22,6 +22,7 @@ All type-implementations must extend this base class. Use [createType()](./types
 
 | Property                                                                    | Modifiers                                                 | Type                                                                          | Description                                                                                                                                                            |
 | --------------------------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ["\~standard"](./types.basetypeimpl.__standard_.md)                         | <code>readonly</code>                                     | StandardSchemaV1.Props&lt;unknown, ResultType&gt;                             | Skunkteam Types implementation of \[StandardSchemaV1\](https://standardschema.dev/)                                                                                    |
 | [basicType](./types.basetypeimpl.basictype.md)                              | <p><code>abstract</code></p><p><code>readonly</code></p>  | [BasicType](./types.basictype.md) \| 'mixed'                                  | The kind of values this type validates.                                                                                                                                |
 | [check](./types.basetypeimpl.check.md)                                      | <code>readonly</code>                                     | (this: void, input: unknown) =&gt; ResultType                                 | Asserts that a value conforms to this Type and returns the input as is, if it does.                                                                                    |
 | [customValidators](./types.basetypeimpl.customvalidators.md)                | <p><code>protected</code></p><p><code>readonly</code></p> | ReadonlyArray&lt;[Validator](./types.validator.md)<!-- -->&lt;unknown&gt;&gt; | Additional custom validation added using [withValidation](./types.basetypeimpl.withvalidation.md) or [withConstraint](./types.basetypeimpl.withconstraint.md)<!-- -->. |
