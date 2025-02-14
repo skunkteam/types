@@ -18,7 +18,14 @@ export function reportError(root: Failure, level = -1, omitInput?: boolean): str
     details.sort(detailSorter);
 
     if (details.length === 1 && !('parserInput' in root)) {
-        return singleDetailMessage(root.type.name, details[0], childLevel);
+        const [detail] = details;
+        const ctx = detail.context ? `${detail.context} of ` : '';
+        const msg = detail.path
+            ? `error in [${root.type.name}] at ${ctx}<${printPath(detail.path)}>: `
+            : root.type.name !== detail.type.name || prependWithTypeName(detail)
+            ? `error in ${ctx}[${root.type.name}]: `
+            : '';
+        return msg + detailMessage(detail, childLevel);
     }
 
     let msg = `errors in [${root.type.name}]:`;
@@ -26,27 +33,9 @@ export function reportError(root: Failure, level = -1, omitInput?: boolean): str
     return msg + reportDetails(details, childLevel);
 }
 
-/** Minor variation of `reportError` that maps the top-level failure details as individual issues in the StandardSchema format */
+/** Maps the top-level failure details to individual issues in the StandardSchema format. */
 export function mapFailureToStandardIssues(root: Failure): readonly StandardSchemaV1.Issue[] {
-    if (root.details.length === 1 && !('parserInput' in root)) {
-        const [detail] = root.details;
-        return [{ message: singleDetailMessage(root.type.name, detail, 0), path: detail.path }];
-    }
-
-    const msg = `errors in [${root.type.name}]:${'parserInput' in root ? ` (${maybePrintInputValue(root, '')})` : ''}`;
-    return [{ message: msg }].concat(
-        root.details.sort(detailSorter).map(detail => ({ message: detailMessageWithContext(detail, 0), path: detail.path })),
-    );
-}
-
-function singleDetailMessage(typeName: string, detail: FailureDetails, childLevel: number): string {
-    const ctx = detail.context ? `${detail.context} of ` : '';
-    const msg = detail.path
-        ? `error in [${typeName}] at ${ctx}<${printPath(detail.path)}>: `
-        : typeName !== detail.type.name || prependWithTypeName(detail)
-        ? `error in ${ctx}[${typeName}]: `
-        : '';
-    return msg + detailMessage(detail, childLevel);
+    return root.details.sort(detailSorter).map(detail => ({ message: detailMessage(detail, 0), path: detail.path }));
 }
 
 function reportDetails(details: FailureDetails[], level: number) {

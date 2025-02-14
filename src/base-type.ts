@@ -507,10 +507,10 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown>
     get ['~standard'](): StandardSchemaV1.Props<unknown, ResultType> {
         return (this._instanceCache.standardSchema ??= {
             version: 1,
-            vendor: 'skunkteam',
+            vendor: 'skunkteam-types',
             validate: (value: unknown): StandardSchemaV1.Result<ResultType> => {
                 // Note: we always call the 'construct' version of `this.validate`, which will parse `value` before typechecking. The
-                // StandardSchemaV1 interface doesn't provide room to make our distinction between 'checking' and 'constructing'
+                // StandardSchemaV1 interface doesn't provide room to make our distinction between 'checking' and 'constructing'.
                 const result = this.validate(value);
                 return result.ok ? { value: result.value } : { issues: mapFailureToStandardIssues(result) };
             },

@@ -62,6 +62,10 @@ testTypeImpl({
                 '',
                 '- key <c> is invalid: expected key to be numeric (because the key-type is: number), got: "c"',
             ],
+            [
+                { message: 'key <a> is invalid: expected key to be numeric (because the key-type is: number), got: "a"' },
+                { message: 'key <c> is invalid: expected key to be numeric (because the key-type is: number), got: "c"' },
+            ],
         ],
     ],
     validConversions: [
@@ -98,6 +102,11 @@ testTypeImpl({
                 '',
                 '- key <"123.4"> is invalid: expected a whole number, got: 123.4',
             ],
+            [
+                { message: 'key <a> is invalid: expected key to be numeric (because the key-type is: int), got: "a"' },
+                { message: 'key <c> is invalid: expected key to be numeric (because the key-type is: int), got: "c"' },
+                { message: 'key <"123.4"> is invalid: expected a whole number, got: 123.4' },
+            ],
         ],
     ],
 });
@@ -127,6 +136,12 @@ testTypeImpl({
                 '',
                 '- key <""> is invalid: expected key to be numeric (because the key-type is: 42 | 3.14), got: ""',
             ],
+            [
+                { message: 'key <"123"> is invalid: in subset of union: expected one of the literals 42 or 3.14, got: 123' },
+                { message: 'key <""> is invalid: expected key to be numeric (because the key-type is: 42 | 3.14), got: ""' },
+                { message: 'missing property <"42"> [string], got: { "123": "not ok", "": "not ok" }' },
+                { message: 'missing property <"3.14"> [string], got: { "123": "not ok", "": "not ok" }' },
+            ],
         ],
     ],
 });
@@ -139,7 +154,14 @@ testTypeImpl({
     basicType: 'object',
     validValues: [{ one: 'mississippi', two: 'mississippi' }],
     invalidValues: [
-        [{}, ['errors in [StrictKeyofRecord]:', '', '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}']],
+        [
+            {},
+            ['errors in [StrictKeyofRecord]:', '', '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}'],
+            [
+                { message: 'missing property <one> ["mississippi"], got: {}' },
+                { message: 'missing property <two> ["mississippi"], got: {}' },
+            ],
+        ],
         [{ one: 'mississippi' }, 'error in [StrictKeyofRecord]: missing property <two> ["mississippi"], got: { one: "mississippi" }'],
         [
             { one: 'mississippi', two: 'mississippi', three: 'mississippi' },
@@ -175,7 +197,14 @@ testTypeImpl({
         { one: 'mississippi', two: 'mississippi', three: 'amazon', [stripped]: { one: 'mississippi', two: 'mississippi' } },
     ],
     invalidValues: [
-        [{}, ['errors in [NonStrictKeyofRecord]:', '', '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}']],
+        [
+            {},
+            ['errors in [NonStrictKeyofRecord]:', '', '- missing properties <one> ["mississippi"] and <two> ["mississippi"], got: {}'],
+            [
+                { message: 'missing property <one> ["mississippi"], got: {}' },
+                { message: 'missing property <two> ["mississippi"], got: {}' },
+            ],
+        ],
         [{ one: 'mississippi' }, 'error in [NonStrictKeyofRecord]: missing property <two> ["mississippi"], got: { one: "mississippi" }'],
         [
             { one: 'mississippi', two: 'amazon' },
@@ -211,6 +240,7 @@ testTypeImpl({
                 '',
                 '- key: <b> should have value "bb", got: "bbbb"',
             ],
+            [{ message: 'key: <a> should have value "aa", got: "aaa"' }, { message: 'key: <b> should have value "bb", got: "bbbb"' }],
         ],
     ],
 });
