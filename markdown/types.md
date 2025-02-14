@@ -71,6 +71,7 @@ Runtime type-validation with derived TypeScript types.
 | [TypeLink](./types.typelink.md)                                               | An object that has an associated TypeScript type.                                                                                                                                                                                             |
 | [ValidationOptions](./types.validationoptions.md)                             |                                                                                                                                                                                                                                               |
 | [Visitor](./types.visitor.md)                                                 | Interface for a visitor that is accepted by all types (classic visitor-pattern).                                                                                                                                                              |
+| [WithDefaultOptions](./types.withdefaultoptions.md)                           | Options that can be passed to [BaseTypeImpl.withDefault()](./types.basetypeimpl.withdefault.md)<!-- -->.                                                                                                                                      |
 
 ## Variables
 

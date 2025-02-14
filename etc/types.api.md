@@ -89,6 +89,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     withBrand<const BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withConfig<const BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withConstraint<const BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
+    withDefault(...args: [value: DeepUnbranded<ResultType>] | [name: string, value: DeepUnbranded<ResultType>] | [options: WithDefaultOptions, value: DeepUnbranded<ResultType>]): this;
     withName(name: string): this;
     withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, newConstructor: (i: unknown) => unknown] | [options: ParserOptions, newConstructor: (i: unknown) => unknown]): this;
     withValidation(validation: Validator<ResultType>): this;
@@ -668,13 +669,15 @@ export interface Visitor<R> {
     // (undocumented)
     visitCustomType(type: BaseTypeImpl<unknown>): R;
     // (undocumented)
+    visitIntersectionType(type: IntersectionType<OneOrMore<BaseObjectLikeTypeImpl<unknown>>>): R;
+    // (undocumented)
     visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
     // (undocumented)
     visitLiteralType(type: LiteralType<LiteralValue>): R;
     // (undocumented)
     visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
     // (undocumented)
-    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
+    visitObjectType(type: InterfaceType<Properties, unknownRecord>): R;
     // (undocumented)
     visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<unknown>, unknown>): R;
     // (undocumented)
@@ -698,6 +701,12 @@ export type WithBrands<T, BrandNames extends string> = T & {
         [P in BrandNames]: true;
     };
 };
+
+// @public
+export interface WithDefaultOptions {
+    clone?: boolean;
+    name?: string;
+}
 
 // @public
 export type Writable<T> = {

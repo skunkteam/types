@@ -4,7 +4,7 @@ import { expectTypeOf } from 'expect-type';
 import { autoCast } from './autocast';
 import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
 import { basicTypeMessage, createExample, defaultMessage, defaultUsualSuspects, stripped, testTypeImpl } from './testutils';
-import { array, boolean, int, number, object, string } from './types';
+import { array, boolean, int, keyof, number, object, string, unknownRecord } from './types';
 import { partial } from './types/interface';
 import { intersection } from './types/intersection';
 import { printValue } from './utils';
@@ -127,6 +127,9 @@ testTypeImpl({ name: 'ConfirmedAge', type: ConfirmedAge, validConversions: [[18,
 type ShoeSize = The<typeof ShoeSize>;
 const ShoeSize = int.withConfig('ShoeSize', { min: 0, customMessage: { min: 'should not be negative' } });
 
+type Status = The<typeof Status>;
+const Status = keyof('Status', { PENDING: null, CONFIRMED: null, DENIED: null });
+
 /** User is a basic interface type. */
 type User = The<typeof User>;
 const User = object('User', {
@@ -139,6 +142,8 @@ const User = object('User', {
     }),
     /** For reference, we need your shoe size, must be a whole non-negative number. */
     shoeSize: ShoeSize,
+    /** The status of the User in our system. */
+    status: Status.withDefault('PENDING'),
 });
 
 test('User example', () => {
@@ -149,6 +154,7 @@ test('User example', () => {
             "last": "xx",
           },
           "shoeSize": 3,
+          "status": "CONFIRMED",
         }
     `);
 });
@@ -158,13 +164,32 @@ testTypeImpl({
     type: User,
     basicType: 'object',
     validValues: [
-        { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 },
+        { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20, status: 'CONFIRMED' },
         {
             name: { first: 'a', last: 'b', middle: 'c' },
             shoeSize: 0,
+            status: 'PENDING',
             other: 'props',
-            [stripped]: { name: { first: 'a', last: 'b' }, shoeSize: 0 },
+            [stripped]: { name: { first: 'a', last: 'b' }, shoeSize: 0, status: 'PENDING' },
         },
+    ],
+    validConversions: [
+        // status property is added if needed.
+        [
+            { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 },
+            { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20, status: 'PENDING' },
+        ],
+        [
+            { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20, status: 'CONFIRMED' },
+            { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20, status: 'CONFIRMED' },
+        ],
+    ],
+    invalidConversions: [
+        // status property is not reported as missing, shoeSize is, because it does not have a default.
+        [
+            { name: { first: 'F', last: 'L' } },
+            'error in [User]: missing property <shoeSize> [ShoeSize], got: { name: { first: "F", last: "L" } }',
+        ],
     ],
     invalidValues: [
         ...defaultUsualSuspects(User),
@@ -173,7 +198,7 @@ testTypeImpl({
             [
                 'errors in [User]:',
                 '',
-                '- missing properties <name> [{ first: SmallString, last: LastNameType }] and <shoeSize> [ShoeSize], got: {}',
+                '- missing properties <name> [{ first: SmallString, last: LastNameType }], <shoeSize> [ShoeSize] and <status> [Status], got: {}',
             ],
             [
                 { message: 'missing property <name> [{ first: SmallString, last: LastNameType }], got: {}' },
@@ -185,7 +210,7 @@ testTypeImpl({
             [
                 'errors in [User]:',
                 '',
-                '- missing property <shoeSize> [ShoeSize], got: { name: {} }',
+                '- missing properties <shoeSize> [ShoeSize] and <status> [Status], got: { name: {} }',
                 '',
                 '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
             ],
@@ -196,7 +221,7 @@ testTypeImpl({
             ],
         ],
         [
-            { name: {}, shoeSize: 1 },
+            { name: {}, shoeSize: 1, status: 'PENDING' },
             ['errors in [User]:', '', '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}'],
             [
                 { path: ['name'], message: 'missing property <first> [SmallString], got: {}' },
@@ -204,13 +229,15 @@ testTypeImpl({
             ],
         ],
         [
-            { name: { first: 'first' }, shoeSize: 2 },
+            { name: { first: 'first' }, shoeSize: 2, status: 'PENDING' },
             'error in [User] at <name>: missing property <last> [LastNameType], got: { first: "first" }',
         ],
         [
             { name: { first: 'I have a long name!' }, shoeSize: -3 },
             [
                 'errors in [User]:',
+                '',
+                '- missing property <status> [Status], got: { name: { first: "I have a long name!" }, shoeSize: -3 }',
                 '',
                 '- at <name>: missing property <last> [LastNameType], got: { first: "I have a long name!" }',
                 '',
@@ -229,6 +256,8 @@ testTypeImpl({
             [
                 'errors in [User]:',
                 '',
+                '- missing property <status> [Status], got: { name: { first: "very very long" }, shoeSize: [Symbol: 4] }',
+                '',
                 '- at <name>: missing property <last> [LastNameType], got: { first: "very very long" }',
                 '',
                 '- at <shoeSize>: expected a number, got a symbol ([Symbol: 4])',
@@ -241,7 +270,10 @@ testTypeImpl({
                 { path: ['name', 'first'], message: 'your string "very very long" is too long! :-(' },
             ],
         ],
-        [{ name: { first: undefined, last: 'name' }, shoeSize: 5 }, 'error in [User] at <name.first>: expected a string, got an undefined'],
+        [
+            { name: { first: undefined, last: 'name' }, shoeSize: 5, status: 'PENDING' },
+            'error in [User] at <name.first>: expected a string, got an undefined',
+        ],
     ],
 });
 
@@ -261,6 +293,12 @@ testTypeImpl({
         { shoeSize: 0, other: 'props', [stripped]: { shoeSize: 0 } },
         { shoeSize: 0 },
         {},
+    ],
+    validConversions: [
+        // Status is not using the default property, because it is optional.
+        [{}, {}],
+        [{ status: undefined }, {}],
+        [{ status: 'PENDING' }, { status: 'PENDING' }],
     ],
     invalidValues: [
         ...defaultUsualSuspects(User.toPartial()),
@@ -314,17 +352,24 @@ testTypeImpl({
     name: 'RestrictedUser',
     type: RestrictedUser,
     basicType: 'object',
-    validValues: [{ name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 }],
+    validValues: [{ name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20, status: 'PENDING' }],
     invalidValues: [
         ...defaultUsualSuspects(RestrictedUser),
         // constraints are fired after the type is deemed structurally valid:
         [
             { name: { first: 'Bobby', last: 'Tables' } },
-            'error in [RestrictedUser]: missing property <shoeSize> [ShoeSize], got: { name: { first: "Bobby", last: "Tables" } }',
+            [
+                'errors in [RestrictedUser]:',
+                '',
+                '- missing properties <shoeSize> [ShoeSize] and <status> [Status], got: { name: { first: "Bobby", last: "Tables" } }',
+            ],
         ],
-        [{ name: { first: 'Bobbx', last: 'Tablex' }, shoeSize: 5 }, 'error in [RestrictedUser]: this User is suspicious'],
         [
-            { name: { first: 'Bobby', last: 'Tables' }, shoeSize: 5 },
+            { name: { first: 'Bobbx', last: 'Tablex' }, shoeSize: 5, status: 'PENDING' },
+            'error in [RestrictedUser]: this User is suspicious',
+        ],
+        [
+            { name: { first: 'Bobby', last: 'Tables' }, shoeSize: 5, status: 'PENDING' },
             [
                 'errors in [RestrictedUser]:',
                 '',
@@ -334,7 +379,7 @@ testTypeImpl({
             ],
         ],
     ],
-    validConversions: [['Pete Johnson 20', { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20 }]],
+    validConversions: [['Pete Johnson 20', { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20, status: 'PENDING' }]],
     invalidConversions: [
         [
             { name: { first: 'Bobby', last: 'Tables' } },
@@ -727,7 +772,8 @@ const ChainedParserParser = number
     .withParser(
         { name: 'ChainedParserParser', chain: true },
         number.withValidation(n => n < 100 || 'outer parser failed').andThen(input => input + 100),
-    );
+    )
+    .withDefault(1);
 
 // The valid ranges of ChainedParserParser:
 // outer parser: input < 100
@@ -738,11 +784,14 @@ testTypeImpl({
     name: 'ChainedParserParser',
     type: ChainedParserParser,
     validValues: [-1, 0, 1, 100],
+    invalidValues: [[undefined, 'error in [ChainedParserParser]: expected a number, got an undefined']],
     validConversions: [
+        [undefined, 111],
         [1, 111],
         [-110, 0],
     ],
     invalidConversions: [
+        [null, 'error in parser precondition of [ChainedParserParser]: expected a number, got a null'],
         [100, 'error in parser precondition of [ChainedParserParser]: outer parser failed, got: 100'],
         [10, 'error in parser precondition of [Inner]: inner parser failed, got: 110, parsed from: 10'],
         [5, 'error in [ChainedParserParser]: inner validation failed, got: 115, parsed from: 5'],
@@ -775,7 +824,7 @@ test('TypeOf', () => {
     expectTypeOf<WithUser>().toEqualTypeOf<{ ok: boolean; inner: User }>();
     expectTypeOf({
         ok: true,
-        inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: ShoeSize(5) },
+        inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: ShoeSize(5), status: Status('PENDING') },
     }).toEqualTypeOf<WithUser>();
 });
 
@@ -797,6 +846,7 @@ test('unbranding and literals', () => {
             last: 'Doe',
         },
         shoeSize: 48,
+        status: 'CONFIRMED',
     });
     type WithUser = The<typeof WithUser>;
     const WithUser = MyGenericWrapper(User);
@@ -805,12 +855,13 @@ test('unbranding and literals', () => {
         inner: {
             name: { first: 'John', last: 'Doe' },
             shoeSize: 48,
+            status: 'DENIED',
         },
     });
     expectTypeOf<Percentage>().not.toEqualTypeOf<number>();
     expectTypeOf<Unbranded<Percentage>>().toEqualTypeOf<number>();
     expectTypeOf<DeepUnbranded<Percentage>>().toEqualTypeOf<number>();
-    expectTypeOf<DeepUnbranded<User>>().toEqualTypeOf<{ name: { first: string; last: string }; shoeSize: number }>();
+    expectTypeOf<DeepUnbranded<User>>().toEqualTypeOf<{ name: { first: string; last: string }; shoeSize: number; status: Status }>();
     expectTypeOf<DeepUnbranded<WithUser>>().toEqualTypeOf<{ ok: boolean; inner: DeepUnbranded<User> }>();
 
     type ComplexBrandedScenario = The<typeof ComplexBrandedScenario>;
@@ -829,7 +880,7 @@ test('unbranding and literals', () => {
     expectTypeOf<DeepUnbranded<ComplexBrandedScenario>>().toHaveProperty('optional').toEqualTypeOf<string | undefined>();
     expectTypeOf<DeepUnbranded<ComplexBrandedScenario>>()
         .toHaveProperty('array')
-        .toEqualTypeOf<Array<{ name: { first: string; last: string }; shoeSize: number; optional?: number }>>();
+        .toEqualTypeOf<Array<{ name: { first: string; last: string }; shoeSize: number; status: Status; optional?: number }>>();
 });
 
 test('assignability of sub-brands', () => {
@@ -878,4 +929,42 @@ test('type inference', () => {
     // I still don't know how to fix this for `extendWith`:
     expectTypeOf(elementOfType(Age)).toEqualTypeOf<number>();
     expectTypeOf(elementOfType(Age)).not.toEqualTypeOf<Age>();
+});
+
+test('cloning of default values', () => {
+    interface MyObjectType {
+        property: string;
+    }
+
+    const defaultValue: MyObjectType & Record<string, unknown> = { property: 'not changed' };
+
+    const NormalType: ObjectType<MyObjectType> = object('NonTrickyObject', { property: string }).withDefault(
+        // `clone: false` is ok here, because `object` will always create a new object, but please don't use `clone: false` unless you
+        // really really need to have a specific instance as default value.
+        { clone: false },
+        defaultValue,
+    );
+
+    const newValue = NormalType(undefined);
+    // newValue equals defaultValue, but is not the same instance, this is because `object` always creates a new object.
+    expect(newValue).toEqual(defaultValue);
+    expect(newValue).not.toBe(defaultValue);
+
+    // So any changes to the resulting object are ok.
+    newValue.property = 'changed';
+    expect(defaultValue.property).toBe('not changed');
+
+    // Not all types create a shallow clone though:
+    const TrickyType = unknownRecord.withDefault({ clone: false }, defaultValue);
+
+    const sameValue = TrickyType(undefined);
+    expect(sameValue).toBe(defaultValue);
+
+    // So this time, changes to `sameValue` are dangerous
+    sameValue.property = 'changed';
+    expect(defaultValue.property).toBe('changed');
+
+    // This is why `clone: true` is default. Don't change that.
+    const NonTrickyType = unknownRecord.withDefault(defaultValue);
+    expect(NonTrickyType(undefined)).not.toBe(defaultValue);
 });
