@@ -1,4 +1,6 @@
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { autoCast } from './autocast';
+import { mapFailureToStandardIssues } from './error-reporter';
 import type {
     BasicType,
     Branded,
@@ -44,7 +46,9 @@ import { ValidationError } from './validation-error';
  * @remarks
  * All type-implementations must extend this base class. Use {@link createType} to create a {@link Type} from a type-implementation.
  */
-export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements TypeLink<ResultType> {
+export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown>
+    implements TypeLink<ResultType>, StandardSchemaV1<unknown, ResultType>
+{
     /**
      * The associated TypeScript-type of a Type.
      * @internal
@@ -120,6 +124,7 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
         autoCastAll?: BaseTypeImpl<ResultType, TypeConfig>;
         boundCheck?: BaseTypeImpl<ResultType, TypeConfig>['check'];
         boundIs?: BaseTypeImpl<ResultType, TypeConfig>['is'];
+        standardSchema?: StandardSchemaV1.Props<ResultType>;
     } = {};
 
     protected createAutoCastAllType(): Type<ResultType> {
@@ -512,6 +517,22 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
      */
     protected combineConfig(oldConfig: TypeConfig, newConfig: TypeConfig): TypeConfig {
         return { ...oldConfig, ...newConfig };
+    }
+
+    /**
+     * Skunkteam Types implementation of [StandardSchemaV1](https://standardschema.dev/)
+     */
+    get ['~standard'](): StandardSchemaV1.Props<unknown, ResultType> {
+        return (this._instanceCache.standardSchema ??= {
+            version: 1,
+            vendor: 'skunkteam-types',
+            validate: (value: unknown): StandardSchemaV1.Result<ResultType> => {
+                // Note: we always call the 'construct' version of `this.validate`, which will parse `value` before typechecking. The
+                // StandardSchemaV1 interface doesn't provide room to make our distinction between 'checking' and 'constructing'.
+                const result = this.validate(value);
+                return result.ok ? { value: result.value } : { issues: mapFailureToStandardIssues(result) };
+            },
+        });
     }
 }
 Object.defineProperties(BaseTypeImpl.prototype, {

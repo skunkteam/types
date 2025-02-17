@@ -1,3 +1,4 @@
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { BasicType, Failure, FailureDetails, OneOrMore, ValidationDetails } from './interfaces';
 import { an, basicType, castArray, checkOneOrMore, humanList, isSingle, plural, printKey, printPath, printValue, remove } from './utils';
@@ -30,6 +31,11 @@ export function reportError(root: Failure, level = -1, omitInput?: boolean): str
     let msg = `errors in [${root.type.name}]:`;
     'parserInput' in root && (msg += reportInput(root, childLevel));
     return msg + reportDetails(details, childLevel);
+}
+
+/** Maps the top-level failure details to individual issues in the StandardSchema format. */
+export function mapFailureToStandardIssues(root: Failure): readonly StandardSchemaV1.Issue[] {
+    return root.details.sort(detailSorter).map(detail => ({ message: detailMessage(detail, 0), path: detail.path }));
 }
 
 function reportDetails(details: FailureDetails[], level: number) {

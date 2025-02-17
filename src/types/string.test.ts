@@ -77,6 +77,10 @@ testTypeImpl({
                 '',
                 `- you're supposed to use only a's and b's and at least one of both, got: "c"`,
             ],
+            [
+                { message: 'you\'re 3 characters short, got: "c"' },
+                { message: "you're supposed to use only a's and b's and at least one of both, got: \"c\"" },
+            ],
         ],
         ['aaaabbbb', 'error in [CombinedValidations]: expected at most 6 characters, got: "aaaabbbb"'],
     ],

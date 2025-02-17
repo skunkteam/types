@@ -28,6 +28,11 @@ testTypeImpl({
                 '',
                 '- at <[2]>: expected a string, got a number (3)',
             ],
+            [
+                { path: [0], message: 'expected a string, got a number (1)' },
+                { path: [1], message: 'expected a string, got a number (2)' },
+                { path: [2], message: 'expected a string, got a number (3)' },
+            ],
         ],
         ...defaultUsualSuspects(array(string)),
     ],
@@ -53,6 +58,11 @@ testTypeImpl({
                 '',
                 '- at <[2]>: expected a string, got a number (3)',
             ],
+            [
+                { path: [0], message: 'expected a string, got a number (1)' },
+                { path: [1], message: 'expected a string, got a number (2)' },
+                { path: [2], message: 'expected a string, got a number (3)' },
+            ],
         ],
     ],
     validConversions: [
@@ -60,7 +70,11 @@ testTypeImpl({
         ['str', ['str']],
     ],
     invalidConversions: [
-        [1, ['errors in [AutoCast<string[]>]:', '(got: [1], parsed from: 1)', '', '- at <[0]>: expected a string, got a number (1)']],
+        [
+            1,
+            ['errors in [AutoCast<string[]>]:', '(got: [1], parsed from: 1)', '', '- at <[0]>: expected a string, got a number (1)'],
+            [{ path: [0], message: 'expected a string, got a number (1)' }],
+        ],
     ],
 });
 

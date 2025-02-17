@@ -115,7 +115,11 @@ testTypeImpl({
         ['-4', 'error in [NegativeInt]: expected a number, got a string ("-4")'],
         [0, 'error in [NegativeInt]: expected a negative number, got: 0'],
         [-1.5, 'error in [NegativeInt]: expected a whole number, got: -1.5'],
-        [1.5, ['errors in [NegativeInt]:', '', '- expected a negative number, got: 1.5', '', '- expected a whole number, got: 1.5']],
+        [
+            1.5,
+            ['errors in [NegativeInt]:', '', '- expected a negative number, got: 1.5', '', '- expected a whole number, got: 1.5'],
+            [{ message: 'expected a negative number, got: 1.5' }, { message: 'expected a whole number, got: 1.5' }],
+        ],
     ],
 });
 
@@ -127,11 +131,16 @@ testTypeImpl({
     validValues: [0, 10, 50, 90],
     invalidValues: [
         [1, 'error in [SimpleDecade]: expected a multiple of 10, got: 1'],
-        [-1, ['errors in [SimpleDecade]:', '', '- expected a non-negative number, got: -1', '', '- expected a multiple of 10, got: -1']],
+        [
+            -1,
+            ['errors in [SimpleDecade]:', '', '- expected a non-negative number, got: -1', '', '- expected a multiple of 10, got: -1'],
+            [{ message: 'expected a non-negative number, got: -1' }, { message: 'expected a multiple of 10, got: -1' }],
+        ],
         [100, 'error in [SimpleDecade]: expected a number less than 100, got: 100'],
         [
             101,
             ['errors in [SimpleDecade]:', '', '- expected a number less than 100, got: 101', '', '- expected a multiple of 10, got: 101'],
+            [{ message: 'expected a number less than 100, got: 101' }, { message: 'expected a multiple of 10, got: 101' }],
         ],
     ],
 });
@@ -142,11 +151,16 @@ testTypeImpl({
     validValues: [0, 10, 50, 90],
     invalidValues: [
         [1, 'error in [SimpleDecade]: expected a multiple of 10, got: 1'],
-        [-1, ['errors in [SimpleDecade]:', '', '- expected a non-negative number, got: -1', '', '- expected a multiple of 10, got: -1']],
+        [
+            -1,
+            ['errors in [SimpleDecade]:', '', '- expected a non-negative number, got: -1', '', '- expected a multiple of 10, got: -1'],
+            [{ message: 'expected a non-negative number, got: -1' }, { message: 'expected a multiple of 10, got: -1' }],
+        ],
         [100, 'error in [SimpleDecade]: expected a number less than 100, got: 100'],
         [
             101,
             ['errors in [SimpleDecade]:', '', '- expected a number less than 100, got: 101', '', '- expected a multiple of 10, got: 101'],
+            [{ message: 'expected a number less than 100, got: 101' }, { message: 'expected a multiple of 10, got: 101' }],
         ],
     ],
 });
