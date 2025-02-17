@@ -100,13 +100,15 @@ define(
     },
 );
 
+/** Small helper type that somehow nudges TS compiler to not widen branded string and number types to their base type. */
+export type Unwidened<T> = T extends T ? T : never;
 /**
  * Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document
  */
 export function record<KeyType extends number | string, ValueType>(
     ...args:
-        | [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]
-        | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]
+        | [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
+        | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
 ): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>> {
     const [name, keyType, valueType, strict] = decodeOptionalName(args);
     return createType(new RecordType(acceptNumberLikeKey(keyType), valueType, name, strict));

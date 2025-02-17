@@ -432,7 +432,7 @@ export type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
 };
 
 // @public
-export function record<KeyType extends number | string, ValueType>(...args: [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean] | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
+export function record<KeyType extends number | string, ValueType>(...args: [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean] | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
 
 // @public
 export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType extends number | string, ValueTypeImpl extends BaseTypeImpl<ValueType>, ValueType, ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>> extends BaseTypeImpl<ResultType> {
@@ -616,6 +616,9 @@ export type unknownRecord = Record<string, unknown>;
 
 // @public
 export const unknownRecord: Type<unknownRecord>;
+
+// @public
+export type Unwidened<T> = T extends T ? T : never;
 
 // @public
 export type ValidationDetails = {
