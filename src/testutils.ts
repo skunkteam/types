@@ -1,19 +1,38 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
+import type { StandardSchemaV1 } from '@standard-schema/spec';
+import assert from 'assert';
 import type { BaseObjectLikeTypeImpl, BaseTypeImpl } from './base-type';
 import type { BasicType, LiteralValue, NumberTypeConfig, OneOrMore, Properties, StringTypeConfig, Type, Visitor } from './interfaces';
 import type { ArrayType, InterfaceType, IntersectionType, KeyofType, LiteralType, RecordType, UnionType, unknownRecord } from './types';
 import { an, basicType, printValue } from './utils';
 import { ValidationError } from './validation-error';
 
+/** Test case for a type. */
 export interface TypeTestCase {
+    /** The expected name of the type */
     name: string;
+    /** The type to test. Can be a single type or an array of types. */
     type: Type<any> | Type<any>[];
     basicType?: BasicType | 'mixed';
+    /** Values that the type should accept as being valid. Note that the parser is not used for these values. */
     validValues?: unknown[];
-    invalidValues?: [value: unknown, message: string | string[] | RegExp][];
+    /**
+     * Values that the type should not accept as being valid. Again, no parser is used for these values. Note that this input is also used
+     * for invalidConversions unless provided explicitly. Therefore it is also possible to provide the third parameter (`issues`) here. Look
+     * at invalidConversions for more details.
+     */
+    invalidValues?: [value: unknown, message: string | string[] | RegExp, issues?: StandardSchemaV1.Issue[]][];
+    /** Values that type should accept as being valid after applying any parsers. */
     validConversions?: [input: unknown, value: unknown][];
-    invalidConversions?: [input: unknown, message: string | string[] | RegExp][];
+    /**
+     * Values that the type should not accept as being valid after applying any parsers. These cases are also applied to the standard schema
+     * validation because that is linked to our validation "in construct mode". The third parameter can be given to override our default
+     * expectations of the standard schema error messages. In a lot of cases we can determine this automatically, but in some cases we
+     * cannot.
+     */
+    invalidConversions?: [input: unknown, message: string | string[] | RegExp, issues?: StandardSchemaV1.Issue[]][];
 }
 
 /**
@@ -35,7 +54,9 @@ export function testTypeImpl({
     validValues,
     invalidValues,
     validConversions,
-    invalidConversions,
+    // Also test the same conditions using the `construct` method, instead of only using the `check` method. This also ensures we take the
+    // standard schema validation into account.
+    invalidConversions = invalidValues,
 }: TypeTestCase): void {
     describe(`test: ${name}`, () => {
         Array.isArray(types) ? describe.each(types)('implementation %#', theTests) : theTests(types);
@@ -87,11 +108,13 @@ export function testTypeImpl({
                 expect(type.apply(undefined, [input])).toEqual(output);
                 expect(type.bind(undefined, input)()).toEqual(output);
                 expect(type.call(undefined, input)).toEqual(output);
+                expect(standardValidate(type, input)).toEqual({ value: output });
             });
 
         invalidConversions &&
-            test.each(invalidConversions)('will not convert: %p', (value, message) => {
+            test.each(invalidConversions)('will not convert: %p', (value, message, issues = defaultIssues(message)) => {
                 expect(() => type(value)).toThrowWithMessage(ValidationErrorForTest, Array.isArray(message) ? message.join('\n') : message);
+                expect(standardValidate(type, value)).toEqual({ issues });
             });
     }
 }
@@ -208,4 +231,41 @@ class CreateExampleVisitor implements Visitor<unknown> {
 
 function hasExample<T>(obj: BaseTypeImpl<T>): obj is BaseTypeImpl<T> & { example: T } {
     return 'example' in obj;
+}
+
+/**
+ * Helper function around StandardSchema validation interface to incorporate it in the existing conversion tests.
+ *
+ * Note that Skunkteam Types has a distinction between checking if an input conforms to a schema (Type) as-is (`.is()`, `.check()`) vs
+ * validating if an input can be parsed and converted into the schema (`.construct()`). This makes it non-trivial to fully incorporate
+ * the StandardSchema interface into the existing test-suite.
+ */
+function standardValidate<T>(schema: StandardSchemaV1<T>, input: unknown): StandardSchemaV1.Result<T> {
+    const result = schema['~standard'].validate(input);
+    if (result instanceof Promise) throw new TypeError('No asynchronous type validation in Skunkteam Types');
+    return result;
+}
+
+function defaultIssues(input: string | RegExp | string[]): StandardSchemaV1.Issue[] {
+    const message = Array.isArray(input) ? input.join('\n') : typeof input === 'string' ? input : expect.stringMatching(input);
+    // Perform some string parsing on the error to guess what the standard schema issue should look like. This is just to prevent having to
+    // configure a lot of expectations, but does not cover every possibility. Especially multiple errors will have to be stated explicitly.
+    //
+    // Things we do here:
+    // - Remove the common header that says "error in {optional context} [TheTypeName]:", because that should not be part of the issues
+    //   list.
+    // - Try to guess the path if any.
+    const hasPath = typeof message === 'string' && /^error in [^[]*\[.*?\](?: at [^<]*<(?<path>[^>]+)>)?: (?<message>[^]*)$/.exec(message);
+    if (hasPath) {
+        assert(hasPath.groups);
+        return [
+            {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- TypeScript is wrong here
+                path: hasPath.groups.path?.split('.').map(key => (/^\[\d+\]$/.test(key) ? +key.slice(1, -1) : key)),
+                message: hasPath.groups.message,
+            },
+        ];
+    }
+    // if (typeof message === 'string') message = message.replace(/^error in .*\[.*\]: /, '');
+    return [{ message }];
 }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { StandardSchemaV1 } from '@standard-schema/spec';
 import { expectTypeOf } from 'expect-type';
 import { autoCast } from './autocast';
 import type { DeepUnbranded, MessageDetails, ObjectType, The, Type, Unbranded, Writable } from './interfaces';
@@ -90,7 +91,11 @@ testTypeImpl({
     invalidValues: [
         [-1, 'error in [Age]: the unborn miracle, got: -1'],
         [Age.MAX + 1, 'error in [Age]: wow, that is really old, got: 200'],
-        [-1.5, ['errors in [Age]:', '', '- the unborn miracle, got: -1.5', '', '- expected a whole number, got: -1.5']],
+        [
+            -1.5,
+            ['errors in [Age]:', '', '- the unborn miracle, got: -1.5', '', '- expected a whole number, got: -1.5'],
+            [{ message: 'the unborn miracle, got: -1.5' }, { message: 'expected a whole number, got: -1.5' }],
+        ],
         [1.5, 'error in [Age]: expected a whole number, got: 1.5'],
     ],
 });
@@ -195,6 +200,10 @@ testTypeImpl({
                 '',
                 '- missing properties <name> [{ first: SmallString, last: LastNameType }], <shoeSize> [ShoeSize] and <status> [Status], got: {}',
             ],
+            [
+                { message: 'missing property <name> [{ first: SmallString, last: LastNameType }], got: {}' },
+                { message: 'missing property <shoeSize> [ShoeSize], got: {}' },
+            ],
         ],
         [
             { name: {} },
@@ -205,10 +214,19 @@ testTypeImpl({
                 '',
                 '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}',
             ],
+            [
+                { message: 'missing property <shoeSize> [ShoeSize], got: { name: {} }' },
+                { path: ['name'], message: 'missing property <first> [SmallString], got: {}' },
+                { path: ['name'], message: 'missing property <last> [LastNameType], got: {}' },
+            ],
         ],
         [
             { name: {}, shoeSize: 1, status: 'PENDING' },
             ['errors in [User]:', '', '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}'],
+            [
+                { path: ['name'], message: 'missing property <first> [SmallString], got: {}' },
+                { path: ['name'], message: 'missing property <last> [LastNameType], got: {}' },
+            ],
         ],
         [
             { name: { first: 'first' }, shoeSize: 2, status: 'PENDING' },
@@ -227,6 +245,11 @@ testTypeImpl({
                 '',
                 '- at <name.first>: your string "I have a long name!" is too long! :-(',
             ],
+            [
+                { path: ['name'], message: 'missing property <last> [LastNameType], got: { first: "I have a long name!" }' },
+                { path: ['shoeSize'], message: 'should not be negative, got: -3' },
+                { path: ['name', 'first'], message: 'your string "I have a long name!" is too long! :-(' },
+            ],
         ],
         [
             { name: { first: 'very very long' }, shoeSize: Symbol('4') },
@@ -240,6 +263,11 @@ testTypeImpl({
                 '- at <shoeSize>: expected a number, got a symbol ([Symbol: 4])',
                 '',
                 '- at <name.first>: your string "very very long" is too long! :-(',
+            ],
+            [
+                { path: ['name'], message: 'missing property <last> [LastNameType], got: { first: "very very long" }' },
+                { path: ['shoeSize'], message: 'expected a number, got a symbol ([Symbol: 4])' },
+                { path: ['name', 'first'], message: 'your string "very very long" is too long! :-(' },
             ],
         ],
         [
@@ -277,6 +305,10 @@ testTypeImpl({
         [
             { name: {} },
             ['errors in [Partial<User>]:', '', '- at <name>: missing properties <first> [SmallString] and <last> [LastNameType], got: {}'],
+            [
+                { path: ['name'], message: 'missing property <first> [SmallString], got: {}' },
+                { path: ['name'], message: 'missing property <last> [LastNameType], got: {}' },
+            ],
         ],
         [
             { name: { first: 'incredibly long name' } },
@@ -286,6 +318,10 @@ testTypeImpl({
                 '- at <name>: missing property <last> [LastNameType], got: { first: "incredibly long name" }',
                 '',
                 '- at <name.first>: your string "incredibly long name" is too long! :-(',
+            ],
+            [
+                { path: ['name'], message: 'missing property <last> [LastNameType], got: { first: "incredibly long name" }' },
+                { path: ['name', 'first'], message: 'your string "incredibly long name" is too long! :-(' },
             ],
         ],
         [{ name: { first: 'name', last: 123 } }, 'error in [Partial<User>] at <name.last>: expected a string, got a number (123)'],
@@ -346,6 +382,11 @@ testTypeImpl({
     validConversions: [['Pete Johnson 20', { name: { first: 'Pete', last: 'Johnson' }, shoeSize: 20, status: 'PENDING' }]],
     invalidConversions: [
         [
+            { name: { first: 'Bobby', last: 'Tables' } },
+            'error in [RestrictedUser]: missing property <shoeSize> [ShoeSize], got: { name: { first: "Bobby", last: "Tables" } }',
+        ],
+        [{ name: { first: 'Bobbx', last: 'Tablex' }, shoeSize: 5 }, 'error in [RestrictedUser]: this User is suspicious'],
+        [
             'Bobby Tables 5',
             [
                 'errors in [RestrictedUser]:',
@@ -353,6 +394,10 @@ testTypeImpl({
                 '- this User is suspicious',
                 '',
                 '- in the Bobby Tables detector at <name>: expected a [RestrictedUser], got: { first: "Bobby", last: "Tables" }',
+            ],
+            [
+                { message: 'this User is suspicious' },
+                { path: ['name'], message: 'expected a [RestrictedUser], got: { first: "Bobby", last: "Tables" }' },
             ],
         ],
         [
@@ -364,6 +409,10 @@ testTypeImpl({
                 '- at <shoeSize>: expected a [ShoeSize], got: NaN',
                 '',
                 '- at <name.last>: expected a string, got an undefined',
+            ],
+            [
+                { path: ['shoeSize'], message: 'expected a [ShoeSize], got: NaN' },
+                { path: ['name', 'last'], message: 'expected a string, got an undefined' },
             ],
         ],
     ],
@@ -422,6 +471,10 @@ testTypeImpl({
                 '',
                 '- in parser precondition at <b>: expected a string, got a number (2)',
             ],
+            [
+                { path: ['a'], message: 'expected a string, got a number (1)' },
+                { path: ['b'], message: 'expected a string, got a number (2)' },
+            ],
         ],
         [
             { a: 'a' },
@@ -431,6 +484,10 @@ testTypeImpl({
                 '- missing property <b> [number], got: { a: "a" }',
                 '',
                 '- in parser at <a>: could not convert value to number, got: "a"',
+            ],
+            [
+                { message: 'missing property <b> [number], got: { a: "a" }' },
+                { path: ['a'], message: 'could not convert value to number, got: "a"' },
             ],
         ],
     ],
@@ -472,6 +529,10 @@ testTypeImpl({
                 '',
                 '- in parser at <neg>: could not convert value to number, got: "--1"',
             ],
+            [
+                { path: ['pos'], message: 'should be positive, got: -1, parsed from: "-1"' },
+                { path: ['neg'], message: 'could not convert value to number, got: "--1"' },
+            ],
         ],
         [
             { pos: '2', neg: '-3' },
@@ -510,6 +571,10 @@ testTypeImpl({
                 '',
                 '- at <first>: expected a string, got an object ({})',
             ],
+            [
+                { message: 'missing property <nr> [number], got: { first: {} }' },
+                { path: ['first'], message: 'expected a string, got an object ({})' },
+            ],
         ],
         [
             { nr: true, ok: 1 },
@@ -519,6 +584,10 @@ testTypeImpl({
                 '- at <nr>: expected a number, got a boolean (true)',
                 '',
                 '- at <ok>: expected a boolean, got a number (1)',
+            ],
+            [
+                { path: ['nr'], message: 'expected a number, got a boolean (true)' },
+                { path: ['ok'], message: 'expected a boolean, got a number (1)' },
             ],
         ],
     ],
@@ -552,6 +621,11 @@ testTypeImpl({
                 '',
                 '- at <b.name.first>: your string "too long a name" is too long! :-(',
             ],
+            [
+                { path: ['b', 'name'], message: 'missing property <last> [LastNameType], got: { first: "too long a name" }' },
+                { path: ['b', 'shoeSize'], message: 'should not be negative, got: -5' },
+                { path: ['b', 'name', 'first'], message: 'your string "too long a name" is too long! :-(' },
+            ],
         ],
     ],
 });
@@ -567,6 +641,7 @@ testTypeImpl({
     validValues: [{ msg: 'a!' }, { msg: '!' }],
     invalidValues: [[{ msg: 'a' }, 'error in [ShoutMessage]: speak up']],
     validConversions: [[{ msg: 'a' }, { msg: 'a!' }]],
+    invalidConversions: [[{ msg: 1 }, 'error in [ShoutMessage] at parser precondition of <msg>: expected a string, got a number (1)']],
 });
 
 // Multiple calls to withValidation should be possible
@@ -646,6 +721,7 @@ testTypeImpl({
                 '',
                 '- at <outer.inner>: missing property <value> [AutoCast<number>], got: {}',
             ],
+            [{ path: ['outer', 'inner'], message: 'missing property <value> [AutoCast<number>], got: {}' }],
         ],
         [
             { value: 'received' },
@@ -657,6 +733,7 @@ testTypeImpl({
                 '',
                 '- in parser at <outer.inner.value>: could not autocast value: "received"',
             ],
+            [{ path: ['outer', 'inner', 'value'], message: 'could not autocast value: "received"' }],
         ],
     ],
 });
@@ -749,6 +826,17 @@ test('TypeOf', () => {
         ok: true,
         inner: { name: { first: SmallString('first'), last: 'last' }, shoeSize: ShoeSize(5), status: Status('PENDING') },
     }).toEqualTypeOf<WithUser>();
+});
+
+test('standard schema conformance', () => {
+    expectTypeOf(standardValidate(string)).toEqualTypeOf<string>();
+    expectTypeOf(standardValidate(number)).toEqualTypeOf<number>();
+    expectTypeOf(standardValidate(Age)).toEqualTypeOf<Age>();
+    expectTypeOf(standardValidate(User)).toEqualTypeOf<User>();
+
+    function standardValidate<T extends StandardSchemaV1>(schema: T): StandardSchemaV1.InferOutput<T> {
+        return schema; // BS, we're only interested in the types in the signature of this function
+    }
 });
 
 test('unbranding and literals', () => {

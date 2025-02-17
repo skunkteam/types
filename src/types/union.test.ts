@@ -396,6 +396,10 @@ testTypeImpl({
                 '',
                 '- at <nested>: expected a boolean, a number or a string, got an object ({})',
             ],
+            [
+                { message: 'missing property <c> [string], got: { nested: {} }' },
+                { path: ['nested'], message: 'expected a boolean, a number or a string, got an object ({})' },
+            ],
         ],
         [
             { nested: true },
@@ -407,6 +411,15 @@ testTypeImpl({
                 '- at <nested>: in union element [false]: expected the literal false, got: true',
                 '  • disregarded 4 union-subtypes that do not accept a boolean',
             ],
+            [
+                { message: 'missing property <c> [string], got: { nested: true }' },
+                {
+                    path: ['nested'],
+                    message:
+                        'in union element [false]: expected the literal false, got: true\n' +
+                        '  • disregarded 4 union-subtypes that do not accept a boolean',
+                },
+            ],
         ],
         [
             { nested: 789 },
@@ -417,6 +430,15 @@ testTypeImpl({
                 '',
                 '- at <nested>: in subset of union: expected one of the literals 123 or 456, got: 789',
                 '  • disregarded 3 union-subtypes that do not accept a number',
+            ],
+            [
+                { message: 'missing property <c> [string], got: { nested: 789 }' },
+                {
+                    path: ['nested'],
+                    message:
+                        'in subset of union: expected one of the literals 123 or 456, got: 789\n' +
+                        '  • disregarded 3 union-subtypes that do not accept a number',
+                },
             ],
         ],
     ],

@@ -60,6 +60,7 @@ testTypeImpl({
     validValues: ['specific string'],
     invalidValues: [[{ toString: () => 'specific string' }, 'expected a string ("specific string"), got an object ("specific string")']],
     validConversions: [[{ toString: () => 'specific string' }, 'specific string']],
+    invalidConversions: [[{ toString: () => 'another string' }, 'expected the literal "specific string", got: "another string"']],
 });
 
 testTypeImpl({
@@ -124,6 +125,7 @@ testTypeImpl({
     validValues: [42],
     invalidValues: [['42', 'expected a number (42), got a string ("42")']],
     validConversions: [['42', 42]],
+    invalidConversions: [['41', 'expected the literal 42, got: 41, parsed from: "41"']],
 });
 
 test('literal', () => {
