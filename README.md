@@ -199,6 +199,8 @@ User({ name: { first: "my name is so incredibly long, you wouldn't believe it" }
 User({ name: { first: 'Donald', last: 'Duck' }, shoeSize: 1 }); // OK
 ```
 
+#### Optional fields
+
 Optional fields can be added with [`withOptional()`](markdown/types.interfacetype.withoptional.md).
 
 ```typescript
@@ -237,27 +239,33 @@ Note that, by default, `undefined` values and omitted fields are interchangeable
 object({ prop: string.or(undefinedType) }).is({}); // => true
 // `partial` is the same as `object`, but all properties are optional
 partial({ prop: string }).is({ prop: undefined }); // => true
-
-// This allows us to provide default values for omitted fields and define
-// optional fields inline with required fields. (`withParser` will be explained
-// later)
-
-type StringOrEmpty = The<typeof StringOrEmpty>;
-const StringOrEmpty = string.or(undefinedType).withParser(i => i || 'DEFAULT');
-
-// Now missing properties are automatically converted to the given default value.
-// In a future version we might add a convenience method for this.
-object({ prop: StringOrEmpty }).construct({}); // => { prop: 'DEFAULT' }
-object({ prop: StringOrEmpty }).is({}); // => true
 ```
 
 To opt out of this behavior, use the optional options parameter (first):
 
 ```typescript
-object({ strictMissingKeys: true }, { prop: StringOrEmpty }).construct({});
+object({ strictMissingKeys: true }, { prop: string.or(undefinedType) }).construct({});
 // throws ValidationError: error in [{ prop: string | undefined }]: missing property <prop> [string | undefined], got: {}
-object({ strictMissingKeys: true }, { prop: StringOrEmpty }).construct({ prop: undefined });
-// => { prop: 'DEFAULT' }
+object({ strictMissingKeys: true }, { prop: string.or(undefinedType) }).construct({ prop: undefined });
+// => { prop: undefined }
+```
+
+#### Default values
+
+It is possible to provide default values for properties that are missing during parsing. This only works for required properties.
+
+```typescript
+type ObjectWithDefaultValues = The<typeof ObjectWithDefaultValues>;
+const ObjectWithDefaultValues = object('ObjectWithDefaultValues', {
+    requiredProp: string.withDefault('this will work'),
+}).withOptional({
+    optionalProp: string.withDefault("this doesn't make sense"),
+});
+
+// Now missing properties are automatically converted to the given default value.
+ObjectWithDefaultValues({}); // => { requiredProp: 'this will work' }
+ObjectWithDefaultValues.is({})); // => false
+ObjectWithDefaultValues.is({ requiredProp: 'still required' })); // => true
 ```
 
 ### Validations
@@ -300,6 +308,15 @@ return messages;
 ```
 
 In this case an empty `messages` array means that no errors occurred. That is why an empty array is regarded as a successful validation.
+
+It is also possible to use a generator function to yield zero or more errors, for example:
+
+```ts
+number.withValidation(function* (n) {
+    if (n <= 10) yield 'should be more than 10';
+    if (n <= 5) yield 'not even close';
+});
+```
 
 **Returning structured error details:**
 
