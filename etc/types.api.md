@@ -111,6 +111,9 @@ export type Branded<T, BrandName extends string> = T extends WithBrands<infer Ba
 export const brands: unique symbol;
 
 // @public
+export function checkOneOrMore<T>(arr: T[]): OneOrMore<T>;
+
+// @public
 export function createType<Impl extends BaseTypeImpl<any, any>>(impl: Impl, override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser' | 'customValidators', PropertyDescriptor>>): TypeImpl<Impl>;
 
 // @public
@@ -232,6 +235,9 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly types: Types;
     protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>>;
 }
+
+// @public
+export function isOneOrMore<T>(arr: T[]): arr is OneOrMore<T>;
 
 // @public
 export function isType(value: unknown): value is Type<unknown>;
