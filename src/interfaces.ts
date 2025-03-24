@@ -362,6 +362,8 @@ export type TypeguardResult<ResultType, Input> =
 
 /**
  * An Array with at least one element.
+ * @remarks
+ * Note that this type does not disable the mutable methods of the array, which may still invalidate the non-emptiness of the array.
  */
 export type OneOrMore<T> = [T, ...T[]];
 

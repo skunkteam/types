@@ -1,9 +1,17 @@
 import type { BasicType, Failure, OneOrMore, Result, ValidationResult } from '../interfaces';
 
+/**
+ * Type guard for `OneOrMore`
+ * @remarks
+ * This checks if the array has at least one element.
+ */
 export function isOneOrMore<T>(arr: T[]): arr is OneOrMore<T> {
     return arr.length > 0;
 }
 
+/**
+ * Returns the original array if and only if it has at least one element.
+ */
 export function checkOneOrMore<T>(arr: T[]): OneOrMore<T> {
     // istanbul ignore if
     if (!isOneOrMore(arr)) {

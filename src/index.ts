@@ -7,4 +7,5 @@ export * from './symbols';
 export * from './type-guard';
 export * from './types';
 export { printKey, printPath, printValue } from './utils/print-utils';
+export { checkOneOrMore, isOneOrMore } from './utils/type-utils';
 export * from './validation-error';
