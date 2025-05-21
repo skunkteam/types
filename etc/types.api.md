@@ -89,7 +89,6 @@ export abstract class BaseTypeImpl<ResultType, TypeConfig = unknown> implements 
     withBrand<const BrandName extends string>(name: BrandName): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withConfig<const BrandName extends string>(name: BrandName, newConfig: TypeConfig): Type<Branded<ResultType, BrandName>, TypeConfig>;
     withConstraint<const BrandName extends string>(name: BrandName, constraint: Validator<ResultType>): Type<Branded<ResultType, BrandName>, TypeConfig>;
-    withDefault(...args: [value: DeepUnbranded<ResultType>] | [name: string, value: DeepUnbranded<ResultType>] | [options: WithDefaultOptions, value: DeepUnbranded<ResultType>]): this;
     withName(name: string): this;
     withParser(...args: [newConstructor: (i: unknown) => unknown] | [name: string, newConstructor: (i: unknown) => unknown] | [options: ParserOptions, newConstructor: (i: unknown) => unknown]): this;
     withValidation(validation: Validator<ResultType>): this;
@@ -109,9 +108,6 @@ export type Branded<T, BrandName extends string> = T extends WithBrands<infer Ba
 
 // @public
 export const brands: unique symbol;
-
-// @public
-export function checkOneOrMore<T>(arr: T[]): OneOrMore<T>;
 
 // @public
 export function createType<Impl extends BaseTypeImpl<any, any>>(impl: Impl, override?: Partial<Record<keyof BaseTypeImpl<any, any> | 'typeValidator' | 'typeParser' | 'customValidators', PropertyDescriptor>>): TypeImpl<Impl>;
@@ -235,9 +231,6 @@ export class IntersectionType<Types extends OneOrMore<BaseObjectLikeTypeImpl<unk
     readonly types: Types;
     protected typeValidator(input: unknown, options: ValidationOptions): Result<IntersectionOfTypeTuple<Types>>;
 }
-
-// @public
-export function isOneOrMore<T>(arr: T[]): arr is OneOrMore<T>;
 
 // @public
 export function isType(value: unknown): value is Type<unknown>;
@@ -438,7 +431,7 @@ export type PropertyInfo<T extends Type<unknown> = Type<unknown>> = {
 };
 
 // @public
-export function record<KeyType extends number | string, ValueType>(...args: [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean] | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
+export function record<KeyType extends number | string, ValueType>(...args: [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean] | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<ValueType>, strict?: boolean]): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>>;
 
 // @public
 export class RecordType<KeyTypeImpl extends BaseTypeImpl<KeyType>, KeyType extends number | string, ValueTypeImpl extends BaseTypeImpl<ValueType>, ValueType, ResultType extends Record<KeyType, ValueType> = Record<KeyType, ValueType>> extends BaseTypeImpl<ResultType> {
@@ -624,9 +617,6 @@ export type unknownRecord = Record<string, unknown>;
 export const unknownRecord: Type<unknownRecord>;
 
 // @public
-export type Unwidened<T> = T extends T ? T : never;
-
-// @public
 export type ValidationDetails = {
     type: BaseTypeImpl<unknown>;
     input: unknown;
@@ -678,15 +668,13 @@ export interface Visitor<R> {
     // (undocumented)
     visitCustomType(type: BaseTypeImpl<unknown>): R;
     // (undocumented)
-    visitIntersectionType(type: IntersectionType<OneOrMore<BaseObjectLikeTypeImpl<unknown>>>): R;
-    // (undocumented)
     visitKeyofType(type: KeyofType<Record<any, any>, any>): R;
     // (undocumented)
     visitLiteralType(type: LiteralType<LiteralValue>): R;
     // (undocumented)
     visitNumberType(type: BaseTypeImpl<number, NumberTypeConfig>): R;
     // (undocumented)
-    visitObjectType(type: InterfaceType<Properties, unknownRecord>): R;
+    visitObjectLikeType(type: BaseObjectLikeTypeImpl<unknown>): R;
     // (undocumented)
     visitRecordType(type: RecordType<BaseTypeImpl<number | string>, number | string, BaseTypeImpl<unknown>, unknown>): R;
     // (undocumented)
@@ -710,12 +698,6 @@ export type WithBrands<T, BrandNames extends string> = T & {
         [P in BrandNames]: true;
     };
 };
-
-// @public
-export interface WithDefaultOptions {
-    clone?: boolean;
-    name?: string;
-}
 
 // @public
 export type Writable<T> = {

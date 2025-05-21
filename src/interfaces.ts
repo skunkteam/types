@@ -221,10 +221,14 @@ export type DeepUnbranded<T> = T extends readonly [any, ...any[]] | readonly []
     : T extends ReadonlyArray<infer E>
     ? ReadonlyArray<DeepUnbranded<E>>
     : T extends Record<string, unknown>
-    ? UnbrandValues<Unbranded<T>>
+    ? UnbrandRecordLike<Unbranded<T>>
     : Unbranded<T>;
 
 export type UnbrandValues<T> = { [P in keyof T]: DeepUnbranded<T[P]> };
+/** Check if the key type of the record-like structure (could also be an object) is branded. In that case, explicitely unbrand the keytype */
+export type UnbrandRecordLike<T> = keyof T extends WithBrands<string, any> | WithBrands<number, any>
+    ? Record<Unbranded<keyof T>, DeepUnbranded<T[keyof T]>>
+    : UnbrandValues<T>;
 
 /**
  * The properties of an object type.

@@ -100,15 +100,34 @@ define(
     },
 );
 
-/** Small helper type that somehow nudges TS compiler to not widen branded string and number types to their base type. */
+/**
+ * Small helper type that nudges the TS compiler to not widen branded string and number types to their base type.
+ */
 export type Unwidened<T> = T extends T ? T : never;
+
 /**
  * Note: record has strict validation by default, while type does not have strict validation, both are strict in construction though. TODO: document
+ *
+ * Warning: mixed unions of branded types as `valueType` behave unpredictably - the brand names get lost:
+ * ```ts
+ * type MixedValueType = The<typeof MixedValueType>;
+ * const MixedValueType = record('MixedValueType', string, union([number.withBrand('A'), string.withBrand('B')]);
+ * // MixedValueType = Record<string, WithBrands<number, string> | WithBrands<string, string>>
+ * // instead of: Record<string, WithBrands<number, 'A'> | WithBrands<string, 'B'>>
+ * ```
+ *
+ * Warning: unions of branded types with `undefinedType` as `valueType` behave unpredictably - the branding dissapears completely:
+ * ```ts
+ * type WithUndefined = The<typeof WithUndefined>;
+ * const WithUndefined = record('WithUndefined', string, union([number.withBrand('A'), undefinedType]);
+ * // WithUndefined = Record<string, number | undefined>
+ * // instead of: Record<string, WithBrands<number, 'A'> | undefined>
+ * ```
  */
 export function record<KeyType extends number | string, ValueType>(
     ...args:
-        | [name: string, keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
-        | [keyType: BaseTypeImpl<KeyType>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
+        | [name: string, keyType: BaseTypeImpl<Unwidened<KeyType>>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
+        | [keyType: BaseTypeImpl<Unwidened<KeyType>>, valueType: BaseTypeImpl<Unwidened<ValueType>>, strict?: boolean]
 ): TypeImpl<RecordType<BaseTypeImpl<KeyType>, KeyType, BaseTypeImpl<ValueType>, ValueType>> {
     const [name, keyType, valueType, strict] = decodeOptionalName(args);
     return createType(new RecordType(acceptNumberLikeKey(keyType), valueType, name, strict));

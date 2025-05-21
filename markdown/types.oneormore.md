@@ -11,7 +11,3 @@ An Array with at least one element.
 ```typescript
 type OneOrMore<T> = [T, ...T[]];
 ```
-
-## Remarks
-
-Note that this type does not disable the mutable methods of the array, which may still invalidate the non-emptiness of the array.
