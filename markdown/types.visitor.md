@@ -19,11 +19,10 @@ interface Visitor<R>
 | [visitArrayType(type)](./types.visitor.visitarraytype.md)                 |             |
 | [visitBooleanType(type)](./types.visitor.visitbooleantype.md)             |             |
 | [visitCustomType(type)](./types.visitor.visitcustomtype.md)               |             |
-| [visitIntersectionType(type)](./types.visitor.visitintersectiontype.md)   |             |
 | [visitKeyofType(type)](./types.visitor.visitkeyoftype.md)                 |             |
 | [visitLiteralType(type)](./types.visitor.visitliteraltype.md)             |             |
 | [visitNumberType(type)](./types.visitor.visitnumbertype.md)               |             |
-| [visitObjectType(type)](./types.visitor.visitobjecttype.md)               |             |
+| [visitObjectLikeType(type)](./types.visitor.visitobjectliketype.md)       |             |
 | [visitRecordType(type)](./types.visitor.visitrecordtype.md)               |             |
 | [visitStringType(type)](./types.visitor.visitstringtype.md)               |             |
 | [visitUnionType(type)](./types.visitor.visituniontype.md)                 |             |

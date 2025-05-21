@@ -35,10 +35,8 @@ Runtime type-validation with derived TypeScript types.
 | [autoCast(type)](./types.autocast.md)                             | Returns the same type, but with an auto-casting default parser installed.                                                                         |
 | [autoCastAll(type)](./types.autocastall.md)                       | Create a recursive autocasting version of the given type.                                                                                         |
 | [booleanAutoCaster(input)](./types.booleanautocaster.md)          |                                                                                                                                                   |
-| [checkOneOrMore(arr)](./types.checkoneormore.md)                  | Returns the original array if and only if it has at least one element.                                                                            |
 | [createType(impl, override)](./types.createtype.md)               | Create a Type from the given type-implementation.                                                                                                 |
 | [intersection(args)](./types.intersection.md)                     | Intersect the given types.                                                                                                                        |
-| [isOneOrMore(arr)](./types.isoneormore.md)                        | Type guard for <code>OneOrMore</code>                                                                                                             |
 | [isType(value)](./types.istype.md)                                | Type-guard that asserts that a given value is a Type.                                                                                             |
 | [keyof(args)](./types.keyof.md)                                   |                                                                                                                                                   |
 | [literal(value)](./types.literal.md)                              |                                                                                                                                                   |
@@ -73,7 +71,6 @@ Runtime type-validation with derived TypeScript types.
 | [TypeLink](./types.typelink.md)                                               | An object that has an associated TypeScript type.                                                                                                                                                                                             |
 | [ValidationOptions](./types.validationoptions.md)                             |                                                                                                                                                                                                                                               |
 | [Visitor](./types.visitor.md)                                                 | Interface for a visitor that is accepted by all types (classic visitor-pattern).                                                                                                                                                              |
-| [WithDefaultOptions](./types.withdefaultoptions.md)                           | Options that can be passed to [BaseTypeImpl.withDefault()](./types.basetypeimpl.withdefault.md)<!-- -->.                                                                                                                                      |
 
 ## Variables
 

@@ -1,10 +1,12 @@
+import { expectTypeOf } from 'expect-type';
+import { WithBrands } from '..';
 import { autoCast, autoCastAll } from '../autocast';
-import type { MessageDetails, The } from '../interfaces';
+import { DeepUnbranded, type MessageDetails, type The } from '../interfaces';
 import { createExample, defaultUsualSuspects, stripped, testTypeImpl } from '../testutils';
 import { printKey, printValue } from '../utils';
 import { object } from './interface';
 import { keyof } from './keyof';
-import { literal } from './literal';
+import { literal, undefinedType } from './literal';
 import { int, number } from './number';
 import { record } from './record';
 import { string } from './string';
@@ -243,4 +245,174 @@ testTypeImpl({
             [{ message: 'key: <a> should have value "aa", got: "aaa"' }, { message: 'key: <b> should have value "bb", got: "bbbb"' }],
         ],
     ],
+});
+
+// Branded keys and values have a particular interaction with the Record type.
+describe('Branded entries', () => {
+    type BrandedString = The<typeof BrandedString>;
+    const BrandedString = string.withBrand('A');
+    test('Branded strings', () => {
+        type BrandedKVRecord = The<typeof BrandedKVRecord>;
+        const BrandedKVRecord = record('BrandedKVRecord', BrandedString, BrandedString);
+
+        // Strict typing on the Key and Value type of the record:
+        expectTypeOf<BrandedKVRecord>().toEqualTypeOf<Record<BrandedString, BrandedString>>();
+        expectTypeOf<DeepUnbranded<BrandedKVRecord>>().toEqualTypeOf<Record<string, string>>();
+
+        const brandedVal = BrandedString('branded');
+        const regularVal = String('abc');
+
+        // Regular strings used as keys and values don't match the stricter type:
+        expectTypeOf({ [regularVal]: regularVal }).not.toEqualTypeOf<BrandedKVRecord>();
+        expectTypeOf({ [regularVal]: regularVal }).toEqualTypeOf<Record<string, string>>();
+
+        // Also normal:
+        expectTypeOf({ [regularVal]: brandedVal }).toEqualTypeOf<Record<string, BrandedString>>();
+
+        // Using `brandedVal` at an index position like this actually calls `toString()` on it, widening the type to `string`.
+        // See: https://basarat.gitbook.io/typescript/type-system/index-signatures
+        // So this is expected behaviour:
+        expectTypeOf({ [brandedVal]: regularVal }).toEqualTypeOf<Record<string, string>>();
+        expectTypeOf({ [brandedVal]: brandedVal }).toEqualTypeOf<Record<string, BrandedString>>();
+
+        // Works with explicit type notations though:
+        const explicitlyTypedValue: BrandedKVRecord = { [brandedVal]: brandedVal };
+        expectTypeOf(explicitlyTypedValue).toEqualTypeOf<Record<BrandedString, BrandedString>>();
+
+        // Literal allows for unbranded entry:
+        expectTypeOf(BrandedKVRecord.literal({ a: 'b' })).toEqualTypeOf<BrandedKVRecord>();
+    });
+
+    type BrandedNumber = The<typeof BrandedNumber>;
+    const BrandedNumber = number.withBrand('B');
+    test('Branded numbers', () => {
+        type BrandedKVRecord = The<typeof BrandedKVRecord>;
+        const BrandedKVRecord = record('BrandedKVRecord', BrandedNumber, BrandedNumber);
+
+        // Strict typing on the Key and Value type of the record:
+        expectTypeOf<BrandedKVRecord>().toEqualTypeOf<Record<BrandedNumber, BrandedNumber>>();
+        expectTypeOf<DeepUnbranded<BrandedKVRecord>>().toEqualTypeOf<Record<number, number>>();
+
+        const brandedVal = BrandedNumber(1);
+        const regularVal = Number(1);
+
+        // Regular numbers used as keys and values don't match the stricter type:
+        expectTypeOf({ [regularVal]: regularVal }).not.toEqualTypeOf<BrandedKVRecord>();
+        expectTypeOf({ [regularVal]: regularVal }).toEqualTypeOf<Record<number, number>>();
+
+        // Also normal:
+        expectTypeOf({ [regularVal]: brandedVal }).toEqualTypeOf<Record<number, BrandedNumber>>();
+
+        // Using `brandedVal` at an index position like this also widens the type to `number`:
+        expectTypeOf({ [brandedVal]: regularVal }).toEqualTypeOf<Record<number, number>>();
+        expectTypeOf({ [brandedVal]: brandedVal }).toEqualTypeOf<Record<number, BrandedNumber>>();
+
+        // Works with explicit type notations though:
+        const explicitlyTypedValue: BrandedKVRecord = { [brandedVal]: brandedVal };
+        expectTypeOf(explicitlyTypedValue).toEqualTypeOf<Record<BrandedNumber, BrandedNumber>>();
+
+        // Literal allows for unbranded entry:
+        expectTypeOf(BrandedKVRecord.literal({ 1: 2 })).toEqualTypeOf<BrandedKVRecord>();
+    });
+
+    describe('Unions over branded values', () => {
+        test('Homogeneous branded types', () => {
+            type OtherBrandedString = The<typeof OtherBrandedString>;
+            const OtherBrandedString = string.withBrand('C');
+
+            type BrandedStringUnion = The<typeof BrandedStringUnion>;
+            const BrandedStringUnion = union('BrandedStringUnion', [BrandedString, OtherBrandedString]);
+            expectTypeOf<BrandedStringUnion>().toEqualTypeOf<BrandedString | OtherBrandedString>();
+
+            type HomogeneousStringsRecord = The<typeof HomogeneousStringsRecord>;
+            const HomogeneousStringsRecord = record('HomogeneousStringsRecord', BrandedString, BrandedStringUnion);
+
+            // This works as expected:
+            expectTypeOf<HomogeneousStringsRecord>().toEqualTypeOf<Record<BrandedString, BrandedStringUnion>>();
+            expectTypeOf<DeepUnbranded<HomogeneousStringsRecord>>().toEqualTypeOf<Record<string, string>>();
+            expectTypeOf(HomogeneousStringsRecord.literal({ a: 'b' })).toEqualTypeOf<HomogeneousStringsRecord>();
+        });
+
+        test('Inhomogeneous branded types', () => {
+            type MixedTypeBranding = The<typeof MixedTypeBranding>;
+            const MixedTypeBranding = union('MixedTypeBranding', [BrandedString, BrandedNumber]);
+
+            // At this point everything is fine. We have a union of two differently branded types:
+            expectTypeOf<MixedTypeBranding>().toEqualTypeOf<BrandedString | BrandedNumber>();
+
+            type MixedTypeRecord = The<typeof MixedTypeRecord>;
+            const MixedTypeRecord = record('MixedTypeRecord', BrandedString, MixedTypeBranding);
+
+            // Here we have some unexpected behaviour:
+            expectTypeOf<MixedTypeRecord>().not.toEqualTypeOf<Record<BrandedString, MixedTypeBranding>>();
+            // The branding information gets lost in a weird way:
+            expectTypeOf<MixedTypeRecord>().toEqualTypeOf<
+                Record<
+                    BrandedString, // Key stays branded...
+                    WithBrands<number, string> | WithBrands<string, string> // ...but the values lose the specific brand names.
+                >
+            >();
+
+            // Unbranding works:
+            expectTypeOf<DeepUnbranded<MixedTypeRecord>>().toEqualTypeOf<Record<string, string | number>>();
+            expectTypeOf(MixedTypeRecord.literal({ a: 'b', c: 4 })).toEqualTypeOf<
+                Record<BrandedString, WithBrands<number, string> | WithBrands<string, string>>
+            >();
+        });
+
+        test('Mixing branded and undefinedType', () => {
+            type MixedBranding = The<typeof MixedBranding>;
+            const MixedBranding = union('MixedBranding', [BrandedNumber, undefinedType]);
+
+            // At this point everything is fine. We have a union over a branded number and unbranded `undefined`:
+            expectTypeOf<MixedBranding>().toEqualTypeOf<BrandedNumber | undefined>();
+
+            type MixedBrandedRecord = The<typeof MixedBrandedRecord>;
+            const MixedBrandedRecord = record('MixedBrandedRecord', BrandedString, MixedBranding);
+
+            // This also doesn't work as expected:
+            expectTypeOf<MixedBrandedRecord>().not.toEqualTypeOf<Record<BrandedString, MixedBranding>>();
+            // Branding is now completely lost on the value type:
+            expectTypeOf<MixedBrandedRecord>().toEqualTypeOf<Record<BrandedString, number | undefined>>();
+
+            // DeepUnbranded works:
+            expectTypeOf<DeepUnbranded<MixedBrandedRecord>>().toEqualTypeOf<Record<string, number | undefined>>();
+            expectTypeOf(MixedBrandedRecord.literal({ a: 2, c: undefined })).toEqualTypeOf<Record<BrandedString, number | undefined>>();
+        });
+
+        test('Mixing branded and unbranded types', () => {
+            type MixedBranding = The<typeof MixedBranding>;
+            const MixedBranding = union('MixedBranding', [BrandedNumber, string]);
+
+            // Union over a branded number and unbranded `string`:
+            expectTypeOf<MixedBranding>().toEqualTypeOf<BrandedNumber | string>();
+
+            type MixedBrandedRecord = The<typeof MixedBrandedRecord>;
+            const MixedBrandedRecord = record('MixedBrandedRecord', BrandedString, MixedBranding);
+
+            // This works (though whether it's expected at this point remains questionable...):
+            expectTypeOf<MixedBrandedRecord>().toEqualTypeOf<Record<BrandedString, MixedBranding>>();
+
+            // DeepUnbranded works:
+            expectTypeOf<DeepUnbranded<MixedBrandedRecord>>().toEqualTypeOf<Record<string, number | string>>();
+            expectTypeOf(MixedBrandedRecord.literal({ a: 2, c: 'weird' })).toEqualTypeOf<Record<BrandedString, BrandedNumber | string>>();
+        });
+    });
+
+    test('Branded object value', () => {
+        type BrandedObject = The<typeof BrandedObject>;
+        const BrandedObject = object({ a: string }).withBrand('BrandedObject');
+
+        type BrandedVRecord = The<typeof BrandedVRecord>;
+        const BrandedVRecord = record('BrandedVRecord', string, BrandedObject.or(literal('whatever')));
+
+        expectTypeOf<BrandedVRecord>().toEqualTypeOf<Record<string, BrandedObject | 'whatever'>>();
+
+        const unbranded = { a: 'abc' };
+        const branded = BrandedObject.literal(unbranded);
+        const someString = String('abc');
+
+        expectTypeOf({ [someString]: unbranded }).not.toMatchTypeOf<BrandedVRecord>();
+        expectTypeOf({ [someString]: branded }).toMatchTypeOf<BrandedVRecord>();
+    });
 });
